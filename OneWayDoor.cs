@@ -104,7 +104,7 @@ public class OneWayDoor : MonoBehaviour {
         // MainCamera.GetComponent<CamController>().CameraRoom(doorHeight, doorHeight2);
         // ResetMonsters();
 
-        Player_.GetComponent<player>().agent.Warp(DoorPortal);
+        Player_.GetComponent<Player>().agent.Warp(DoorPortal);
 
         MainCamera.GetComponent<CamController>().zLevel = doorHeight;
         MainCamera.GetComponent<CamController>().zLevel2 = doorHeight2;
@@ -113,7 +113,7 @@ public class OneWayDoor : MonoBehaviour {
         MainCamera.GetComponent<CamController>().xLimit2 = rightEdge;
 
         MainCamera.GetComponent<CamController>().zTest = CamCenter;
-        Player_.GetComponent<player>().targetPosition = Player_.transform.position;
+        Player_.GetComponent<Player>().targetPosition = Player_.transform.position;
         Invoke("TrustMe", 1f);
 
 

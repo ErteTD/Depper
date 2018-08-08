@@ -46,7 +46,7 @@ public class BigBoyFire : MonoBehaviour {
     {
         if (other.tag == "Player" && !PlayerCasting)
         {
-            player enemy = other.GetComponent<player>();
+            Player enemy = other.GetComponent<Player>();
             enemy.Slow(FrostBoltSlow, SlowDuration, SlowPercent);
             enemy.Burn(FireBallBurn, BurnDuration, BurnPercent, damage * Time.deltaTime);
             enemy.TakeDamage(damage * Time.deltaTime);

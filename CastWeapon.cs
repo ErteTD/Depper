@@ -37,11 +37,11 @@ public class CastWeapon : MonoBehaviour
 
         if (ID == 3)
         {
-            Player1.GetComponent<player>().BigBoyGlow.SetActive(true);
+            Player1.GetComponent<Player>().BigBoyGlow.SetActive(true);
         }
-        else if (Player1.GetComponent<player>().BigBoyGlow.activeSelf == true)
+        else if (Player1.GetComponent<Player>().BigBoyGlow.activeSelf == true)
         {
-            Player1.GetComponent<player>().BigBoyGlow.SetActive(false);
+            Player1.GetComponent<Player>().BigBoyGlow.SetActive(false);
         }
     }
     public void SelectArmor(int ID)
@@ -55,28 +55,28 @@ public class CastWeapon : MonoBehaviour
                 Invoke("ArmorTrigger", CD2+0.1f);
             }
         }
-        else if (Player1.GetComponent<player>().ChangeColor.GetComponent<Renderer>().material.color == Color.red)
+        else if (Player1.GetComponent<Player>().ChangeColor.GetComponent<Renderer>().material.color == Color.red)
         {
-            Player1.GetComponent<player>().ChangeColor.GetComponent<Renderer>().material.color = Color.white;
-            Player1.GetComponent<player>().MovementSpeed = 9;
-            Player1.GetComponent<player>().MovementSpeed_ = 9;
-            Player1.GetComponent<player>().agent.speed = 9;
-            Player1.GetComponent<player>().CantBeSlowed = false;
+            Player1.GetComponent<Player>().ChangeColor.GetComponent<Renderer>().material.color = Color.white;
+            Player1.GetComponent<Player>().MovementSpeed = 9;
+            Player1.GetComponent<Player>().MovementSpeed_ = 9;
+            Player1.GetComponent<Player>().agent.speed = 9;
+            Player1.GetComponent<Player>().CantBeSlowed = false;
 
         }
 
 
-        if (ID != 4 && Player1.GetComponent<player>().fullhealth == 15) // armor 4 non frost explosion stuff.
+        if (ID != 4 && Player1.GetComponent<Player>().fullhealth == 15) // armor 4 non frost explosion stuff.
         {
-            Player1.GetComponent<player>().fullhealth = 10;
-            Player1.GetComponent<player>().HealthText.text = Player1.GetComponent<player>().health.ToString("F1");
-            Player1.GetComponent<player>().HealthBar.fillAmount = Player1.GetComponent<player>().health / Player1.GetComponent<player>().fullhealth;
+            Player1.GetComponent<Player>().fullhealth = 10;
+            Player1.GetComponent<Player>().HealthText.text = Player1.GetComponent<Player>().health.ToString("F1");
+            Player1.GetComponent<Player>().HealthBar.fillAmount = Player1.GetComponent<Player>().health / Player1.GetComponent<Player>().fullhealth;
 
         }else if (ID == 4)
         {
-            Player1.GetComponent<player>().fullhealth = 15;
-            Player1.GetComponent<player>().HealthText.text = Player1.GetComponent<player>().health.ToString("F1");
-            Player1.GetComponent<player>().HealthBar.fillAmount = Player1.GetComponent<player>().health / Player1.GetComponent<player>().fullhealth;
+            Player1.GetComponent<Player>().fullhealth = 15;
+            Player1.GetComponent<Player>().HealthText.text = Player1.GetComponent<Player>().health.ToString("F1");
+            Player1.GetComponent<Player>().HealthBar.fillAmount = Player1.GetComponent<Player>().health / Player1.GetComponent<Player>().fullhealth;
         }
     }
 
@@ -181,9 +181,9 @@ public class CastWeapon : MonoBehaviour
         if (TelePortDoor == false)
         {
             Tele1Effect.transform.parent = null;
-            Player1.GetComponent<player>().agent.Warp(TeleLoc);
-            Player1.GetComponent<player>().targetPosition = Player1.transform.position;
-            Player1.GetComponent<player>().agent.destination = Player1.transform.position;
+            Player1.GetComponent<Player>().agent.Warp(TeleLoc);
+            Player1.GetComponent<Player>().targetPosition = Player1.transform.position;
+            Player1.GetComponent<Player>().agent.destination = Player1.transform.position;
         }
     }
 
@@ -220,12 +220,12 @@ public class CastWeapon : MonoBehaviour
                 case 3:
                     ArmorIllusion spell3 = Armor[CurrentArmor].GetComponent<ArmorIllusion>();
                     spellSlotCD2 = spell3.cooldown;
-                    Player1.GetComponent<player>().ChangeColor.GetComponent<Renderer>().material.color = Color.red;
-                    Player1.GetComponent<player>().MovementSpeed = 10.8f;
-                    Player1.GetComponent<player>().MovementSpeed_ = 10.8f;
-                    Player1.GetComponent<player>().agent.speed = 10.8f;
-                    Player1.GetComponent<player>().slowedDur = 0;
-                    Player1.GetComponent<player>().CantBeSlowed = true;
+                    Player1.GetComponent<Player>().ChangeColor.GetComponent<Renderer>().material.color = Color.red;
+                    Player1.GetComponent<Player>().MovementSpeed = 10.8f;
+                    Player1.GetComponent<Player>().MovementSpeed_ = 10.8f;
+                    Player1.GetComponent<Player>().agent.speed = 10.8f;
+                    Player1.GetComponent<Player>().slowedDur = 0;
+                    Player1.GetComponent<Player>().CantBeSlowed = true;
 
                     break;
                 case 4:

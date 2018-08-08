@@ -167,7 +167,7 @@ public class CastSpell : MonoBehaviour {
         if (curSlotcd)
         {
 
-            player.FindObjectOfType<player>().AttackAnim();
+            Player.FindObjectOfType<Player>().AttackAnim();
             curSlotcd = false;
 
             if (cone || channel || aoeSizeMeteor > 0)
@@ -344,19 +344,19 @@ public class CastSpell : MonoBehaviour {
                 {
 
                     Invoke("DoubleCastSpell1", 0.15f);
-                    player.FindObjectOfType<player>().MultiVis(0);
+                    Player.FindObjectOfType<Player>().MultiVis(0);
                 }
                 if (MultiCast > 75)
                 {
 
                     Invoke("DoubleCastSpell1", 0.3f);
-                    player.FindObjectOfType<player>().MultiVis(1);
+                    Player.FindObjectOfType<Player>().MultiVis(1);
                 }
                 if (MultiCast > 90)
                 {
 
                     Invoke("DoubleCastSpell1", 0.45f);
-                    player.FindObjectOfType<player>().MultiVis(-1);
+                    Player.FindObjectOfType<Player>().MultiVis(-1);
                 }
 
 
@@ -658,7 +658,7 @@ public class CastSpell : MonoBehaviour {
                 {
                     CD1 = 0.5f;
                     CD1_ = 0.5f;
-                    player.FindObjectOfType<player>().HastenVis();
+                    Player.FindObjectOfType<Player>().HastenVis();
                 }
             }   
         }
@@ -675,7 +675,7 @@ public class CastSpell : MonoBehaviour {
                     CD2 = 0.5f;
                     CD2_ = 0.5f;
 
-                    player.FindObjectOfType<player>().HastenVis();
+                    Player.FindObjectOfType<Player>().HastenVis();
                 }          
             }
     }
@@ -691,7 +691,7 @@ public class CastSpell : MonoBehaviour {
                 {
                     CD3 = 0.5f;
                     CD3_ = 0.5f;
-                    player.FindObjectOfType<player>().HastenVis();
+                    Player.FindObjectOfType<Player>().HastenVis();
                 }
             }
 

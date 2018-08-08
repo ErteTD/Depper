@@ -145,7 +145,7 @@ public class TokenScript : MonoBehaviour {
                 switch (ItemID)
                 {
                     case 1:
-                        Player_.GetComponent<player>().Heal(healing);
+                        Player_.GetComponent<Player>().Heal(healing);
                         break;
                 }
                 break;

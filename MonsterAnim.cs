@@ -188,7 +188,7 @@ public class MonsterAnim : MonoBehaviour {
     {
         //if (!animation.IsPlaying("attack_short_001")){
 
-        if (player.FindObjectOfType<player>().channelingNow == false)
+        if (Player.FindObjectOfType<Player>().channelingNow == false)
         {
             animation["attack_short_001"].time = 0.6f;
             animation["attack_short_001"].speed = 1.2f;

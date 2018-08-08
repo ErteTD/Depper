@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class player : MonoBehaviour {
+public class Player : MonoBehaviour {
 
     public GameObject MousePing;
     public GameObject animChild;
@@ -427,7 +427,7 @@ public class player : MonoBehaviour {
     {
         animChild.GetComponent<MonsterAnim>().PlayerDie();
         animChild.transform.parent = null;
-        this.GetComponent<player>().enabled = false;
+        this.GetComponent<Player>().enabled = false;
     }
 
     public void AttackAnim()

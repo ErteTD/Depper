@@ -836,7 +836,7 @@ public class Monster : MonoBehaviour {
             if (other.tag == "Player")
             {
                 OnlyOnce = true;
-                other.GetComponent<player>().TakeDamage(damage);
+                other.GetComponent<Player>().TakeDamage(damage);
                 transform.GetChild(0).gameObject.SetActive(true);
                 Destroy(transform.GetChild(0).gameObject, 0.99f);
                 transform.GetChild(0).gameObject.transform.parent = null;
@@ -907,7 +907,7 @@ public class Monster : MonoBehaviour {
             }
             else if (!StartScene && dist < meleeRange+6 && tag != "Ressing" && !AttackFriend)
             {
-                PC.GetComponent<player>().TakeDamage(damage);
+                PC.GetComponent<Player>().TakeDamage(damage);
             }
             else if (StartScene)
             {
@@ -926,7 +926,7 @@ public class Monster : MonoBehaviour {
             }
             else if (!AttackFriend)
             {
-                PC.GetComponent<player>().TakeDamage(damage);
+                PC.GetComponent<Player>().TakeDamage(damage);
             }else if(AttackFriend){
                 PC.GetComponent<Monster>().TakeDamage(damage);
             }

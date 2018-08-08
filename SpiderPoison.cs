@@ -21,7 +21,7 @@ public class SpiderPoison : MonoBehaviour {
     {
         if (other.tag == "Player" && TickRate <= 0)
         {
-            player player = other.GetComponent<player>();
+            Player player = other.GetComponent<Player>();
             player.TakeDamage((damage));
             TickRate = TickRate_;
         }

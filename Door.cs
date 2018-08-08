@@ -53,7 +53,7 @@ public class Door : MonoBehaviour {
             if (doorHeight == doorHeight2)
             {
                 doorHeight = doorHeight3;
-                Player_.GetComponent<player>().agent.Warp(new Vector3(transform.position.x, Player_.transform.position.y, transform.position.z + 6f));
+                Player_.GetComponent<Player>().agent.Warp(new Vector3(transform.position.x, Player_.transform.position.y, transform.position.z + 6f));
                 MainCamera.GetComponent<CamController>().xLimit1 = topCamera1;
                 MainCamera.GetComponent<CamController>().xLimit2 = topCamera2;
 
@@ -61,7 +61,7 @@ public class Door : MonoBehaviour {
             else
             {
                 doorHeight = doorHeight2;
-                Player_.GetComponent<player>().agent.Warp(new Vector3(transform.position.x, Player_.transform.position.y, transform.position.z - 6f));
+                Player_.GetComponent<Player>().agent.Warp(new Vector3(transform.position.x, Player_.transform.position.y, transform.position.z - 6f));
 
                 MainCamera.GetComponent<CamController>().xLimit1 = bottomCamera1;
                 MainCamera.GetComponent<CamController>().xLimit2 = bottomCamera2;
@@ -73,7 +73,7 @@ public class Door : MonoBehaviour {
             if (doorHeight == doorHeight2)
             {
                 doorHeight = doorHeight3;
-                Player_.GetComponent<player>().agent.Warp(new Vector3(transform.position.x +6f, Player_.transform.position.y, transform.position.z));
+                Player_.GetComponent<Player>().agent.Warp(new Vector3(transform.position.x +6f, Player_.transform.position.y, transform.position.z));
                 MainCamera.GetComponent<CamController>().xLimit1 = topCamera1;
                 MainCamera.GetComponent<CamController>().xLimit2 = topCamera2;
 
@@ -81,7 +81,7 @@ public class Door : MonoBehaviour {
             else
             {
                 doorHeight = doorHeight2;
-                Player_.GetComponent<player>().agent.Warp(new Vector3(transform.position.x -6f, Player_.transform.position.y, transform.position.z));
+                Player_.GetComponent<Player>().agent.Warp(new Vector3(transform.position.x -6f, Player_.transform.position.y, transform.position.z));
 
                 MainCamera.GetComponent<CamController>().xLimit1 = bottomCamera1;
                 MainCamera.GetComponent<CamController>().xLimit2 = bottomCamera2;
@@ -91,7 +91,7 @@ public class Door : MonoBehaviour {
         }
 
 
-        Player_.GetComponent<player>().targetPosition = Player_.transform.position;
+        Player_.GetComponent<Player>().targetPosition = Player_.transform.position;
     }
 
     private void ResetMonsters()

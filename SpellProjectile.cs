@@ -131,7 +131,7 @@ public class SpellProjectile : MonoBehaviour {
             }
             if (!enemyCastingspell && !CompOrbPlayer)
             {
-                ThePlayer.GetComponent<player>().curSpellProjectile.Add(gameObject);
+                ThePlayer.GetComponent<Player>().curSpellProjectile.Add(gameObject);
             }
 
             Crit(); //calls the crit function.
@@ -166,7 +166,7 @@ public class SpellProjectile : MonoBehaviour {
                 chanRange = 25; // control channeling distance with this.
                 if (!CompOrbPlayer) // Comporb testing, making sure the orb is the new "player" for channeling script
                 {
-                    ThePlayer.GetComponent<player>().Channeling(); // call player channeling function to set speed to 0
+                    ThePlayer.GetComponent<Player>().Channeling(); // call player channeling function to set speed to 0
                 }
 
                 if (spellName == "Lightningbolt" && !cone)
@@ -438,7 +438,7 @@ public class SpellProjectile : MonoBehaviour {
                     damage *= CritDamage;
                 if (!CompOrbPlayer) // Comporb testing, making sure the orb is the new "player" for channeling script. OBS! CHANGE! Make so the text can hover over the orb.
                 {
-                    ThePlayer.GetComponent<player>().Crit(damage);
+                    ThePlayer.GetComponent<Player>().Crit(damage);
                 }
                 else
                 {
@@ -1424,9 +1424,9 @@ public class SpellProjectile : MonoBehaviour {
 
                 if (other.tag == "Player" && enemyCastingspell == true)
             {
-                other.GetComponent<player>().TakeDamage(damage); // ToDo create player slow aswell.
-                other.GetComponent<player>().Burn(FireBallBurn, BurnDuration, BurnPercent, damage);
-                other.GetComponent<player>().Slow(FrostBoltSlow, SlowDuration, SlowPercent);
+                other.GetComponent<Player>().TakeDamage(damage); // ToDo create player slow aswell.
+                other.GetComponent<Player>().Burn(FireBallBurn, BurnDuration, BurnPercent, damage);
+                other.GetComponent<Player>().Slow(FrostBoltSlow, SlowDuration, SlowPercent);
                 Stop();
             }
         }
@@ -1587,12 +1587,12 @@ public class SpellProjectile : MonoBehaviour {
                 }
                 else
                 {
-                    player e = c.GetComponent<player>();
+                    Player e = c.GetComponent<Player>();
                     if (e != null)
                     {
                         directionF = (e.transform.position - transform.position).normalized;
-                        e.GetComponent<player>().Slow(FrostBoltSlow, SlowDuration, SlowPercent);
-                        e.GetComponent<player>().TakeDamage(damage);
+                        e.GetComponent<Player>().Slow(FrostBoltSlow, SlowDuration, SlowPercent);
+                        e.GetComponent<Player>().TakeDamage(damage);
                     }
                 }
             }
@@ -1658,7 +1658,7 @@ public class SpellProjectile : MonoBehaviour {
         }
         if (channeling && !CompOrb && !CompOrbPlayer && !ChaosOrb_)
         {
-            ThePlayer.GetComponent<player>().StopChanneling();
+            ThePlayer.GetComponent<Player>().StopChanneling();
         }
         Destroy(gameObject);
     }

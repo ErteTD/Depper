@@ -1237,7 +1237,7 @@ public class Spellbook : MonoBehaviour {
                 cast.FrostBoltSlow = false;
             cast.LBBounce = false;
             cast.PoolInst = fire.Pool;
-                player.FindObjectOfType<player>().spellrange = fire.spellrange;
+                Player.FindObjectOfType<Player>().spellrange = fire.spellrange;
             }
 
             if (lvl1choiceNOW == 2)
@@ -1257,7 +1257,7 @@ public class Spellbook : MonoBehaviour {
             cast.FireBallBurn = false;
             cast.LBBounce = false;
             cast.PoolInst = frost.Pool;
-            player.FindObjectOfType<player>().spellrange = frost.spellrange;
+            Player.FindObjectOfType<Player>().spellrange = frost.spellrange;
             }
 
             if (lvl1choiceNOW == 3)
@@ -1274,7 +1274,7 @@ public class Spellbook : MonoBehaviour {
             cast.LBBounce = lightning.LBBounce;
             cast.LBBounceAmount = lightning.LBBounceAmount;
             cast.PoolInst = lightning.Pool;
-            player.FindObjectOfType<player>().spellrange = lightning.spellrange;
+            Player.FindObjectOfType<Player>().spellrange = lightning.spellrange;
             }
             if (lvl1choiceNOW == 0)
             {
@@ -1287,7 +1287,7 @@ public class Spellbook : MonoBehaviour {
             cast.FireBallBurn = false;
             cast.LBBounce = false;
             cast.LBBounceAmount = 0;
-            player.FindObjectOfType<player>().spellrange = 0;
+            Player.FindObjectOfType<Player>().spellrange = 0;
         }       
 
     }

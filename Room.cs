@@ -21,7 +21,7 @@ public class Room : MonoBehaviour
 
 
     [Header("Other stuff")]
-    public int Monsters;
+    public int Monsters_;
     public GameObject MimiMapBlock;
     public List<GameObject> DoorList = new List<GameObject>();
     public List<int> MiniMapDoors = new List<int>();
@@ -29,11 +29,22 @@ public class Room : MonoBehaviour
     public bool HasLoot;
     // Use this for initialization
 
+
+    private List<GameObject> Monsters = new List<GameObject>();
+
     void Start()
     {
-        InvokeRepeating("GetChildObject", 0.01f, 0.5f);
+        //   InvokeRepeating("GetChildObject", 0.01f, 0.5f);
+        InvokeRepeating("OpenDoorsIfNoMonsters", 0.01f, 0.5f);
         Invoke("GetDoors", 0.001f);
         Invoke("ColorMiniMapRed", 0.1f);
+    }
+
+
+
+    public void AddMonster(GameObject monster)
+    {
+        Monsters.Add(monster);
     }
 
     //void MiniMapRooms(){
@@ -105,23 +116,55 @@ public class Room : MonoBehaviour
     }
 
 
-    public void GetChildObject()
+    //public void GetChildObject()
+    //{
+    //    Monsters_ = 0;
+    //    for (int i = 0; i < transform.childCount; i++)
+    //    {
+    //        Transform child = transform.GetChild(i);
+    //        if (child.tag == "Monster" || child.tag == "Illusion" || child.tag == "Ressing")
+    //        {
+    //            Monsters_++;
+    //        }
+    //    }
+    //    if (Monsters_ == 0)
+    //    {
+    //        foreach (var door in DoorList)
+    //        {
+    //            door.transform.GetChild(0).gameObject.SetActive(true);
+    //        }
+    //    }
+    //}
+
+
+    void OpenDoorsIfNoMonsters()
     {
-        Monsters = 0;
-        for (int i = 0; i < transform.childCount; i++)
+        if (Monsters.Count == 0)
         {
-            Transform child = transform.GetChild(i);
-            if (child.tag == "Monster" || child.tag == "Illusion" || child.tag == "Ressing")
+            OpenDoors();
+        }
+        else
+        {
+            for (int i = Monsters.Count - 1; i > -1; i--)
             {
-                Monsters++;
+                if (Monsters[i] == null)
+                {
+                    Monsters.RemoveAt(i);
+                }
             }
         }
-        if (Monsters == 0)
+    }
+
+    void OpenDoors()
+    {
+        foreach (var door in DoorList)
         {
-            foreach (var door in DoorList)
-            {
-                door.transform.GetChild(0).gameObject.SetActive(true);
-            }
+            OpenDoor(door);
         }
+    }
+
+    void OpenDoor(GameObject door)
+    {
+        door.transform.GetChild(0).gameObject.SetActive(true);
     }
 }

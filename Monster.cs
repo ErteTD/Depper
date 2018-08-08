@@ -6,7 +6,7 @@ using System.Linq;
 
 public class Monster : MonoBehaviour
 {
-
+    
     public float health;
     public float damage;
     public float meleeRange;

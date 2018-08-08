@@ -94,9 +94,9 @@ public class MapGrid : MonoBehaviour
         AmountOfLoot = (int)Mathf.Floor(TotalRooms / 3);
         AmountOfPotions = (int)Mathf.Floor(TotalRooms / 4);
         GameObject Base = Instantiate(BasicRoom, transform.position, transform.rotation, transform);
-        Base.GetComponent<Room>().HasLoot = true; // so loot cant spawn in first room.
+        // this is a really disgusting hack that prevents this room from getting loot later on.. sorry
+        Base.GetComponent<Room>().HasLoot = true;
 
-        //      var RandomFloor = Random.Range(0, FloorType.Count);
         Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material = FloorType[CurrentLevel];
 
         var RandomObstacle = Random.Range(0, Obstacle.Count);
@@ -105,7 +105,6 @@ public class MapGrid : MonoBehaviour
         MiniMapList.Add(new Vector2Int(0, 0));
         RoomList.Add(Base);
         SpawnMoreRooms(0);
-
     }
 
     public void MonsterList()
@@ -215,6 +214,8 @@ public class MapGrid : MonoBehaviour
                         SpawnMulti = MonsterType_[RandomMonster].GetComponent<Monster>().SpawnMultiNumber;
                     }
 
+                    var room = Base.GetComponent<Room>();
+
                     for (int i = 0; i < SpawnMulti; i++)
                     {
                         var RandomPos = Random.Range(0, MonRanDPosList.Count);
@@ -224,6 +225,7 @@ public class MapGrid : MonoBehaviour
                         Monst.transform.localPosition = MonRanDPosList[RandomPos];
                         MonRanDPosList.RemoveAt(RandomPos);
 
+                        room.AddMonster(Monst);
                         if (Monst.GetComponent<Monster>().MonsterType == 5)
                         {
                             Monst.transform.position = new Vector3(Monst.transform.position.x, 3f, Monst.transform.position.z);
@@ -237,93 +239,8 @@ public class MapGrid : MonoBehaviour
                 var RandomObstacle = Random.Range(0, Obstacle.Count);
                 Instantiate(Obstacle[RandomObstacle], Base.transform);
 
-                //       var RandomFloor = Random.Range(0, FloorType.Count);
                 Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material = FloorType[CurrentLevel];
                 Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(Base.GetComponent<Room>().Floor.transform.localScale.x, Base.GetComponent<Room>().Floor.transform.localScale.z);
-
-                //switch (RPos)
-                //{
-                //    case 1: //Up
-                //        DoorLoc = new Vector3(-25, 2, 13);
-                //        DoorRot = Quaternion.Euler(new Vector3(0, -45, 0));
-                //        DoorPortal1 = new Vector3(-5, 0, 5);
-                //        DoorLoc2 = new Vector3(25, 2, -11);
-                //        DoorRot2 = Quaternion.Euler(new Vector3(0, 135, 0));
-                //        DoorPortal2 = new Vector3(5, 0, -5);
-                //        MiniMapCur = 2;
-                //        break;
-                //    case 2: //Down
-                //        DoorLoc = new Vector3(25, 2, -11);
-                //        DoorRot = Quaternion.Euler(new Vector3(0, 135, 0));
-                //        DoorPortal1 = new Vector3(5, 0, -5);
-                //        DoorLoc2 = new Vector3(-25, 2, 13);
-                //        DoorRot2 = Quaternion.Euler(new Vector3(0, -45, 0));
-                //        DoorPortal2 = new Vector3(-5, 0, 5);
-                //        MiniMapCur = 1;
-                //        break;
-                //    case 3: //Left
-                //        DoorLoc = new Vector3(-25, 2, -11);
-                //        DoorRot = Quaternion.Euler(new Vector3(0, -135, 0));
-                //        DoorPortal1 = new Vector3(-5, 0, -5);
-                //        DoorLoc2 = new Vector3(25, 2, 13);
-                //        DoorRot2 = Quaternion.Euler(new Vector3(0, 45, 0));
-                //        DoorPortal2 = new Vector3(5, 0, 5);
-                //        MiniMapCur = 4;
-                //        break;
-                //    case 4: // Right
-                //        DoorLoc = new Vector3(25, 2, 13);
-                //        DoorRot = Quaternion.Euler(new Vector3(0, 45, 0));
-                //        DoorPortal1 = new Vector3(5, 0, 5);
-                //        DoorLoc2 = new Vector3(-25, 2, -11);
-                //        DoorRot2 = Quaternion.Euler(new Vector3(0, -135, 0));
-                //        DoorPortal2 = new Vector3(-5, 0, -5);
-                //        MiniMapCur = 3;
-                //        break;
-                //    default:
-                //        break;
-                //}
-
-                //GameObject Doors = Instantiate(Door, CurrentRoom.transform);
-                //Doors.transform.localPosition = DoorLoc;
-                //Doors.transform.localRotation = DoorRot;
-
-                //GameObject Doors2 = Instantiate(Door, Base.transform);
-                //Doors2.transform.localPosition = DoorLoc2;
-                //Doors2.transform.localRotation = DoorRot2;
-
-                //DoorPortal1 += Doors2.transform.position;
-                //DoorPortal2 += Doors.transform.position;
-
-                //Doors.transform.GetChild(0).GetComponent<OneWayDoor>().DoorPortal = DoorPortal1;
-                //Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().DoorPortal = DoorPortal2;
-
-                //Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight += (CurGrid.y * 40);
-                //Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight2 += (CurGrid.y * 40);
-                //Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().leftEdge += (CurGrid.x * 80);
-                //Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().rightEdge += (CurGrid.x * 80);
-
-                //Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight += (YGrid * 40);
-                //Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight2 += (YGrid * 40);
-                //Doors.transform.GetChild(0).GetComponent<OneWayDoor>().leftEdge += (XGrid * 80);
-                //Doors.transform.GetChild(0).GetComponent<OneWayDoor>().rightEdge += (XGrid * 80);
-
-                //Doors.transform.GetChild(0).GetComponent<OneWayDoor>().ConRoom = Base;
-                //Doors.transform.GetChild(0).GetComponent<OneWayDoor>().CurRoom = CurrentRoom;
-
-                //Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().ConRoom = CurrentRoom;
-                //Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().CurRoom = Base;
-
-                //Doors.transform.GetChild(0).GetComponent<OneWayDoor>().ConnectingRoom = Doors2;
-                //Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().ConnectingRoom = Doors;
-
-                //Doors.transform.GetChild(0).gameObject.SetActive(false);
-                //Doors2.transform.GetChild(0).gameObject.SetActive(false);
-
-                //Base.GetComponent<Room>().MiniMapDoors.Add(MiniMapCur);
-                //CurrentRoom.GetComponent<Room>().MiniMapDoors.Add(RPos);
-
-                //Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().MoveMMCam = MiniMapCur;
-                //Doors.transform.GetChild(0).GetComponent<OneWayDoor>().MoveMMCam = RPos;
 
                 Base.SetActive(false);
                 RoomList.Add(Base);
@@ -337,7 +254,6 @@ public class MapGrid : MonoBehaviour
             int Counter2 = 0;
             foreach (var Room in GridList)
             {
-
                 TopY = Room.y;
                 TopX = Room.x;
                 MinX = Room.x;
@@ -356,27 +272,16 @@ public class MapGrid : MonoBehaviour
                     LR = Room;
                 }
 
-
                 for (int i = 0; i < GridList.Count; i++) // create all doors.
                 {
                     if (TopX + 1 == GridList[i].x && TopY == GridList[i].y)
                     {
-                        //  Debug.Log("Room at X: " + TopX + " And Y: " + TopY + " Connects Right");
                         SpawnRoom(4, TopY, TopX, GridList[i].y, GridList[i].x, RoomList[Counter2], RoomList[i]);
                     }
-                    //if (TopX - 1 == GridList[i].x && TopY == GridList[i].y)
-                    //{
-                    //    Debug.Log("Room at X: " + TopX + " And Y: " + TopY + " Connects Left");
-                    //}
                     if (TopX == GridList[i].x && TopY + 1 == GridList[i].y)
                     {
-                        //  Debug.Log("Room at X: " + TopX + " And Y: " + TopY + " Connects Up");
                         SpawnRoom(1, TopY, TopX, GridList[i].y, GridList[i].x, RoomList[Counter2], RoomList[i]);
                     }
-                    //if (TopX == GridList[i].x && TopY - 1 == GridList[i].y)
-                    //{
-                    //    Debug.Log("Room at X: " + TopX + " And Y: " + TopY + " Connects Down");
-                    //}
                 }
                 Counter2++;
 

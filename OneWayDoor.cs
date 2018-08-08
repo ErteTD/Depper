@@ -104,6 +104,7 @@ public class OneWayDoor : MonoBehaviour
         FindObjectOfType<CastWeapon>().TelePortDoor = true;
         // MainCamera.GetComponent<CamController>().CameraRoom(doorHeight, doorHeight2);
         // ResetMonsters();
+        FindObjectOfType<GameManager>().SetCurrentRoom(ConRoom);
 
         Player_.GetComponent<Player>().agent.Warp(DoorPortal);
 

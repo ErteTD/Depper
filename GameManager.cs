@@ -123,6 +123,9 @@ public class GameManager : MonoBehaviour
     public List<GameObject> Illus;
     private bool show;
     private float SetTime;
+    private GameObject CurrentRoom;
+
+
     void Start()
     {
         Vector2 asd = new Vector2(0, 0);
@@ -132,6 +135,15 @@ public class GameManager : MonoBehaviour
     }
     // Update is called once per frame
 
+
+    public void SetCurrentRoom(GameObject room) // not used currently
+    {
+        CurrentRoom = room;
+    }
+    public GameObject GetCurrentRoom() // not used currently
+    {
+        return CurrentRoom;
+    }
 
     public void ButtonRooms(int Type)
     {

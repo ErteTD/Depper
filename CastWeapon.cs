@@ -16,7 +16,7 @@ public class CastWeapon : MonoBehaviour
     public Image slot1;
     public GameObject Player1;
     public ParticleSystem TelePortEffect;
-    [HideInInspector]public float spellSlotCD;
+    [HideInInspector] public float spellSlotCD;
     public List<GameObject> Weapons;
     [HideInInspector] Vector3 TeleLoc;
     [HideInInspector] ParticleSystem Tele1Effect;
@@ -24,7 +24,7 @@ public class CastWeapon : MonoBehaviour
 
     private float CD2;
     private float CD2_;
-    [HideInInspector]public bool spellSlot2rdy;
+    [HideInInspector] public bool spellSlot2rdy;
     public Text coolDownTextDisplay2;
     public Text coolDownTextDisplay2_;
     public Image slot2;
@@ -49,10 +49,10 @@ public class CastWeapon : MonoBehaviour
         CurrentArmor = ID;
         if (ID == 3)
         {
-            ArmorTrigger();   
+            ArmorTrigger();
             if (!spellSlot2rdy)
             {
-                Invoke("ArmorTrigger", CD2+0.1f);
+                Invoke("ArmorTrigger", CD2 + 0.1f);
             }
         }
         else if (Player1.GetComponent<Player>().ChangeColor.GetComponent<Renderer>().material.color == Color.red)
@@ -72,7 +72,8 @@ public class CastWeapon : MonoBehaviour
             Player1.GetComponent<Player>().HealthText.text = Player1.GetComponent<Player>().health.ToString("F1");
             Player1.GetComponent<Player>().HealthBar.fillAmount = Player1.GetComponent<Player>().health / Player1.GetComponent<Player>().fullhealth;
 
-        }else if (ID == 4)
+        }
+        else if (ID == 4)
         {
             Player1.GetComponent<Player>().fullhealth = 15;
             Player1.GetComponent<Player>().HealthText.text = Player1.GetComponent<Player>().health.ToString("F1");
@@ -93,10 +94,10 @@ public class CastWeapon : MonoBehaviour
 
 
                 case 1:
-                    WeaponSpider spell = Weapons[CurrentWeapon].GetComponent<WeaponSpider>();                  
+                    WeaponSpider spell = Weapons[CurrentWeapon].GetComponent<WeaponSpider>();
                     spellSlotCD = spell.cooldown;
-                      GameObject spider1 = Instantiate(spell.Spiders, transform.position, transform.rotation, transform);
-                      GameObject spider2 = Instantiate(spell.Spiders, transform.position, transform.rotation, transform);
+                    GameObject spider1 = Instantiate(spell.Spiders, transform.position, transform.rotation, transform);
+                    GameObject spider2 = Instantiate(spell.Spiders, transform.position, transform.rotation, transform);
 
                     spider1.transform.position += spider1.transform.right * 2;
                     spider2.transform.position += spider2.transform.right * -2;
@@ -111,16 +112,16 @@ public class CastWeapon : MonoBehaviour
                     RaycastHit hit;
                     if (Physics.Raycast(ray, out hit) && hit.collider.gameObject.tag == "Floor" || hit.collider.gameObject.tag == "Monster" || hit.collider.gameObject.tag == "Token" || hit.collider.gameObject.tag == "Door")
                     {
-                      TelePortDoor = false;
-                      Tele1Effect = Instantiate(TelePortEffect, Player1.transform.position, Player1.transform.rotation);
-                      Tele1Effect.transform.parent = Player1.transform;
+                        TelePortDoor = false;
+                        Tele1Effect = Instantiate(TelePortEffect, Player1.transform.position, Player1.transform.rotation);
+                        Tele1Effect.transform.parent = Player1.transform;
 
-                      Instantiate(TelePortEffect, hit.point, Player1.transform.rotation);
-                      TeleLoc = hit.point;
+                        Instantiate(TelePortEffect, hit.point, Player1.transform.rotation);
+                        TeleLoc = hit.point;
 
 
-                    Invoke("TelePortPlayer", 1f);
-                    spellSlotCD = spell2.cooldown;
+                        Invoke("TelePortPlayer", 1f);
+                        spellSlotCD = spell2.cooldown;
                     }
                     else
                     {
@@ -154,7 +155,7 @@ public class CastWeapon : MonoBehaviour
                 case 4:
                     Blink spell4 = Weapons[CurrentWeapon].GetComponent<Blink>();
 
-                        // Code Here.
+                    // Code Here.
                     float OrbFacing = transform.rotation.eulerAngles.x;
                     float attackTimer = 0;
                     for (int i = 0; i < 5; i++)
@@ -251,11 +252,11 @@ public class CastWeapon : MonoBehaviour
     void Update()
     {
 
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                WeaponAttack();
-            }
-        
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            WeaponAttack();
+        }
+
 
         if (CD1 <= 0f)
         {

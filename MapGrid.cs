@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class MapGrid : MonoBehaviour {
+public class MapGrid : MonoBehaviour
+{
 
     public List<Material> FloorType;
     public GameObject GiveStuff;
     private int TotalRooms;
     public GameObject BasicRoom;
     public GameObject Door;
-    
 
 
-   [HideInInspector] public int XGrid;
-   [HideInInspector] public int YGrid;
+
+    [HideInInspector] public int XGrid;
+    [HideInInspector] public int YGrid;
 
     private int MiniMapCur;
 
@@ -43,7 +44,7 @@ public class MapGrid : MonoBehaviour {
     public int CurrentLevel;
     public int minRoom;
     public int maxRoom;
-    
+
     public List<int> LevelCR;
     [Header("Loot")]
     public List<GameObject> Tokens;
@@ -72,43 +73,38 @@ public class MapGrid : MonoBehaviour {
 
     void Start()
     {
-        if (GameManager.StartLevel_ == false)
-        {
-            FirstRoom();
-        }
-        else
+        if (GameManager.StartLevel_)
         {
             minRoom = GameManager.minRoom_;
             maxRoom = GameManager.maxRoom_;
             CurrentLevel = GameManager.CurrentLevel_;
 
-            if (GameManager.GiveLoot_) { 
-            GiveStuff.GetComponent<GameManager>().SpellsAndItems();
-                }
-
-            FirstRoom();
+            if (GameManager.GiveLoot_)
+            {
+                GiveStuff.GetComponent<GameManager>().SpellsAndItems();
+            }
         }
+        GenerateFirstRoom();
     }
 
 
-    public void FirstRoom()
+    public void GenerateFirstRoom()
     {
+        TotalRooms = Random.Range(minRoom, maxRoom + 1);
+        AmountOfLoot = (int)Mathf.Floor(TotalRooms / 3);
+        AmountOfPotions = (int)Mathf.Floor(TotalRooms / 4);
+        GameObject Base = Instantiate(BasicRoom, transform.position, transform.rotation, transform);
+        Base.GetComponent<Room>().HasLoot = true; // so loot cant spawn in first room.
 
-            TotalRooms = Random.Range(minRoom, maxRoom + 1);
-            AmountOfLoot = (int)Mathf.Floor(TotalRooms / 3);
-            AmountOfPotions = (int)Mathf.Floor(TotalRooms / 4);
-            GameObject Base = Instantiate(BasicRoom, transform.position, transform.rotation, transform);
-            Base.GetComponent<Room>().HasLoot = true; // so loot cant spawn in first room.
-
-      //      var RandomFloor = Random.Range(0, FloorType.Count);
-            Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material = FloorType[CurrentLevel];
+        //      var RandomFloor = Random.Range(0, FloorType.Count);
+        Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material = FloorType[CurrentLevel];
 
         var RandomObstacle = Random.Range(0, Obstacle.Count);
-            Instantiate(Obstacle[RandomObstacle], Base.transform);
-            GridList.Add(new Vector2Int(0, 0));
-            MiniMapList.Add(new Vector2Int(0, 0));
-            RoomList.Add(Base);
-            SpawnMoreRooms(0);
+        Instantiate(Obstacle[RandomObstacle], Base.transform);
+        GridList.Add(new Vector2Int(0, 0));
+        MiniMapList.Add(new Vector2Int(0, 0));
+        RoomList.Add(Base);
+        SpawnMoreRooms(0);
 
     }
 
@@ -144,7 +140,8 @@ public class MapGrid : MonoBehaviour {
             int RemoveMonst = Random.Range(0, MonsterType_.Count);
             MonsterType_.RemoveAt(RemoveMonst);
             TrimList();
-        }else if (MonsterType_.Count < 3)
+        }
+        else if (MonsterType_.Count < 3)
         {
             int AddMonst = Random.Range(0, MonsterType.Count);
             MonsterType_.Add(MonsterType[AddMonst]);
@@ -189,17 +186,17 @@ public class MapGrid : MonoBehaviour {
                     MiniMapZ = 1;
                     break;
                 default:
-                break;
+                    break;
             }
             if (!GridList.Contains(new Vector2Int(XGrid, YGrid)))
             {
-            GridList.Add(new Vector2Int(XGrid, YGrid));
+                GridList.Add(new Vector2Int(XGrid, YGrid));
 
-            MiniMapList.Add(new Vector2Int(MiniMapList[ListKey].x + MiniMapX, MiniMapList[ListKey].y + MiniMapZ));
+                MiniMapList.Add(new Vector2Int(MiniMapList[ListKey].x + MiniMapX, MiniMapList[ListKey].y + MiniMapZ));
 
-            TotalRooms--;
-            GameObject Base = Instantiate(BasicRoom, transform.position, transform.rotation, transform);
-            Base.transform.localPosition = new Vector3(XGrid * 80, 0, YGrid * 40);
+                TotalRooms--;
+                GameObject Base = Instantiate(BasicRoom, transform.position, transform.rotation, transform);
+                Base.transform.localPosition = new Vector3(XGrid * 80, 0, YGrid * 40);
 
                 for (int i = -6; i < 7; i += 2)
                 {
@@ -240,7 +237,7 @@ public class MapGrid : MonoBehaviour {
                 var RandomObstacle = Random.Range(0, Obstacle.Count);
                 Instantiate(Obstacle[RandomObstacle], Base.transform);
 
-         //       var RandomFloor = Random.Range(0, FloorType.Count);
+                //       var RandomFloor = Random.Range(0, FloorType.Count);
                 Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material = FloorType[CurrentLevel];
                 Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(Base.GetComponent<Room>().Floor.transform.localScale.x, Base.GetComponent<Room>().Floor.transform.localScale.z);
 
@@ -333,18 +330,19 @@ public class MapGrid : MonoBehaviour {
             }
 
             var RandomRoom = Random.Range(0, GridList.Count);
-            SpawnMoreRooms(RandomRoom);      
+            SpawnMoreRooms(RandomRoom);
         }
         else //Boss Room && Doors
         {
             int Counter2 = 0;
             foreach (var Room in GridList)
             {
-                
+
                 TopY = Room.y;
                 TopX = Room.x;
                 MinX = Room.x;
-                if (FinalY < TopY) {
+                if (FinalY < TopY)
+                {
                     FinalY = TopY;
                 }
                 if (FinalX <= TopX)
@@ -361,9 +359,9 @@ public class MapGrid : MonoBehaviour {
 
                 for (int i = 0; i < GridList.Count; i++) // create all doors.
                 {
-                    if (TopX +1 == GridList[i].x && TopY == GridList[i].y)
+                    if (TopX + 1 == GridList[i].x && TopY == GridList[i].y)
                     {
-                      //  Debug.Log("Room at X: " + TopX + " And Y: " + TopY + " Connects Right");
+                        //  Debug.Log("Room at X: " + TopX + " And Y: " + TopY + " Connects Right");
                         SpawnRoom(4, TopY, TopX, GridList[i].y, GridList[i].x, RoomList[Counter2], RoomList[i]);
                     }
                     //if (TopX - 1 == GridList[i].x && TopY == GridList[i].y)
@@ -372,7 +370,7 @@ public class MapGrid : MonoBehaviour {
                     //}
                     if (TopX == GridList[i].x && TopY + 1 == GridList[i].y)
                     {
-                      //  Debug.Log("Room at X: " + TopX + " And Y: " + TopY + " Connects Up");
+                        //  Debug.Log("Room at X: " + TopX + " And Y: " + TopY + " Connects Up");
                         SpawnRoom(1, TopY, TopX, GridList[i].y, GridList[i].x, RoomList[Counter2], RoomList[i]);
                     }
                     //if (TopX == GridList[i].x && TopY - 1 == GridList[i].y)
@@ -390,9 +388,10 @@ public class MapGrid : MonoBehaviour {
                 FinalFinalX = RR;
 
             }
-            else {
-                FinalFinalX = LR;                           
-            } 
+            else
+            {
+                FinalFinalX = LR;
+            }
 
             DoorLoc = new Vector3(0, 2, 15);
             DoorRot = Quaternion.Euler(new Vector3(0, 0, 0));
@@ -404,7 +403,7 @@ public class MapGrid : MonoBehaviour {
             Doors.transform.localRotation = DoorRot;
             Doors.transform.Find("LightAndTrigger").GetComponent<OneWayDoor>().BossRoom();
 
-         //   var RandomBoss = Random.Range(0, Boss.Count); // Boss room currently does not have a challenge raiting.
+            //   var RandomBoss = Random.Range(0, Boss.Count); // Boss room currently does not have a challenge raiting.
             GameObject BossRoom = Instantiate(Boss[CurrentLevel], transform); // 
             Room BRoom = BossRoom.GetComponent<Room>();
             BossRoom.transform.position = new Vector3(0f, 0f, (FinalY + 2) * 40);
@@ -417,15 +416,15 @@ public class MapGrid : MonoBehaviour {
             BRoom.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(BRoom.GetComponent<Room>().Floor.transform.localScale.x, BRoom.GetComponent<Room>().Floor.transform.localScale.z);
 
 
-            Doors.transform.Find("LightAndTrigger").GetComponent<OneWayDoor>().DoorPortal = new Vector3(BossRoom.transform.position.x+ BRoom.StartLocation.x, BossRoom.transform.position.y + +BRoom.StartLocation.y, BossRoom.transform.position.z + +BRoom.StartLocation.z); 
+            Doors.transform.Find("LightAndTrigger").GetComponent<OneWayDoor>().DoorPortal = new Vector3(BossRoom.transform.position.x + BRoom.StartLocation.x, BossRoom.transform.position.y + +BRoom.StartLocation.y, BossRoom.transform.position.z + +BRoom.StartLocation.z);
 
-            Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight += ((FinalY+2) * 40) + BRoom.CamTop;
-            Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight2 += ((FinalY+2) * 40)+ BRoom.CamBot;
+            Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight += ((FinalY + 2) * 40) + BRoom.CamTop;
+            Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight2 += ((FinalY + 2) * 40) + BRoom.CamBot;
             Doors.transform.GetChild(0).GetComponent<OneWayDoor>().leftEdge = BRoom.CamLeft;
             Doors.transform.GetChild(0).GetComponent<OneWayDoor>().rightEdge = BRoom.CamRight;
             Doors.transform.GetChild(0).GetComponent<OneWayDoor>().CamCenter = BRoom.CamCenter;
 
-            MiniMapList.Add(new Vector2Int(0, FinalY+2));
+            MiniMapList.Add(new Vector2Int(0, FinalY + 2));
             RoomList[Indeex].GetComponent<Room>().MiniMapDoors.Add(5);
             RoomList[Indeex].GetComponent<Room>().RoomBeforeBoss = true;
             RoomList.Add(BossRoom);
@@ -436,8 +435,8 @@ public class MapGrid : MonoBehaviour {
             if (BRoom.SBHC) // || for all bossrooms that have random obstacles. Alt. Boss[0] etc.
             {
                 var RandomObstacle = Random.Range(0, Obstacle.Count);
-              GameObject Rubble =  Instantiate(Obstacle[RandomObstacle], BossRoom.transform);
-                Rubble.transform.position = new Vector3(BossRoom.transform.position.x, BossRoom.transform.position.y, BossRoom.transform.position.z-2f);
+                GameObject Rubble = Instantiate(Obstacle[RandomObstacle], BossRoom.transform);
+                Rubble.transform.position = new Vector3(BossRoom.transform.position.x, BossRoom.transform.position.y, BossRoom.transform.position.z - 2f);
             }
 
             BossRoom.SetActive(false);
@@ -476,11 +475,11 @@ public class MapGrid : MonoBehaviour {
                             Lastdoor = MMD;
                             break;
                         default:
-                            break;                       
-                    }                  
+                            break;
+                    }
                 }
                 LastRoom = MiniMapBlock;
-                
+
                 if (Counter > 0) // so wont deactive first room
                 {
                     MiniMapBlock.SetActive(false);
@@ -494,7 +493,7 @@ public class MapGrid : MonoBehaviour {
             }
             if (Lastdoor != null)
             { // Purpose: Make the minimap door connecting to the bossroom RED.
-             //   Lastdoor.GetComponent<Renderer>().material.color = Color.red; //Not working as the lastdoor is not always the door connecting to boss room.
+              //   Lastdoor.GetComponent<Renderer>().material.color = Color.red; //Not working as the lastdoor is not always the door connecting to boss room.
             }
 
 
@@ -610,7 +609,7 @@ public class MapGrid : MonoBehaviour {
         MonRanDPosList.Clear();
         MonsterType_.Clear();
         Counter = 0;
-        MiniMapX = 0; 
+        MiniMapX = 0;
         MiniMapZ = 0;
         DoorLoc2 = new Vector3(0, 0, 0);
         DoorPortal1 = new Vector3(0, 0, 0);
@@ -622,12 +621,12 @@ public class MapGrid : MonoBehaviour {
         MinX = 0;
         FinalX = 0;
         FinalX2 = 0;
-        FinalFinalX = new Vector2Int(0,0);
+        FinalFinalX = new Vector2Int(0, 0);
         LR = new Vector2Int(0, 0);
         RR = new Vector2Int(0, 0);
         Lastdoor = null;
         LastRoom = null;
-        FirstRoom();
+        GenerateFirstRoom();
     }
 
 
@@ -638,13 +637,13 @@ public class MapGrid : MonoBehaviour {
         var RandPot = Random.Range(0, RoomList.Count);
 
         if (RoomList[RandLoot].GetComponent<Room>().HasLoot == false && AmountOfLoot > 0)
-            {
-                var LootBag = Random.Range(0, 15);
-                GameObject Loot = Instantiate(Tokens[LootBag], RoomList[RandLoot].transform);
-                Loot.transform.localPosition = new Vector3(0, 3, 0);
-                RoomList[RandLoot].GetComponent<Room>().HasLoot = true;
-                AmountOfLoot--;
-            }
+        {
+            var LootBag = Random.Range(0, 15);
+            GameObject Loot = Instantiate(Tokens[LootBag], RoomList[RandLoot].transform);
+            Loot.transform.localPosition = new Vector3(0, 3, 0);
+            RoomList[RandLoot].GetComponent<Room>().HasLoot = true;
+            AmountOfLoot--;
+        }
         if (RoomList[RandPot].GetComponent<Room>().HasLoot == false && AmountOfPotions > 0)
         {
             GameObject Loot = Instantiate(Healing[0], RoomList[RandPot].transform);
@@ -659,11 +658,11 @@ public class MapGrid : MonoBehaviour {
             SpawnLoot();
         }
 
-        
+
 
         //foreach (var room in RoomList)
         //{
-             
+
         //    room.GetComponent<Room>().GetDoors();
         //    if ((room.GetComponent<Room>().DoorList.Count == 1) && (room.GetComponent<Room>().HasLoot == false) && (AmountOfLoot >0))
         //    {       
@@ -713,7 +712,7 @@ public class MapGrid : MonoBehaviour {
         else
         {
             SpawnMoreRooms(RandomRoom);
-        }      
+        }
     }
 
 }

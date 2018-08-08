@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SmoothFollow : MonoBehaviour {
+public class SmoothFollow : MonoBehaviour
+{
 
     public GameObject target;
     public float distance;
@@ -10,9 +11,10 @@ public class SmoothFollow : MonoBehaviour {
     public float heightDamping;
 
 
-	// Use this for initialization
-	void Start () {
-   
+    // Use this for initialization
+    void Start()
+    {
+
         var wantedHeight = target.transform.position.y + height;
         var currentHeight = transform.position.y;
 
@@ -23,12 +25,13 @@ public class SmoothFollow : MonoBehaviour {
 
         transform.position = new Vector3(transform.position.x, currentHeight, transform.position.z);
         transform.LookAt(target.transform);
-        
+
     }
-	
-	// Update is called once per frame
-	void Update () {
-		if (!target)
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (!target)
         {
             return;
         }
@@ -45,5 +48,5 @@ public class SmoothFollow : MonoBehaviour {
         transform.LookAt(target.transform);
 
 
-	}
+    }
 }

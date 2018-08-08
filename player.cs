@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Player : MonoBehaviour {
+public class Player : MonoBehaviour
+{
 
     public GameObject MousePing;
     public GameObject animChild;
@@ -26,7 +27,7 @@ public class Player : MonoBehaviour {
     // Hide both
     [HideInInspector]
     public float spellrange;
-    
+
     public bool channelingNow;
     [Header("Health&Mana")]
     public Text HealthText;
@@ -59,9 +60,10 @@ public class Player : MonoBehaviour {
     private int ChanCount;
     Vector3 moveAmount;
     Vector3 smoothMoveVelocity;
-    void Start () {
+    void Start()
+    {
         CritObj.SetActive(false);
-        targetPosition = transform.position; 
+        targetPosition = transform.position;
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         fullhealth = health;
         HealthText.text = health.ToString("F0");
@@ -73,7 +75,7 @@ public class Player : MonoBehaviour {
         InvokeRepeating("IlluArmor", 1, 0.5f);
 
     }
-	void Update()
+    void Update()
     {
         AmIBurning(); // checks if burning currently
         AmISlowed();
@@ -84,7 +86,7 @@ public class Player : MonoBehaviour {
         float inputY = Input.GetAxisRaw("Vertical");
 
         Vector3 moveDir = new Vector3(inputX, 0, inputY).normalized;
-       // Vector3 targetMoveAmount = moveDir * MovementSpeed;
+        // Vector3 targetMoveAmount = moveDir * MovementSpeed;
         //moveAmount = Vector3.SmoothDamp(moveAmount, targetMoveAmount, ref smoothMoveVelocity, .15f);
 
         //Vector3 localMove = transform.TransformDirection(moveAmount) * Time.fixedDeltaTime;
@@ -142,20 +144,21 @@ public class Player : MonoBehaviour {
         {
 
             rightclick = false;
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); // Raycast things, checks where mouse clicks
-			RaycastHit hit;           
-			if (Physics.Raycast(ray, out hit) ){
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); // Raycast things, checks where mouse clicks
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
                 float dist = Vector3.Distance(hit.point, transform.position); // distance between click point and PC
 
 
-                if (Input.GetMouseButtonDown(0) && (hit.collider.tag=="Floor" || hit.collider.tag =="Door"))
+                if (Input.GetMouseButtonDown(0) && (hit.collider.tag == "Floor" || hit.collider.tag == "Door"))
                 {
-                    Vector3 DaPoint = new Vector3(hit.point.x, hit.point.y+0.1f, hit.point.z);
-                    Instantiate(MousePing, DaPoint, Quaternion.Euler(0,0,0));
+                    Vector3 DaPoint = new Vector3(hit.point.x, hit.point.y + 0.1f, hit.point.z);
+                    Instantiate(MousePing, DaPoint, Quaternion.Euler(0, 0, 0));
                 }
 
 
-            if (dist > 0.1f)
+                if (dist > 0.1f)
                 {
                     targetPosition = hit.point;
                     move = true; // when move true, character moves unless rightclick is true.
@@ -192,7 +195,7 @@ public class Player : MonoBehaviour {
                     activeDoor = null;
                 }
             }
-		}
+        }
         // right click spell cast input
         if (Input.GetMouseButton(1) && !EventSystem.current.IsPointerOverGameObject())
         {
@@ -202,16 +205,16 @@ public class Player : MonoBehaviour {
             if (Physics.Raycast(ray, out hit))
             {
                 CastSpell.GetComponent<CastSpell>().spellCastLocation = hit.point; // On right click, send the CastSpell script the location of the click, so it can use it for Meteor-like attacks.
-               // float dist = Vector3.Distance(hit.point, transform.position);
+                                                                                   // float dist = Vector3.Distance(hit.point, transform.position);
                 targetPosition = hit.point;
-                
+
                 //trackTarget = null;
                 agent.stoppingDistance = 0f;
 
-                
-                    move = true;
-                    rightclick = true;
-                
+
+                move = true;
+                rightclick = true;
+
 
                 //if (hit.collider.gameObject.tag == "Monster") // same function as earlier, PC still moves toward clicked area/monster if out of range.
                 //{
@@ -221,7 +224,7 @@ public class Player : MonoBehaviour {
                 //}
             }
         }
-      
+
         if (move)
         {
             if (rightclick == true)
@@ -233,8 +236,8 @@ public class Player : MonoBehaviour {
                     agent.destination = this.transform.position;
                     Vector3 direction = (targetPosition - transform.position).normalized;
 
-                        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));    // flattens the vector3             
-                        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 999f);
+                    Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));    // flattens the vector3             
+                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 999f);
 
                     // float dot = Vector3.Dot(transform.forward, (targetPosition - transform.position).normalized); 
                     // if (dot > 0.9f && channelingNow == false) // Checks that PC is facing the clicked spot. When facing, call function that casts the spell.
@@ -244,7 +247,7 @@ public class Player : MonoBehaviour {
                         SendSpellCast();
 
                     }
-          // }                                                    
+                    // }                                                    
                 }
                 else if (channelingNow == false)
                 {
@@ -285,9 +288,9 @@ public class Player : MonoBehaviour {
             attackingDuration -= Time.deltaTime;
         }
 
-            CheckDestinationReached();
+        CheckDestinationReached();
 
-      
+
     }
 
     void CheckDestinationReached()
@@ -396,7 +399,7 @@ public class Player : MonoBehaviour {
 
     public void HastenVis()
     {
-       GameObject Haste = Instantiate(HastenVisual, transform);
+        GameObject Haste = Instantiate(HastenVisual, transform);
         //Haste.name = "haste";
         //Invoke("HastenDestory", 2.5f);
         Destroy(Haste, 2.5f);
@@ -421,7 +424,7 @@ public class Player : MonoBehaviour {
     public void SendSpellCast()
     {
         move = false;  // can't move when casting spells.
-        CastSpell.GetComponent<CastSpell>().CastCurrentSpell();        
+        CastSpell.GetComponent<CastSpell>().CastCurrentSpell();
     }
     public void Die()
     {
@@ -485,7 +488,7 @@ public class Player : MonoBehaviour {
         {
             MovementSpeed /= str;
             agent.speed = MovementSpeed;
-           
+
 
             GameObject sloweffect = Instantiate(FrostSlow, new Vector3(transform.position.x, 1f, transform.position.z), transform.rotation, transform);
             sloweffect.name = "slow";

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Spellbook : MonoBehaviour {
+public class Spellbook : MonoBehaviour
+{
     [Header("Level1")]
     public GameObject Fireball;
     public GameObject FrostBolt;
@@ -184,7 +185,7 @@ public class Spellbook : MonoBehaviour {
 
     private void Update()
     {
-       if (Input.GetKeyDown(KeyCode.Alpha1)) //|| Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Alpha1)) //|| Input.GetKeyDown(KeyCode.Q))
         {
             SlotOne();
         }
@@ -252,7 +253,7 @@ public class Spellbook : MonoBehaviour {
                 Frame1.color = Color.green;
             }
         }
-        
+
         switch (lvl2choice)
         {
             case 1:
@@ -262,7 +263,7 @@ public class Spellbook : MonoBehaviour {
                 MeteorBlocked.enabled = false;
                 ConeBlocked.enabled = true;
                 GhostCastBlocked.enabled = true;
-                
+
                 if (manager.coneToken > 0)
                 {
                     frostRing2.color = Color.cyan;
@@ -697,7 +698,7 @@ public class Spellbook : MonoBehaviour {
             slot3Mem4 = lvl5choice;
             slot3Mem5 = lvl6choice;
         }
-        
+
         //toggleSpells = toggleSpells ? false : true;
         //showSpellBook.SetActive(toggleSpells);
         //showSpellBookSpells.SetActive(false);
@@ -823,7 +824,7 @@ public class Spellbook : MonoBehaviour {
 
     public void ExitSlotTip()
     {
-        
+
         this.GetComponent<ToolTipScript>().Empty1();
         this.GetComponent<ToolTipScript>().Empty2();
         this.GetComponent<ToolTipScript>().Empty3();
@@ -838,9 +839,10 @@ public class Spellbook : MonoBehaviour {
     public void CheckCurrency(int level)
     {
 
-     //   GameManager manager = GameManager.FindObjectOfType<GameManager>();
+        //   GameManager manager = GameManager.FindObjectOfType<GameManager>();
 
-        switch (level) {
+        switch (level)
+        {
             case 1:
                 if (manager.meteorToken == 0)
                 {
@@ -894,7 +896,7 @@ public class Spellbook : MonoBehaviour {
                 else EmpowerBlocked.enabled = false;
                 break;
 
-            case 4: 
+            case 4:
                 if (manager.bhToken == 0)
                 {
                     BHBlocked.enabled = true;
@@ -929,7 +931,7 @@ public class Spellbook : MonoBehaviour {
                 else BlessedAimBlocked.enabled = false;
                 break;
 
-            default: 
+            default:
 
                 if (manager.meteorToken == 0)
                 {
@@ -1011,7 +1013,7 @@ public class Spellbook : MonoBehaviour {
                 else BlessedAimBlocked.enabled = false;
 
                 break;
-                }
+        }
 
     }
 
@@ -1024,16 +1026,17 @@ public class Spellbook : MonoBehaviour {
         Frame5.color = Color.white;
 
 
-    //    GameManager manager = GameManager.FindObjectOfType<GameManager>();
+        //    GameManager manager = GameManager.FindObjectOfType<GameManager>();
         CheckCurrency(0);
 
-       toggleSpells = toggleSpells ? false : true;
-       showSpellBook.SetActive(toggleSpells);
-       showSpellBookSpells.SetActive(toggleSpells);
+        toggleSpells = toggleSpells ? false : true;
+        showSpellBook.SetActive(toggleSpells);
+        showSpellBookSpells.SetActive(toggleSpells);
 
-       curSlot = slotNumber;       
+        curSlot = slotNumber;
 
-        if (finishSpell_) {
+        if (finishSpell_)
+        {
             FinishSpell();
         }
 
@@ -1099,7 +1102,7 @@ public class Spellbook : MonoBehaviour {
             case 2:
 
                 showSpellBook.transform.position = new Vector3(slot2.transform.position.x, showSpellBook.transform.position.y, showSpellBook.transform.position.z);
-             //   SpellPanel.transform.position = new Vector3(showSpellBook.transform.position.x + 500, SpellPanel.transform.position.y, SpellPanel.transform.position.z);
+                //   SpellPanel.transform.position = new Vector3(showSpellBook.transform.position.x + 500, SpellPanel.transform.position.y, SpellPanel.transform.position.z);
 
                 if (manager.meteorToken_2 == true || manager.coneToken_2 == true || manager.ghostToken_2 == true)
                 {
@@ -1155,7 +1158,7 @@ public class Spellbook : MonoBehaviour {
             case 3:
 
                 showSpellBook.transform.position = new Vector3(slot3.transform.position.x, showSpellBook.transform.position.y, showSpellBook.transform.position.z);
-              //  SpellPanel.transform.position = new Vector3(showSpellBook.transform.position.x + 500, SpellPanel.transform.position.y, SpellPanel.transform.position.z);
+                //  SpellPanel.transform.position = new Vector3(showSpellBook.transform.position.x + 500, SpellPanel.transform.position.y, SpellPanel.transform.position.z);
 
                 if (manager.meteorToken_3 == true || manager.coneToken_3 == true || manager.ghostToken_3 == true)
                 {
@@ -1166,7 +1169,7 @@ public class Spellbook : MonoBehaviour {
                     unselect2 = false;
                 }
 
-                if (manager.doubleToken_3 == true || manager.splitToken_3== true || manager.CompToken_3 == true)
+                if (manager.doubleToken_3 == true || manager.splitToken_3 == true || manager.CompToken_3 == true)
                 {
                     unselect3 = true;
                 }
@@ -1219,53 +1222,53 @@ public class Spellbook : MonoBehaviour {
         FrostBolt frost = FrostBolt.GetComponent<FrostBolt>();
         LightningBolt lightning = LightningBolt.GetComponent<LightningBolt>();
 
-        
-            if (lvl1choiceNOW == 1)
-            {
-                cast.spellname = fire.spellname;
-                cast.projectilespeed = fire.projectilespeed;
-                cast.damage1Pure = fire.damage;
-                cast.currentspellObject = fire.projectile;
+
+        if (lvl1choiceNOW == 1)
+        {
+            cast.spellname = fire.spellname;
+            cast.projectilespeed = fire.projectilespeed;
+            cast.damage1Pure = fire.damage;
+            cast.currentspellObject = fire.projectile;
             cast.currentConeObject = fire.Cone;
             cast.currentChannel = fire.Channel;
             cast.currentChannelCone = fire.ChannelCone;
             cast.currentChanMet = fire.ChannelMeteor;
-                cast.cd1Pure = fire.cooldown;
+            cast.cd1Pure = fire.cooldown;
             cast.FireBallBurn = fire.FireBallBurn;
             cast.BurnDuration = fire.BurnDuration;
             cast.BurnPercent = fire.BurnPercent;
-                cast.FrostBoltSlow = false;
+            cast.FrostBoltSlow = false;
             cast.LBBounce = false;
             cast.PoolInst = fire.Pool;
-                Player.FindObjectOfType<Player>().spellrange = fire.spellrange;
-            }
+            Player.FindObjectOfType<Player>().spellrange = fire.spellrange;
+        }
 
-            if (lvl1choiceNOW == 2)
-            {
-                cast.spellname = frost.spellname;
-                cast.projectilespeed = frost.projectilespeed;
-                cast.damage1Pure = frost.damage;
-                cast.currentspellObject = frost.projectile;
+        if (lvl1choiceNOW == 2)
+        {
+            cast.spellname = frost.spellname;
+            cast.projectilespeed = frost.projectilespeed;
+            cast.damage1Pure = frost.damage;
+            cast.currentspellObject = frost.projectile;
             cast.currentConeObject = frost.Cone;
             cast.currentChannel = frost.Channel;
             cast.currentChannelCone = frost.ChannelCone;
             cast.currentChanMet = frost.ChannelMeteor;
             cast.cd1Pure = frost.cooldown;
-                cast.FrostBoltSlow = frost.FrostBoltSlow;
-                cast.SlowDuration = frost.SlowDuration;
-                cast.SlowPercent = frost.SlowPercent;
+            cast.FrostBoltSlow = frost.FrostBoltSlow;
+            cast.SlowDuration = frost.SlowDuration;
+            cast.SlowPercent = frost.SlowPercent;
             cast.FireBallBurn = false;
             cast.LBBounce = false;
             cast.PoolInst = frost.Pool;
             Player.FindObjectOfType<Player>().spellrange = frost.spellrange;
-            }
+        }
 
-            if (lvl1choiceNOW == 3)
-            {
-                cast.spellname = lightning.spellname;
-                cast.projectilespeed = lightning.projectilespeed;
-                cast.damage1Pure = lightning.damage;
-                cast.currentspellObject = lightning.projectile;
+        if (lvl1choiceNOW == 3)
+        {
+            cast.spellname = lightning.spellname;
+            cast.projectilespeed = lightning.projectilespeed;
+            cast.damage1Pure = lightning.damage;
+            cast.currentspellObject = lightning.projectile;
             cast.currentLBmeteor = lightning.LBMeteor;
             cast.currentChannelCone = lightning.ChannelCone;
             cast.cd1Pure = lightning.cooldown;
@@ -1275,9 +1278,9 @@ public class Spellbook : MonoBehaviour {
             cast.LBBounceAmount = lightning.LBBounceAmount;
             cast.PoolInst = lightning.Pool;
             Player.FindObjectOfType<Player>().spellrange = lightning.spellrange;
-            }
-            if (lvl1choiceNOW == 0)
-            {
+        }
+        if (lvl1choiceNOW == 0)
+        {
             cast.spellname = "";
             cast.projectilespeed = 0;
             cast.damage1Pure = 0;
@@ -1288,7 +1291,7 @@ public class Spellbook : MonoBehaviour {
             cast.LBBounce = false;
             cast.LBBounceAmount = 0;
             Player.FindObjectOfType<Player>().spellrange = 0;
-        }       
+        }
 
     }
 
@@ -1298,7 +1301,7 @@ public class Spellbook : MonoBehaviour {
         Meteor meteor = Meteor.GetComponent<Meteor>();
         GhostCast ghost = GhostCast.GetComponent<GhostCast>();
         Cone cone = Cone.GetComponent<Cone>();
- 
+
         if (lvl2choiceNOW == 1)
         { // Meteor
             cast.damage2Pure = meteor.damageReduction;
@@ -1370,7 +1373,7 @@ public class Spellbook : MonoBehaviour {
             cast.cd1Per = 1f;
             cast.doubleCast = false;
             cast.splitCast = false;
-        } 
+        }
         if (lvl3choiceNOW == 0)
         {
             cast.damage1Per = 1f;
@@ -1419,7 +1422,7 @@ public class Spellbook : MonoBehaviour {
             cast.BoostCrit = false;
             cast.HastenBool = false;
             cast.damage3Pure = 0f;
-            cast.damage2Per = 1f;           
+            cast.damage2Per = 1f;
         }
         if (lvl4choiceNOW == 0)
         {

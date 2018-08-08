@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpiderBall : MonoBehaviour {
+public class SpiderBall : MonoBehaviour
+{
 
     public GameObject Spooders;
     public GameObject Daddy;
@@ -12,10 +13,10 @@ public class SpiderBall : MonoBehaviour {
     {
         if (other.tag == "Floor")
         {
-                for (int i = 0; i < 2; i++)
-                {
-                    GameObject Spider = Instantiate(Spooders, transform.position, transform.rotation);
-                    Spider.GetComponent<Monster>().AggroRange = 25;
+            for (int i = 0; i < 2; i++)
+            {
+                GameObject Spider = Instantiate(Spooders, transform.position, transform.rotation);
+                Spider.GetComponent<Monster>().AggroRange = 25;
                 Spider.GetComponent<Monster>().MovementSpeed = 5f;
                 Spider.GetComponent<Monster>().health = 3;
                 Spider.GetComponent<Monster>().health2 = 3;

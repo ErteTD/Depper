@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OneWayDoor : MonoBehaviour {
+public class OneWayDoor : MonoBehaviour
+{
 
     public float doorHeight;
     public float doorHeight2;
@@ -30,7 +31,7 @@ public class OneWayDoor : MonoBehaviour {
         MainCamera = GameObject.Find("MainCamera");
         MiniCamera = GameObject.Find("MiniMapCamera");
         //   doorHeight = doorHeight2;
-     //   Monsters = GameObject.FindGameObjectsWithTag("Monster");
+        //   Monsters = GameObject.FindGameObjectsWithTag("Monster");
         if (ConRoom != null)
         {
             roomCol = ConRoom.GetComponent<Room>().MimiMapBlock.GetComponent<Renderer>().material.color;
@@ -67,33 +68,33 @@ public class OneWayDoor : MonoBehaviour {
 
             ResetCamera(); // resets any movement
             switch (MoveMMCam)
-                {
-                    case 1:
-                        MiniCamera.transform.position += new Vector3(-7f, 0, 7f);
-                        break;
-                    case 2:
-                        MiniCamera.transform.position += new Vector3(7f, 0, -7f);
-                        break;
-                    case 3:
-                        MiniCamera.transform.position += new Vector3(-7f, 0, -7f);
-                        break;
-                    case 4:
-                        MiniCamera.transform.position += new Vector3(7f, 0, 7f);
-                        break;
-                    case 5:
-                        MiniCamera.transform.position = new Vector3(-1000, 100, 100);
-                        break;
-                    default: // if 0, move it back. So after boss level.
+            {
+                case 1:
+                    MiniCamera.transform.position += new Vector3(-7f, 0, 7f);
+                    break;
+                case 2:
+                    MiniCamera.transform.position += new Vector3(7f, 0, -7f);
+                    break;
+                case 3:
+                    MiniCamera.transform.position += new Vector3(-7f, 0, -7f);
+                    break;
+                case 4:
+                    MiniCamera.transform.position += new Vector3(7f, 0, 7f);
+                    break;
+                case 5:
+                    MiniCamera.transform.position = new Vector3(-1000, 100, 100);
+                    break;
+                default: // if 0, move it back. So after boss level.
                     MiniCamera.transform.position = new Vector3(-1000, 100, 0);
                     break;
-                }
+            }
             EnterRoom();
         }
     }
 
     public void ResetCamera()
-    {       
-       MiniCamera.transform.position -= new Vector3(GameManager.FindObjectOfType<GameManager>().changeInX, 0, GameManager.FindObjectOfType<GameManager>().changeInZ);
+    {
+        MiniCamera.transform.position -= new Vector3(GameManager.FindObjectOfType<GameManager>().changeInX, 0, GameManager.FindObjectOfType<GameManager>().changeInZ);
         GameManager.FindObjectOfType<GameManager>().changeInX = 0;
         GameManager.FindObjectOfType<GameManager>().changeInZ = 0;
     }

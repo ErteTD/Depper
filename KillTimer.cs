@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KillTimer : MonoBehaviour {
+public class KillTimer : MonoBehaviour
+{
     public float DieTime;
     // Use this for initialization
     void Start()

@@ -306,20 +306,20 @@ public class ToolTipScript : MonoBehaviour
         {
             case 1:
                 Spellname6.text = Chaos.spellname;
-                ExtraCD5.text = "Cooldown Modifier: +" + (Chaos.CoolDownMod*100).ToString("F2") + "% and +" + (Chaos.CoolDownSec).ToString("F0") + " second";
+                ExtraCD5.text = "Cooldown Modifier: +" + (Chaos.CoolDownMod * 100).ToString("F2") + "% and +" + (Chaos.CoolDownSec).ToString("F0") + " second";
                 DamageModifierlvl5.text = "";
                 Effect5.text = "Effect: " + Chaos.effect.ToString();
 
                 break;
             case 2:
                 Spellname6.text = chan.spellname;
-                ExtraCD5.text = "Cooldown Modifier: +" + (chan.extraCD* 100).ToString("F2") + "%";
+                ExtraCD5.text = "Cooldown Modifier: +" + (chan.extraCD * 100).ToString("F2") + "%";
                 DamageModifierlvl5.text = "Damage: " + ((chan.damageModifier) * 100).ToString("F0") + "%";
                 Effect5.text = "Effect: " + chan.effect.ToString();
                 break;
             case 3:
                 Spellname6.text = Aim.spellname;
-                ExtraCD5.text = "Cooldown Modifier: +" + (Aim.CoolDownMod* 100).ToString("F2") + "%";
+                ExtraCD5.text = "Cooldown Modifier: +" + (Aim.CoolDownMod * 100).ToString("F2") + "%";
                 DamageModifierlvl5.text = "Damage: " + ((Aim.DamageMod) * 100).ToString("F0") + "%";
                 Effect5.text = "Effect: " + Aim.effect.ToString();
                 break;
@@ -373,7 +373,7 @@ public class ToolTipScript : MonoBehaviour
         {
             Empty5();
         }
-        if (spellCombTip6 == true && (lvlAndnumber >60 && lvlAndnumber < 70))
+        if (spellCombTip6 == true && (lvlAndnumber > 60 && lvlAndnumber < 70))
         {
             Empty6();
         }
@@ -529,7 +529,7 @@ public class ToolTipScript : MonoBehaviour
                 spellCombTip5 = true;
                 SpellImage5.sprite = pool.GetComponent<Image>().sprite;
                 break;
-                //HERE
+            //HERE
             case 61:
                 curSpellname[5] = "-" + Chaos.spellname;
                 curExtraCD5 = Chaos.CoolDownMod;
@@ -689,7 +689,7 @@ public class ToolTipScript : MonoBehaviour
         ArmorTipPanel.SetActive(true);
 
         int CurID = CastSpell.FindObjectOfType<CastWeapon>().CurrentArmor;
-        
+
         if (preview)
         {
             CurID = CurItemID;

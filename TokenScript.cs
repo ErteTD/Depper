@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TokenScript : MonoBehaviour {
+public class TokenScript : MonoBehaviour
+{
 
     public int TokenType;
     public int ItemType;
@@ -152,9 +153,9 @@ public class TokenScript : MonoBehaviour {
             case 3:
                 switch (ItemID)
                 {
-                 case 1:
+                    case 1:
                         manager.SpiderWeaponToken++;
-                break;
+                        break;
                     case 2:
                         manager.BlinkWeaponToken++;
                         break;

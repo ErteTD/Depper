@@ -2,25 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MonsterAnim : MonoBehaviour {
+public class MonsterAnim : MonoBehaviour
+{
     private bool alreadyAttacking;
     public Animator anim;
     public new Animation animation;
 
-	// Use this for initialization
-	void Awake () {
+    // Use this for initialization
+    void Awake()
+    {
         anim = GetComponent<Animator>();
         animation = GetComponent<Animation>();
-	}
-	 
+    }
+
     public void IdleAnim()
     {
         anim.Play("Idle", -1);
     }
-        public void IdleAnimation()
-        {
+    public void IdleAnimation()
+    {
         animation.Play("idle");
-        }
+    }
     public void IdleAnimation2()
     {
         animation.Play("Idle");
@@ -36,12 +38,12 @@ public class MonsterAnim : MonoBehaviour {
     }
 
     public void RunAnim()
-    {       
-        anim.Play("creature1run", -1); 
+    {
+        anim.Play("creature1run", -1);
     }
     public void RunAnimation()
     {
-    animation.Play("run");
+        animation.Play("run");
     }
     public void RunAnimation2()
     {
@@ -74,12 +76,12 @@ public class MonsterAnim : MonoBehaviour {
     }
 
     public void AttackAnimation()
-        {
-            animation.Play("hpunch");
-        }
-            public void AttackAnimation2()
-            {
-                var RandomAnim = Random.Range(0, 3);
+    {
+        animation.Play("hpunch");
+    }
+    public void AttackAnimation2()
+    {
+        var RandomAnim = Random.Range(0, 3);
 
         switch (RandomAnim)
         {
@@ -96,10 +98,10 @@ public class MonsterAnim : MonoBehaviour {
                 break;
         }
 
-            }
+    }
     public void AttackAnimation3()
     {
-       
+
         anim.Play("Attack");
     }
 
@@ -108,16 +110,16 @@ public class MonsterAnim : MonoBehaviour {
         anim.Play("creature1Die", -1, 0f);
         Invoke("Die", 1.3f);
     }
-        public void DieAnimation()
-        {
-            animation.Play("death");
-            Invoke("Die", 1.4f);
-        }
-        public void DieAnimation2()
-        {
-            animation.Play("Death");
-            Invoke("Die", 2f);
-        }
+    public void DieAnimation()
+    {
+        animation.Play("death");
+        Invoke("Die", 1.4f);
+    }
+    public void DieAnimation2()
+    {
+        animation.Play("Death");
+        Invoke("Die", 2f);
+    }
     public void DieAnimation3()
     {
         anim.Play("Death");
@@ -142,8 +144,8 @@ public class MonsterAnim : MonoBehaviour {
     }
     public void SkeletonRise()
     {
-       // transform.parent.GetComponent<Monster>()
-        anim.Play("Revive");     
+        // transform.parent.GetComponent<Monster>()
+        anim.Play("Revive");
     }
     void Die()
     {
@@ -199,7 +201,7 @@ public class MonsterAnim : MonoBehaviour {
 
             animation["attack_short_001"].time = 0.6f;
             animation["attack_short_001"].speed = 1.2f;
-          //  animation.wrapMode = WrapMode.Loop;
+            //  animation.wrapMode = WrapMode.Loop;
             animation.Play("attack_short_001");
 
 

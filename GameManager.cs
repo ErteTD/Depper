@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour
+{
 
     public Texture2D DefCursor;
     public GameObject EscMenu;
@@ -191,7 +192,8 @@ public class GameManager : MonoBehaviour {
         SetTime = time;
     }
 
-    void Update () {
+    void Update()
+    {
 
         if (Input.GetKey(KeyCode.RightArrow))
         {
@@ -234,7 +236,7 @@ public class GameManager : MonoBehaviour {
         //{
         //    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         //}
-        
+
         //if (Input.GetKeyDown(KeyCode.T)) //BUG currently, tooltip wont hide if active when this is hidden.
         //{
         //    ShowHide = ShowHide ? false : true;
@@ -252,7 +254,7 @@ public class GameManager : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             //Application.Quit();    
-            
+
             ShowEscMenu();
 
         }
@@ -314,7 +316,7 @@ public class GameManager : MonoBehaviour {
 
     public void EscButton()
     {
-        Application.Quit();   
+        Application.Quit();
     }
     public void RestartButton()
     {
@@ -360,7 +362,7 @@ public class GameManager : MonoBehaviour {
                             {
                                 coneToken++;
                                 coneToken_ = false;
-                                
+
                             }
                             if (ghostToken_)
                             {
@@ -1423,7 +1425,7 @@ public class GameManager : MonoBehaviour {
                         break;
                 }
                 break;
-        }      
+        }
     }
     public void SpellsAndItems()
     {

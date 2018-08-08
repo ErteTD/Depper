@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CastSpell : MonoBehaviour {
+public class CastSpell : MonoBehaviour
+{
 
 
     public float baseCasttimeCD;
@@ -153,16 +154,16 @@ public class CastSpell : MonoBehaviour {
         {
             curSlotcd = true;
         }
-            if (currentSlot == 2 && spellSlot2rdy == true)
-            {
+        if (currentSlot == 2 && spellSlot2rdy == true)
+        {
             curSlotcd = true;
 
-            }
-                if (currentSlot == 3 && spellSlot3rdy == true)
-                {
-                    curSlotcd = true;
+        }
+        if (currentSlot == 3 && spellSlot3rdy == true)
+        {
+            curSlotcd = true;
 
-                }
+        }
 
         if (curSlotcd)
         {
@@ -214,8 +215,8 @@ public class CastSpell : MonoBehaviour {
             spellSlotCD = (cd1Pure + cd2Pure + cd3Pure + cd4Pure) * cd1Per * cd2Per * cd3Per * cd4Per;
 
 
-                GameObject test123 = Instantiate(currentspellObject, this.transform);
-                SpellProjectile spell = test123.GetComponent<SpellProjectile>();
+            GameObject test123 = Instantiate(currentspellObject, this.transform);
+            SpellProjectile spell = test123.GetComponent<SpellProjectile>();
 
 
             spell.BlessedAim = BlessedAim;
@@ -289,19 +290,19 @@ public class CastSpell : MonoBehaviour {
             }
 
 
-            
+
             if (doubleCast)
             {
 
-                    currentspellObject1 = currentspellObject;
-                    projectilespeed1 = projectilespeed;
-                    damage1 = damage;
-                    spellCastLocation1 = spellCastLocation;
-                    aoeSizeMeteor1 = aoeSizeMeteor;
-                    ghostCast1 = ghostCast;
-                    cone1 = cone;
-                    spellname1 = spellname;
-                    channel1 = channel;
+                currentspellObject1 = currentspellObject;
+                projectilespeed1 = projectilespeed;
+                damage1 = damage;
+                spellCastLocation1 = spellCastLocation;
+                aoeSizeMeteor1 = aoeSizeMeteor;
+                ghostCast1 = ghostCast;
+                cone1 = cone;
+                spellname1 = spellname;
+                channel1 = channel;
                 FrostBoltSlow1 = FrostBoltSlow;
                 SlowPercent1 = SlowPercent;
                 SlowDuration1 = SlowDuration;
@@ -318,19 +319,19 @@ public class CastSpell : MonoBehaviour {
 
 
                 //BlackHole
-               BHBool1 = BHBool;
-               BHSize1 = BHSize;
-               BHRadius1 = BHRadius;
-               BHDuration1 = spellSlotCD * BHDuration;
-               BHStrenght1 = BHStrenght;
+                BHBool1 = BHBool;
+                BHSize1 = BHSize;
+                BHRadius1 = BHRadius;
+                BHDuration1 = spellSlotCD * BHDuration;
+                BHStrenght1 = BHStrenght;
                 //Push
-               Push1 = Push;
+                Push1 = Push;
                 //Pool
-               pool1 = pool;
+                pool1 = pool;
                 PoolInst1 = PoolInst;
                 //spell.Poolduration = Poolduration;
                 PoolDamage1 = damage * PoolDamage;
-               Poolduration1 = spellSlotCD * Poolduration;
+                Poolduration1 = spellSlotCD * Poolduration;
                 // Blessed aim
                 BlessedAim1 = BlessedAim;
 
@@ -374,10 +375,10 @@ public class CastSpell : MonoBehaviour {
                 if (channel) { maxC = 1f; minC = 1f; spreadC = 30; };
 
                 Vector3 dist = spellCastLocation - this.transform.position;
-                float spread = Mathf.Clamp(dist.magnitude, minC, maxC);          
-                spread = -1 *(spread - spreadC);
+                float spread = Mathf.Clamp(dist.magnitude, minC, maxC);
+                spread = -1 * (spread - spreadC);
 
-                    Quaternion dir = transform.rotation;
+                Quaternion dir = transform.rotation;
 
                 //Quaternion dir = Quaternion.Euler(0, transform.rotation.y, transform.rotation.z);
                 Vector3 rot = dir.eulerAngles;
@@ -424,7 +425,7 @@ public class CastSpell : MonoBehaviour {
 
         }
     }
-    public void DoubleCastSpell1()  
+    public void DoubleCastSpell1()
     {
 
         GameObject test1234 = Instantiate(currentspellObject1, this.transform);
@@ -469,11 +470,11 @@ public class CastSpell : MonoBehaviour {
         spell2.FrostBoltSlow = FrostBoltSlow1;
         spell2.SlowPercent = SlowPercent1;
         spell2.SlowDuration = SlowDuration1;
-        spell2.FireBallBurn=FireBallBurn1;
+        spell2.FireBallBurn = FireBallBurn1;
         spell2.LBBounce = LBBounce1;
         spell2.LBBounceAmount = LBBounceAmount1;
-        spell2.BurnPercent =BurnPercent1;
-        spell2.BurnDuration=BurnDuration1;
+        spell2.BurnPercent = BurnPercent1;
+        spell2.BurnDuration = BurnDuration1;
         spell2.BoostCrit = BoostCrit1;
         spell2.CritChance = CritChance1;
         spell2.CritDamage = CritDamage1;
@@ -563,7 +564,7 @@ public class CastSpell : MonoBehaviour {
 
     void Update()
     {
-        
+
 
         if (CD1 <= 0f)
         {
@@ -584,15 +585,15 @@ public class CastSpell : MonoBehaviour {
                 coolDownTextDisplay1_.enabled = false;
             }
             CD1 -= Time.deltaTime;
-            slot1.fillAmount = (CD1 / CD1_);        
+            slot1.fillAmount = (CD1 / CD1_);
             coolDownTextDisplay1.text = (Mathf.Ceil(CD1).ToString)("0");
             coolDownTextDisplay1_.text = (Mathf.Ceil(CD1).ToString)("0");
             spellSlot1rdy = false;
         }
 
-            if (CD2 <= 0f)
-            {
-                spellSlot2rdy = true;
+        if (CD2 <= 0f)
+        {
+            spellSlot2rdy = true;
             coolDownTextDisplay2.enabled = false;
             coolDownTextDisplay2_.enabled = false;
         }
@@ -613,11 +614,11 @@ public class CastSpell : MonoBehaviour {
             coolDownTextDisplay2.text = (Mathf.Ceil(CD2).ToString)("0");
             coolDownTextDisplay2_.text = (Mathf.Ceil(CD2).ToString)("0");
             spellSlot2rdy = false;
-             }
+        }
 
-                if (CD3 <= 0f)
-                {
-                    spellSlot3rdy = true;
+        if (CD3 <= 0f)
+        {
+            spellSlot3rdy = true;
             coolDownTextDisplay3.enabled = false;
             coolDownTextDisplay3_.enabled = false;
         }
@@ -636,17 +637,17 @@ public class CastSpell : MonoBehaviour {
 
 
             CD3 -= Time.deltaTime;
-                    slot3.fillAmount = (CD3 / CD3_);
+            slot3.fillAmount = (CD3 / CD3_);
             coolDownTextDisplay3.text = (Mathf.Ceil(CD3).ToString)("0");
             coolDownTextDisplay3_.text = (Mathf.Ceil(CD3).ToString)("0");
             spellSlot3rdy = false;
-                 }
+        }
 
     }
 
     public void SetSlotCD(int slotnumber)
     {
-        if(slotnumber == 1)
+        if (slotnumber == 1)
         {
             CD1 = spellSlotCD;
             CD1_ = spellSlotCD;
@@ -660,7 +661,7 @@ public class CastSpell : MonoBehaviour {
                     CD1_ = 0.5f;
                     Player.FindObjectOfType<Player>().HastenVis();
                 }
-            }   
+            }
         }
         if (slotnumber == 2)
         {
@@ -676,9 +677,9 @@ public class CastSpell : MonoBehaviour {
                     CD2_ = 0.5f;
 
                     Player.FindObjectOfType<Player>().HastenVis();
-                }          
+                }
             }
-    }
+        }
         if (slotnumber == 3)
         {
             CD3 = spellSlotCD;

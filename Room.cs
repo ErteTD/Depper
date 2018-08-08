@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class Room : MonoBehaviour {
+public class Room : MonoBehaviour
+{
     public GameObject Floor;
     [Header("Boss Stuff")]
     public bool BossRoom;
@@ -22,13 +23,14 @@ public class Room : MonoBehaviour {
     [Header("Other stuff")]
     public int Monsters;
     public GameObject MimiMapBlock;
-   public List<GameObject> DoorList = new List<GameObject>();
+    public List<GameObject> DoorList = new List<GameObject>();
     public List<int> MiniMapDoors = new List<int>();
     public GameObject Boss;
     public bool HasLoot;
     // Use this for initialization
 
-    void Start() {
+    void Start()
+    {
         InvokeRepeating("GetChildObject", 0.01f, 0.5f);
         Invoke("GetDoors", 0.001f);
         Invoke("ColorMiniMapRed", 0.1f);
@@ -47,7 +49,7 @@ public class Room : MonoBehaviour {
     //}
 
 
-     void Update()
+    void Update()
     {
 
         if (TIMEK)

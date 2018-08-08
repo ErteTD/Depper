@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class MirrorWall : MonoBehaviour {
+public class MirrorWall : MonoBehaviour
+{
 
 
     private float ChannelTimer = 0.5f;
@@ -85,7 +86,7 @@ public class MirrorWall : MonoBehaviour {
                 }
 
 
-                
+
                 Bounce.transform.parent = null;
                 Bounce.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
 

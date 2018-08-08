@@ -32,7 +32,7 @@ public class OneTimeThing : MonoBehaviour
                 Quaternion rot = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
                 center.x = LineDist;
                 Instantiate(prefab, center, rot);
-              //  Rock.transform.parent = gameObject.transform;
+                //  Rock.transform.parent = gameObject.transform;
 
                 LineDist += 1f;
             }

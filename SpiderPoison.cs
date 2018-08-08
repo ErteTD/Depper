@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpiderPoison : MonoBehaviour {
+public class SpiderPoison : MonoBehaviour
+{
 
 
     public float damage;

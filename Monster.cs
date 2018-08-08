@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 
-public class Monster : MonoBehaviour {
+public class Monster : MonoBehaviour
+{
 
     public float health;
     public float damage;
@@ -68,12 +69,12 @@ public class Monster : MonoBehaviour {
     [HideInInspector] public Vector3 BaseVel;
     private float CurrentSlowSTR;
     [HideInInspector] public bool Type5BHSLOW;
-    [HideInInspector] public List<string> chainList = new List<string>(); 
+    [HideInInspector] public List<string> chainList = new List<string>();
     [Header("Challenge Raiting")]
     public float MonsterCR;
     public bool SpawnMultiBool;
     public int SpawnMultiNumber;
-    public int IntendedLevel; 
+    public int IntendedLevel;
 
     [Header("Boss Weapon")]
     public GameObject BossWeapon;
@@ -186,7 +187,7 @@ public class Monster : MonoBehaviour {
     public Monster SkeletonKing;
     public bool Defiling;
     public GameObject CurDefile;
-    public List<GameObject> SkeletonList = new List<GameObject>();   
+    public List<GameObject> SkeletonList = new List<GameObject>();
     public List<GameObject> SkeletonListAlive = new List<GameObject>();
 
     [Header("The Blob")]
@@ -207,9 +208,10 @@ public class Monster : MonoBehaviour {
     [HideInInspector] public bool BlobAttack4;
     [HideInInspector] public bool BlobDie;
     [HideInInspector] public float BlobDieTimer;
-    
 
-    void Start () {
+
+    void Start()
+    {
         targetColor = Color.green;
         AttackDelay_ = AttackDelay;
         HelpPos = transform.position;
@@ -409,7 +411,7 @@ public class Monster : MonoBehaviour {
         }
     }
 
-    void BlobOne() 
+    void BlobOne()
     {
         float AttackDelay_ = 0;
         int BlobCounter = 0;
@@ -429,8 +431,8 @@ public class Monster : MonoBehaviour {
             {
                 BlobDirMod = -30;
                 BlobCounter = 0;
-            }        
-            StartCoroutine(Blob1(gameObject,false,1, new Vector3(0,0,0),BlobDirMod,2,15, 4f, AttackDelay_));
+            }
+            StartCoroutine(Blob1(gameObject, false, 1, new Vector3(0, 0, 0), BlobDirMod, 2, 15, 4f, AttackDelay_));
             AttackDelay_ += 0.1f;
         }
     }
@@ -448,7 +450,7 @@ public class Monster : MonoBehaviour {
 
             yAxis += 11;
 
-            StartCoroutine(Blob1(gameObject,false, 2, RotateDir, 0, 2, 15, 4, AttackDelay_));
+            StartCoroutine(Blob1(gameObject, false, 2, RotateDir, 0, 2, 15, 4, AttackDelay_));
             AttackDelay_ += 0.07f;
         }
     }
@@ -462,11 +464,11 @@ public class Monster : MonoBehaviour {
             var yAxis = Random.Range(0, 360);
             RotateDir = new Vector3(0, yAxis, 0);
 
-            StartCoroutine(Blob1(gameObject,false, 3, RotateDir, 0, 2, 15, 4, AttackDelay_));
+            StartCoroutine(Blob1(gameObject, false, 3, RotateDir, 0, 2, 15, 4, AttackDelay_));
             AttackDelay_ += 0.1f;
         }
     }
-     
+
     void BlobFour()
     {
         float AttackDelay_ = 0;
@@ -480,7 +482,7 @@ public class Monster : MonoBehaviour {
 
             yAxis += 22;
 
-            StartCoroutine(Blob1(gameObject,false, 4, RotateDir, 0, 2, 17, 4, AttackDelay_));
+            StartCoroutine(Blob1(gameObject, false, 4, RotateDir, 0, 2, 17, 4, AttackDelay_));
             AttackDelay_ += 0.1f;
         }
     }
@@ -503,7 +505,7 @@ public class Monster : MonoBehaviour {
         }
     }
 
-    IEnumerator Blob1(GameObject BlobDad,bool heal, int AttackNumb, Vector3 BlobRot, int DirMod, float BHealth, float Bspeed, float lifeTime, float delay)
+    IEnumerator Blob1(GameObject BlobDad, bool heal, int AttackNumb, Vector3 BlobRot, int DirMod, float BHealth, float Bspeed, float lifeTime, float delay)
     {
         yield return new WaitForSeconds(delay);
         GameObject CurBlob = Instantiate(BlobAttack1Object, transform.position, transform.rotation, transform);
@@ -554,7 +556,7 @@ public class Monster : MonoBehaviour {
         CurBlob_.BlobAttackNoTarget = true;
         CurBlob_.BlobDie = true;
         CurBlob_.BlobDieTimer = lifeTime;
-        
+
     }
 
     void BlobExpire()
@@ -577,26 +579,26 @@ public class Monster : MonoBehaviour {
 
     public void AttackFriendFunc()
     {
-            GameObject[] enemies = GameObject.FindGameObjectsWithTag("Monster");
-            float shortestDistance = Mathf.Infinity;
-            GameObject nearestEnemy = null;
-            foreach (GameObject enemy in enemies)
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Monster");
+        float shortestDistance = Mathf.Infinity;
+        GameObject nearestEnemy = null;
+        foreach (GameObject enemy in enemies)
+        {
+            float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+            if (distanceToEnemy < shortestDistance && enemy != gameObject)
             {
-                float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-                if (distanceToEnemy < shortestDistance && enemy != gameObject)
-                {
-                    shortestDistance = distanceToEnemy;
-                    nearestEnemy = enemy;
-                }
+                shortestDistance = distanceToEnemy;
+                nearestEnemy = enemy;
             }
-            if (nearestEnemy != null && shortestDistance <= 50)
-            {
-                PC = nearestEnemy;
-            }
-            else
-            {
-                PC = null;
-            }     
+        }
+        if (nearestEnemy != null && shortestDistance <= 50)
+        {
+            PC = nearestEnemy;
+        }
+        else
+        {
+            PC = null;
+        }
     }
     public void StopFriendAttack()
     {
@@ -629,7 +631,7 @@ public class Monster : MonoBehaviour {
             TheBlobAttack();
             ChangeColorBlob();
         }
-        
+
         //Checks if slowed | burning.
         AmISlowed();
         AmIBurning();
@@ -647,7 +649,7 @@ public class Monster : MonoBehaviour {
                 {
                     AttackFriendFunc();
                     AttackDelay = AttackDelay_;
-                    
+
                 }
                 else
                 {
@@ -655,7 +657,7 @@ public class Monster : MonoBehaviour {
                     AttackDelay = AttackDelay_;
                 }
             }
-            else 
+            else
             {
                 PC = StartOpponent;
                 meleeRange = 8;
@@ -663,7 +665,7 @@ public class Monster : MonoBehaviour {
         }
 
 
-        if (!CurrentlyRessing && !BlobAttackNoTarget &&!TheBlob && PC != null) 
+        if (!CurrentlyRessing && !BlobAttackNoTarget && !TheBlob && PC != null)
         {
             float dist = Vector3.Distance(transform.position, PC.transform.position);
             if (dist < AggroRange && !SpiderBoss)
@@ -687,7 +689,7 @@ public class Monster : MonoBehaviour {
                     transform.Translate(dir.normalized * distThisFrame, Space.World);
                     Quaternion targetRotation = Quaternion.LookRotation(dir);
                     this.transform.rotation = Quaternion.Lerp(this.transform.rotation, targetRotation, Time.deltaTime * MovementSpeed);
-                } 
+                }
                 if (MonsterType != 5)
                 {
                     if (hardCodeDansGame <= 0 && agent.velocity.magnitude > 0.5f) // makes so the attack animation does not get canceled by run animation. && makes sure if they are not currently in attack animation and they are moving the running animation is active.
@@ -811,7 +813,7 @@ public class Monster : MonoBehaviour {
         }
         else if (RegenLife) // heal if currently ressing.
         {
-            if (health <= health2-0.01f && !OldKing)
+            if (health <= health2 - 0.01f && !OldKing)
             {
                 health += (health2 / ResTimer * Time.deltaTime);
                 Healthbar.fillAmount = health / health2;
@@ -824,7 +826,7 @@ public class Monster : MonoBehaviour {
     void OnTriggerEnter(Collider other)
     {
         if (BlobAttackNoTarget && !OnlyOnce)
-        {          
+        {
             if (other.tag == "Wall")
             {
                 OnlyOnce = true;
@@ -865,14 +867,14 @@ public class Monster : MonoBehaviour {
                 transform.GetChild(0).gameObject.transform.parent = null;
                 Destroy(gameObject);
             }
-            
+
         }
     }
 
 
     protected void LateUpdate()
     {
-            transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
+        transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
     }
 
     private void RotateTowards(Transform target) // if in melee range, rotate towards player
@@ -899,21 +901,23 @@ public class Monster : MonoBehaviour {
 
     public void Attack()
     {
-        if (MonsterType == 1 || MonsterType == 6 || (MonsterType == 3 && !SpiderBoss) && !CurrentlyRessing) {
+        if (MonsterType == 1 || MonsterType == 6 || (MonsterType == 3 && !SpiderBoss) && !CurrentlyRessing)
+        {
             float dist = Vector3.Distance(transform.position, PC.transform.position);
             if (GameObject.FindWithTag("Illusion") != null && !StartScene)
             {
                 PC.GetComponent<IlluScript>().TakeDamage(damage);
             }
-            else if (!StartScene && dist < meleeRange+6 && tag != "Ressing" && !AttackFriend)
+            else if (!StartScene && dist < meleeRange + 6 && tag != "Ressing" && !AttackFriend)
             {
                 PC.GetComponent<Player>().TakeDamage(damage);
             }
             else if (StartScene)
             {
                 PC.GetComponent<Monster>().FakeFight(damage);
-            }else if (AttackFriend)
-                {
+            }
+            else if (AttackFriend)
+            {
                 PC.GetComponent<Monster>().TakeDamage(damage);
             }
         }
@@ -927,7 +931,9 @@ public class Monster : MonoBehaviour {
             else if (!AttackFriend)
             {
                 PC.GetComponent<Player>().TakeDamage(damage);
-            }else if(AttackFriend){
+            }
+            else if (AttackFriend)
+            {
                 PC.GetComponent<Monster>().TakeDamage(damage);
             }
 
@@ -949,16 +955,17 @@ public class Monster : MonoBehaviour {
             if (MonsterType == 4)
             {
                 var RandomSpell = Random.Range(0, 5);
-                switch (RandomSpell) {
+                switch (RandomSpell)
+                {
                     case 0:
-                    currentspellObject = currentspellObject3;
-                currentSpell = currentSpell3;
-                MonsterTypeSubLayer = 2;
+                        currentspellObject = currentspellObject3;
+                        currentSpell = currentSpell3;
+                        MonsterTypeSubLayer = 2;
                         break;
                     case 1:
-                currentspellObject = currentspellObject2;
-                currentSpell = currentSpell2;
-                MonsterTypeSubLayer = 1;
+                        currentspellObject = currentspellObject2;
+                        currentSpell = currentSpell2;
+                        MonsterTypeSubLayer = 1;
                         break;
                     case 2:
                         currentspellObject = currentspellObject4;
@@ -1050,7 +1057,7 @@ public class Monster : MonoBehaviour {
                 GameObject ball = Instantiate(SBAttack, new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z - 4f), Quaternion.identity);
                 ball.GetComponent<Rigidbody>().velocity = BallisticVel(PC.transform, 30f);
                 ball.GetComponent<SpiderBall>().Daddy = gameObject;
-            }     
+            }
         }
     }
     void StartSwarm() // so animation can start before spiders spawn.
@@ -1146,7 +1153,7 @@ public class Monster : MonoBehaviour {
                         GameObject MMI = Instantiate(gameObject, Pos, transform.rotation);
                         Monster Illu = MMI.GetComponent<Monster>();
 
-                     //   var FakeMaxHealth = health / health2;
+                        //   var FakeMaxHealth = health / health2;
                         Illu.health = 5;
                         Illu.health2 = 5;
                         Illu.Healthbar.fillAmount = health / health2;
@@ -1157,7 +1164,7 @@ public class Monster : MonoBehaviour {
                         float randomAS = Random.Range(3, 6);
                         Illu.AttackSpeed = 2;
 
-                       // Illu.attackCountdown = randomAS-3;
+                        // Illu.attackCountdown = randomAS-3;
                         Illu.CasterVariationAS = randomAS;
                         Illu.Healthbar.transform.parent.gameObject.transform.parent.gameObject.SetActive(false);
                         Illu.Invoke("IlluMaxTime", 15);
@@ -1167,7 +1174,7 @@ public class Monster : MonoBehaviour {
                 ParticleSystem ps = OuterRing.GetComponent<ParticleSystem>();
                 var main = ps.main;
                 main.startDelay = 0;
-              //  OuterRing.startDelay = 0f;
+                //  OuterRing.startDelay = 0f;
 
                 OuterRing.Play(true);
                 MirrorImageCD_ = MirrorImageCD;
@@ -1179,18 +1186,19 @@ public class Monster : MonoBehaviour {
     }
 
 
-    public Vector3 BallisticVel(Transform target , float angle)  {//SpiderBossAttack
-     var dir = target.position - new Vector3(transform.position.x, transform.position.y+3f, transform.position.z - 4f);  // get target direction
-    var h = dir.y;  // get height difference
-    dir.y = 0;  // retain only the horizontal direction
-     var dist = dir.magnitude;  // get horizontal distance
-    var a = angle * Mathf.Deg2Rad;  // convert angle to radians
-    dir.y = dist* Mathf.Tan(a);  // set dir to the elevation angle
-    dist += h / Mathf.Tan(a);  // correct for small height differences
-     // calculate the velocity magnitude
-     var vel = Mathf.Sqrt(dist * Physics.gravity.magnitude / Mathf.Sin(2 * a));
-     return vel* dir.normalized;
-}
+    public Vector3 BallisticVel(Transform target, float angle)
+    {//SpiderBossAttack
+        var dir = target.position - new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z - 4f);  // get target direction
+        var h = dir.y;  // get height difference
+        dir.y = 0;  // retain only the horizontal direction
+        var dist = dir.magnitude;  // get horizontal distance
+        var a = angle * Mathf.Deg2Rad;  // convert angle to radians
+        dir.y = dist * Mathf.Tan(a);  // set dir to the elevation angle
+        dist += h / Mathf.Tan(a);  // correct for small height differences
+                                   // calculate the velocity magnitude
+        var vel = Mathf.Sqrt(dist * Physics.gravity.magnitude / Mathf.Sin(2 * a));
+        return vel * dir.normalized;
+    }
     void FakeFight(float damage)
     {
         health -= damage;
@@ -1317,12 +1325,12 @@ public class Monster : MonoBehaviour {
             //    //        e.Slow(true, 3, 9999);
             //    //        e.StopAgent();
             //    //    }
-                
+
             //}
         }
         if (MonsterType == 1) { animChild.GetComponent<MonsterAnim>().DieAnim(); }
         if (MonsterType == 2) { animChild.GetComponent<MonsterAnim>().DieAnimation(); }
-            
+
         if (MonsterType == 4) { animChild.GetComponent<MonsterAnim>().DieTK(); }
         if (MonsterType == 3)
         {
@@ -1332,36 +1340,36 @@ public class Monster : MonoBehaviour {
                 Instantiate(SpiderPoison, new Vector3(transform.position.x, 2f, transform.position.z), transform.rotation);
             }
         }
-            if (MonsterType == 5)
-            {
-                transform.GetChild(0).gameObject.SetActive(true);
-                Destroy(transform.GetChild(0).gameObject, 0.99f);
-                transform.GetChild(0).gameObject.transform.parent = null;
-            }
-    if (MonsterType == 6 && Resurrect && !Immortal) { animChild.GetComponent<MonsterAnim>().DieAnimation3(); }
-    if (MonsterType == 6 && !Resurrect && !Immortal) { animChild.GetComponent<MonsterAnim>().DieAnimation4(); }
+        if (MonsterType == 5)
+        {
+            transform.GetChild(0).gameObject.SetActive(true);
+            Destroy(transform.GetChild(0).gameObject, 0.99f);
+            transform.GetChild(0).gameObject.transform.parent = null;
+        }
+        if (MonsterType == 6 && Resurrect && !Immortal) { animChild.GetComponent<MonsterAnim>().DieAnimation3(); }
+        if (MonsterType == 6 && !Resurrect && !Immortal) { animChild.GetComponent<MonsterAnim>().DieAnimation4(); }
 
-    if (IamIllu)
+        if (IamIllu)
         {
             GameManager manag = GameObject.FindObjectOfType<GameManager>();
             manag.Illus.Remove(gameObject);
-        }       
+        }
 
-    if (animChild != null && !Resurrect)
-    {
-        animChild.transform.parent = null;
-    }
+        if (animChild != null && !Resurrect)
+        {
+            animChild.transform.parent = null;
+        }
 
         SpiderBoss = false;
-    if (!Resurrect)
-    {
-        Loot();
-        Destroy(gameObject);
-    }
-    else if (!Immortal)
-    {
-        CurrentlyRessing = true;
-        agent.isStopped = true;
+        if (!Resurrect)
+        {
+            Loot();
+            Destroy(gameObject);
+        }
+        else if (!Immortal)
+        {
+            CurrentlyRessing = true;
+            agent.isStopped = true;
             if (CurrentlyFrozen)
             {
                 CurrentlyFrozen = false;
@@ -1373,10 +1381,10 @@ public class Monster : MonoBehaviour {
                 meleeRange = meleeRange_;
             }
             Invoke("RessurectMonster", 0.1f);
-    }
-    if (Immortal)
-    {
-        RealDeath = true;
+        }
+        if (Immortal)
+        {
+            RealDeath = true;
             if (CurrentlyFrozen)
             {
                 CurrentlyFrozen = false;
@@ -1394,7 +1402,7 @@ public class Monster : MonoBehaviour {
             }
             //    Invoke("SkeletonStartDead", 0.05f);
             SkeletonStartDead();
-    }
+        }
 
         Collider[] cols = Physics.OverlapSphere(transform.position, 20f); //aggro range when enemy hit.
         foreach (Collider c in cols)
@@ -1412,7 +1420,7 @@ public class Monster : MonoBehaviour {
         BurnDur = 0;
         tag = "Ressing";
         GetComponent<Collider>().GetComponent<CapsuleCollider>().enabled = false;
-        Invoke("StartRessing", ResTimer-0.1f);
+        Invoke("StartRessing", ResTimer - 0.1f);
     }
     void StartRessing()
     {
@@ -1425,7 +1433,7 @@ public class Monster : MonoBehaviour {
         else
         {
             Invoke("KingResAnim", 2);
-            Invoke("Resurected", ResTimer+2);
+            Invoke("Resurected", ResTimer + 2);
         }
     }
     void KingResAnim()
@@ -1434,7 +1442,7 @@ public class Monster : MonoBehaviour {
     }
 
     public void Resurected()
-    {        
+    {
         tag = "Monster";
         hardCodeDansGame = 0;
         GetComponent<Collider>().GetComponent<CapsuleCollider>().enabled = true;
@@ -1442,7 +1450,7 @@ public class Monster : MonoBehaviour {
         OnlyOnce = false;
         Resurrect = false;
     }
-    
+
     public void FixedUpdate()
     {
         if (pushed && !SpiderBoss && !TheBlob)
@@ -1471,7 +1479,7 @@ public class Monster : MonoBehaviour {
 
     public void PushMonster()
     {
-        transform.position = transform.position + ((pushDir * Time.fixedDeltaTime*10)/(PushResistance + 1));
+        transform.position = transform.position + ((pushDir * Time.fixedDeltaTime * 10) / (PushResistance + 1));
         Invoke("StopPush", 0.8f);
     }
 
@@ -1487,7 +1495,7 @@ public class Monster : MonoBehaviour {
     public void StopPush()
     {
         pushed = false;
-     //   this.GetComponent<Rigidbody>().velocity = BaseVel;
+        //   this.GetComponent<Rigidbody>().velocity = BaseVel;
     }
 
     public void StopAgent()
@@ -1543,7 +1551,7 @@ public class Monster : MonoBehaviour {
         if (slow && MovementSpeed >= MovementSpeed_ && !CurrentlyRessing) //slow is true and currently not slowed. How to work if enemy has a sprint effect? to be seen.
         {
 
-            
+
             MovementSpeed /= str;
 
             if (MonsterType != 5)
@@ -1599,7 +1607,8 @@ public class Monster : MonoBehaviour {
                 agent.speed = MovementSpeed;
             }
             Transform result = gameObject.transform.Find("slow");
-            if (result) {
+            if (result)
+            {
                 Destroy(transform.Find("slow").gameObject);
             }
         }
@@ -1610,9 +1619,9 @@ public class Monster : MonoBehaviour {
     }
 
     public void Burn(bool burn, float dur, float str, float dmg)
-    {    
+    {
         if (burn && !CurrentlyRessing)
-        {         
+        {
             BurnDamage += dmg;
             TotalBurnDamage = BurnDamage * str;
             BurnDur = dur;
@@ -1630,7 +1639,7 @@ public class Monster : MonoBehaviour {
             {
                 GameObject burneffect = Instantiate(FireBurn, new Vector3(transform.position.x, 1f, transform.position.z), transform.rotation, transform);
                 burneffect.name = "burn";
-            }          
+            }
         }
     }
 
@@ -1655,7 +1664,7 @@ public class Monster : MonoBehaviour {
 
     public void BoltBounce(bool bounce, bool channel, GameObject bolt, GameObject Current, string chainID)
     {
-        
+
         if (channel && ChannelTimer > 0)
         {
             noBounce = true;
@@ -1682,7 +1691,7 @@ public class Monster : MonoBehaviour {
                 var randomTarget = Random.Range(0, MonsterList.Count);
                 var Rot = Quaternion.LookRotation((MonsterList[randomTarget].transform.position - transform.position).normalized);
                 var Pos2 = Vector3.MoveTowards(this.transform.position, MonsterList[randomTarget].transform.position, BounceDistance);
-                
+
                 GameObject Bounce = Instantiate(bolt, new Vector3(Pos2.x, 2.6f, Pos2.z), Rot, this.transform);
                 SpellProjectile spell = Bounce.GetComponent<SpellProjectile>();
 
@@ -1700,7 +1709,7 @@ public class Monster : MonoBehaviour {
                     spell.spellName = curr.spellName;
                     spell.LBBounce = curr.LBBounce;
                     // spell.Push = curr.Push;
-                   // spell.BlessedAim = curr.BlessedAim;
+                    // spell.BlessedAim = curr.BlessedAim;
                     spell.LBBounceAmount = curr.LBBounceAmount - 1;
                     spell.chainID = chainID;
                     spell.enemyCastingspell = false;
@@ -1720,7 +1729,7 @@ public class Monster : MonoBehaviour {
                     spell.LBCopy = true;
                 }
 
-                
+
 
                 Bounce.transform.parent = null;
                 Bounce.transform.localScale = new Vector3(1, 1, 1);
@@ -1754,7 +1763,7 @@ public class Monster : MonoBehaviour {
                     ChannelTimer = 0.75f;
                 }
 
-                
+
             }
             MonsterList.Clear();
         }
@@ -1774,18 +1783,18 @@ public class Monster : MonoBehaviour {
         if (Boss && !TheBlob) // or any other boss
         {
 
-            var RandomLoot = Random.Range(0, 2);        
-                switch (RandomLoot)
-                {
-                    case 0:
-                       GameObject BossLoot = Instantiate(BossWeapon, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), GameObject.FindGameObjectWithTag("SpiderBossRoom").transform);
+            var RandomLoot = Random.Range(0, 2);
+            switch (RandomLoot)
+            {
+                case 0:
+                    GameObject BossLoot = Instantiate(BossWeapon, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), GameObject.FindGameObjectWithTag("SpiderBossRoom").transform);
                     BossLoot.transform.localPosition = LootLoc;
                     break;
-                    case 1:
-                        GameObject BossLoot2 = Instantiate(BossArmor, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), GameObject.FindGameObjectWithTag("SpiderBossRoom").transform);
+                case 1:
+                    GameObject BossLoot2 = Instantiate(BossArmor, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), GameObject.FindGameObjectWithTag("SpiderBossRoom").transform);
                     BossLoot2.transform.localPosition = LootLoc;
                     break;
-                }        
+            }
         }
     }
 

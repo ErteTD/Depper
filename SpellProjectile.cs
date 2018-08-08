@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SpellProjectile : MonoBehaviour {
+public class SpellProjectile : MonoBehaviour
+{
 
     public GameObject effect1;
     public GameObject effect2;
@@ -54,7 +55,7 @@ public class SpellProjectile : MonoBehaviour {
     public GameObject lightChild5;
     public GameObject lightChild6;
 
-  //  [HideInInspector] public GameObject thePlayer;
+    //  [HideInInspector] public GameObject thePlayer;
     public GameObject BlackHole;
     public bool CompChanCollider;
     public float BHDuration;
@@ -187,7 +188,7 @@ public class SpellProjectile : MonoBehaviour {
 
                 if (spellName != "Lightningbolt")
                 {
-                   if (SplitChanLeft)
+                    if (SplitChanLeft)
                     {
                         if (aoeSizeMeteor == 0)
                         {
@@ -234,7 +235,7 @@ public class SpellProjectile : MonoBehaviour {
                 {
                     if (SplitChanLeft)
                     {
-                            transform.localPosition = new Vector3(-4, 2, -2);
+                        transform.localPosition = new Vector3(-4, 2, -2);
                         Vector3 Rotet = new Vector3(0, 0, 90);
                         transform.localRotation = Quaternion.Euler(Rotet);
                     }
@@ -393,9 +394,9 @@ public class SpellProjectile : MonoBehaviour {
                 else
                 {
 
-                        Vector3 loc2 = transform.position;
-                        loc2 += transform.forward * 4f;
-                        transform.position = loc2;
+                    Vector3 loc2 = transform.position;
+                    loc2 += transform.forward * 4f;
+                    transform.position = loc2;
                 }
                 Invoke("Stop", 1.5f);
 
@@ -411,10 +412,11 @@ public class SpellProjectile : MonoBehaviour {
 
             if (channeling && aoeSizeMeteor == 0)
             {
-          //   InvokeRepeating("OrbChannelTargetUpdate", 0.01f, 0.1f);
+                //   InvokeRepeating("OrbChannelTargetUpdate", 0.01f, 0.1f);
             }
 
-            } else if (ChaosOrb_)
+        }
+        else if (ChaosOrb_)
         {
             transform.position = new Vector3(transform.position.x, 2.5f, transform.position.z);
             pos_ = transform.position;
@@ -427,15 +429,15 @@ public class SpellProjectile : MonoBehaviour {
 
     }
 
-        public void Crit()
+    public void Crit()
+    {
+        if (BoostCrit)
         {
-            if (BoostCrit)
-            {
-                var randomInt = Random.Range(0, 100);
+            var randomInt = Random.Range(0, 100);
 
-                if (randomInt <= CritChance)
-                 {
-                    damage *= CritDamage;
+            if (randomInt <= CritChance)
+            {
+                damage *= CritDamage;
                 if (!CompOrbPlayer) // Comporb testing, making sure the orb is the new "player" for channeling script. OBS! CHANGE! Make so the text can hover over the orb.
                 {
                     ThePlayer.GetComponent<Player>().Crit(damage);
@@ -445,15 +447,15 @@ public class SpellProjectile : MonoBehaviour {
 
                     GameObject Crit = Instantiate(CritVis, CritVisCompOrb.transform);
                     Text txt = Crit.transform.GetChild(0).gameObject.transform.GetChild(0).GetComponent<Text>();
-   
+
                     txt.text = damage.ToString("F1");
                     Destroy(Crit, 1);
                 }
 
 
             }
-            }
         }
+    }
 
 
     public void ChainTarget() // Blessed aim ghostcast testing.
@@ -461,33 +463,33 @@ public class SpellProjectile : MonoBehaviour {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Monster");
         float shortestDistance = Mathf.Infinity;
         GameObject nearestEnemy = null;
-            foreach (GameObject enemy in enemies)
-            {
-                struck = false;
-                listCount = enemy.GetComponent<Monster>().chainList.Count;
+        foreach (GameObject enemy in enemies)
+        {
+            struck = false;
+            listCount = enemy.GetComponent<Monster>().chainList.Count;
 
-                for (int a = 0; a < listCount; a++)
+            for (int a = 0; a < listCount; a++)
+            {
+                if (enemy.GetComponent<Monster>().chainList[a] == chainID)
                 {
-                    if (enemy.GetComponent<Monster>().chainList[a] == chainID)
-                    {
-                        struck = true;
-                    }
-                }
-                float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-                if ((distanceToEnemy < shortestDistance) && struck == false)
-                {
-                    shortestDistance = distanceToEnemy;
-                    nearestEnemy = enemy;
+                    struck = true;
                 }
             }
-            if (nearestEnemy != null && shortestDistance <= 50)
+            float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+            if ((distanceToEnemy < shortestDistance) && struck == false)
             {
-                TempTestTarget = nearestEnemy;
+                shortestDistance = distanceToEnemy;
+                nearestEnemy = enemy;
             }
-            else
-            {
-                TempTestTarget = null;
-            }    
+        }
+        if (nearestEnemy != null && shortestDistance <= 50)
+        {
+            TempTestTarget = nearestEnemy;
+        }
+        else
+        {
+            TempTestTarget = null;
+        }
     }
 
     void Update()
@@ -578,25 +580,25 @@ public class SpellProjectile : MonoBehaviour {
                     transform.position = ThePlayer.transform.position;
                     pos_ = transform.position;
 
-                        pos_ += ThePlayer.transform.forward * chanRange; // set to spell range instead of fixed.     
-                        if (!CompOrbPlayer)
-                        {
-                            pos_.y = 1.5f;
-                        }
+                    pos_ += ThePlayer.transform.forward * chanRange; // set to spell range instead of fixed.     
+                    if (!CompOrbPlayer)
+                    {
+                        pos_.y = 1.5f;
+                    }
 
 
                     if (SplitChanRight)
                     {
-                        pos_ += (transform.right * 7.5f);                      
+                        pos_ += (transform.right * 7.5f);
                     }
                     if (SplitChanLeft)
                     {
                         pos_ += (transform.right * -7.5f);
                     }
-                    
+
                     chanLoc = pos_;
                     spellCastLocation = pos_;
-                    gameObject.transform.position = ThePlayer.transform.position + new Vector3(0, 1.5f, 0f) + ThePlayer.transform.right * MultiChanPosX;                  
+                    gameObject.transform.position = ThePlayer.transform.position + new Vector3(0, 1.5f, 0f) + ThePlayer.transform.right * MultiChanPosX;
                 }
 
                 if (ghostCast) // script makes ghostcast work with channeling.
@@ -738,7 +740,7 @@ public class SpellProjectile : MonoBehaviour {
                     }
                 }
                 //CompChanCollider Here i guess.
-              //  Debug.Log(CompChanCollider);
+                //  Debug.Log(CompChanCollider);
                 if (!CompChanCollider) // HYPERTESTING.
                 {
                     RaycastHit hit;
@@ -949,8 +951,8 @@ public class SpellProjectile : MonoBehaviour {
                             ps.shapeType = ParticleSystemShapeType.Box;
 
 
-                            ps.scale = new Vector3(1f, 1f, (Vector3.Distance(chanLoc, transform.position + transform.forward * 1)-1.5f));
-                            result.transform.localPosition = new Vector3(0, ((Vector3.Distance(chanLoc, transform.position)+3.5f) / 2), 0);
+                            ps.scale = new Vector3(1f, 1f, (Vector3.Distance(chanLoc, transform.position + transform.forward * 1) - 1.5f));
+                            result.transform.localPosition = new Vector3(0, ((Vector3.Distance(chanLoc, transform.position) + 3.5f) / 2), 0);
 
                             //   result.transform.localScale = new Vector3 (transform.position.x, transform.position.y, Vector3.Distance(chanLoc, transform.position) * 0.5f);
 
@@ -975,7 +977,8 @@ public class SpellProjectile : MonoBehaviour {
                     }
                 }
                 else // ChanCompCollider true
-                {if (!ghostCast)
+                {
+                    if (!ghostCast)
                     {
                         if (spellName != "Lightningbolt")
                         {
@@ -1099,7 +1102,7 @@ public class SpellProjectile : MonoBehaviour {
                             Destroy(Haste, 2.5f);
                         }
                     }
-                    
+
                 }
                 else
                 {
@@ -1109,12 +1112,13 @@ public class SpellProjectile : MonoBehaviour {
             chanDur_ -= Time.deltaTime;
             CompOrbCD_ -= Time.deltaTime;
 
-        } else if (ChaosOrb_)
+        }
+        else if (ChaosOrb_)
         {
             pos_ += Direction * Time.deltaTime * 7;
             transform.position = pos_;
 
-        //    transform.Rotate(Vector3.up * Time.deltaTime * randomRotSpeed, Space.World);
+            //    transform.Rotate(Vector3.up * Time.deltaTime * randomRotSpeed, Space.World);
             if (ChaosOrbCD_ <= 0)
             {
 
@@ -1131,44 +1135,44 @@ public class SpellProjectile : MonoBehaviour {
                 SpellProjectile spell = test123.GetComponent<SpellProjectile>();
 
                 spell.BlessedAim = BlessedAim;
-            spell.CompOrbPlayer = true;
-            spell.ThePlayer = gameObject;
-            spell.ChaosOrb_ = false;
+                spell.CompOrbPlayer = true;
+                spell.ThePlayer = gameObject;
+                spell.ChaosOrb_ = false;
                 spell.CritVis = CritVis;
                 spell.CritVisCompOrb = gameObject;
                 spell.projectilespeed = projectilespeed;
-            spell.damage = damage;
-            spell.spellCastLocation = spellCastLocation;
-            spell.aoeSizeMeteor = aoeSizeMeteor;
-            spell.ghostCast = ghostCast;
-            spell.cone = cone;
-            spell.spellName = spellName;
-            spell.channeling = channeling;
-            spell.FrostBoltSlow = FrostBoltSlow;
-            spell.SlowDuration = SlowDuration;
-            spell.SlowPercent = SlowPercent;
-            spell.FireBallBurn = FireBallBurn;
-            spell.BurnDuration = BurnDuration;
-            spell.BurnPercent = BurnPercent;
-            spell.LBBounce = LBBounce;
-            spell.LBBounceAmount = LBBounceAmount;
-            spell.BoostCrit = BoostCrit;
-            spell.CritChance = CritChance;
-            spell.CritDamage = CritDamage;
-            spell.BHBool = BHBool;
-            spell.BHSize = BHSize;
-            spell.BHRadius = BHRadius;
+                spell.damage = damage;
+                spell.spellCastLocation = spellCastLocation;
+                spell.aoeSizeMeteor = aoeSizeMeteor;
+                spell.ghostCast = ghostCast;
+                spell.cone = cone;
+                spell.spellName = spellName;
+                spell.channeling = channeling;
+                spell.FrostBoltSlow = FrostBoltSlow;
+                spell.SlowDuration = SlowDuration;
+                spell.SlowPercent = SlowPercent;
+                spell.FireBallBurn = FireBallBurn;
+                spell.BurnDuration = BurnDuration;
+                spell.BurnPercent = BurnPercent;
+                spell.LBBounce = LBBounce;
+                spell.LBBounceAmount = LBBounceAmount;
+                spell.BoostCrit = BoostCrit;
+                spell.CritChance = CritChance;
+                spell.CritDamage = CritDamage;
+                spell.BHBool = BHBool;
+                spell.BHSize = BHSize;
+                spell.BHRadius = BHRadius;
                 spell.BHDuration = BHDuration;
-            spell.BHStrenght = BHStrenght;
-            spell.Push = Push;
-            spell.pool = pool;
-            spell.PoolInst = PoolInst;
-            spell.PoolDamage = damage * PoolDamage;
-            spell.Poolduration = Poolduration;
-            ChaosOrbCD_ = ChaosOrbCD;
+                spell.BHStrenght = BHStrenght;
+                spell.Push = Push;
+                spell.pool = pool;
+                spell.PoolInst = PoolInst;
+                spell.PoolDamage = damage * PoolDamage;
+                spell.Poolduration = Poolduration;
+                ChaosOrbCD_ = ChaosOrbCD;
             }
 
-        ChaosOrbCD_ -= Time.deltaTime;
+            ChaosOrbCD_ -= Time.deltaTime;
         }
 
     }
@@ -1182,10 +1186,10 @@ public class SpellProjectile : MonoBehaviour {
         foreach (GameObject enemy in enemies)
         {
             float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-            if (distanceToEnemy < shortestDistance )
+            if (distanceToEnemy < shortestDistance)
             {
-                shortestDistance = distanceToEnemy;               
-                nearestEnemy = enemy;                             
+                shortestDistance = distanceToEnemy;
+                nearestEnemy = enemy;
             }
         }
 
@@ -1198,7 +1202,7 @@ public class SpellProjectile : MonoBehaviour {
 
         if (NearestEnemy_ != null && Distance_ <= 50)
         {
-           // spellCastLocation = nearestEnemy.transform.position;
+            // spellCastLocation = nearestEnemy.transform.position;
             Vector3 dir = NearestEnemy_.transform.position - this.transform.localPosition;
             transform.rotation = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z));
 
@@ -1210,58 +1214,58 @@ public class SpellProjectile : MonoBehaviour {
     private void CompOrbCheck(SpellProjectile spell) // Checks if CompOrb is inside a collider (Raycast wont work if this is the case).
     {
         ColCounter = 0;
-            Collider[] cols = Physics.OverlapSphere(transform.position, 0.1f);
-            foreach (Collider col in cols)
+        Collider[] cols = Physics.OverlapSphere(transform.position, 0.1f);
+        foreach (Collider col in cols)
+        {
+            if (col.tag == "Monster" && enemyCastingspell == false && aoeSizeMeteor == 0)
             {
-                if (col.tag == "Monster" && enemyCastingspell == false && aoeSizeMeteor == 0)
-                {
-                    spell.CompChanCollider = true;
-                    ColCounter++;
+                spell.CompChanCollider = true;
+                ColCounter++;
 
-                    Monster enemy = col.transform.GetComponent<Monster>();
-                    enemy.Slow(FrostBoltSlow, SlowDuration, SlowPercent);
-                    enemy.Burn(FireBallBurn, BurnDuration, BurnPercent, spell.damage * Time.deltaTime);
-                    enemy.BoltBounce(LBBounce, channeling, Unmodified, gameObject, chainID);
-                    enemy.TakeDamage(spell.damage * Time.deltaTime);
-                    if (Push)
-                    {
-                        enemy.GetComponent<Monster>().pushDir = directionF;
-                        enemy.GetComponent<Monster>().ChannelPush(4 * Time.deltaTime);
-                    }
-                    if (BHBool) //blackholescript
-                    {
-                        GameObject blackH = Instantiate(BlackHole, col.transform.position, transform.rotation, transform);
-                        blackH.transform.parent = null;
-                        blackH.transform.localScale = BHSize;
-                        blackH.GetComponent<GravityBody>().pullRadius = BHRadius;
-                        blackH.GetComponent<GravityBody>().pullForce = BHStrenght;
-                        blackH.GetComponent<GravityBody>().duration = BHDuration;
-                        BHBool = false;
-                    }
-                    if (pool) //poolscript
-                    {
-                        GameObject PoolObj = Instantiate(PoolInst, new Vector3(col.transform.position.x, 1, col.transform.position.z), PoolInst.transform.rotation, transform);
-                        PoolObj.transform.parent = null;
-                        PoolObj.transform.localScale = new Vector3(1, 2, 2);
-                        Poolscript curPool = PoolObj.GetComponent<Poolscript>();
-                        curPool.TriggerKillMe(Poolduration);
-                        curPool.damage = PoolDamage;
-                        curPool.FrostBoltSlow = FrostBoltSlow;
-                        curPool.SlowPercent = SlowPercent;
-                        curPool.SlowDuration = SlowDuration;
-                        curPool.FireBallBurn = FireBallBurn;
-                        curPool.BurnPercent = BurnPercent;
-                        curPool.BurnDuration = BurnDuration;
-                        curPool.LBBounce = LBBounce;
-                        curPool.LBBounceAmount = LBBounceAmount;
-                        curPool.Unmodified = Unmodified;
-                        curPool.projectilespeed = projectilespeed;
-                        curPool.ghostCast = ghostCast;
-                        curPool.spellName = spellName;
-                        pool = false;
-                    }             
+                Monster enemy = col.transform.GetComponent<Monster>();
+                enemy.Slow(FrostBoltSlow, SlowDuration, SlowPercent);
+                enemy.Burn(FireBallBurn, BurnDuration, BurnPercent, spell.damage * Time.deltaTime);
+                enemy.BoltBounce(LBBounce, channeling, Unmodified, gameObject, chainID);
+                enemy.TakeDamage(spell.damage * Time.deltaTime);
+                if (Push)
+                {
+                    enemy.GetComponent<Monster>().pushDir = directionF;
+                    enemy.GetComponent<Monster>().ChannelPush(4 * Time.deltaTime);
+                }
+                if (BHBool) //blackholescript
+                {
+                    GameObject blackH = Instantiate(BlackHole, col.transform.position, transform.rotation, transform);
+                    blackH.transform.parent = null;
+                    blackH.transform.localScale = BHSize;
+                    blackH.GetComponent<GravityBody>().pullRadius = BHRadius;
+                    blackH.GetComponent<GravityBody>().pullForce = BHStrenght;
+                    blackH.GetComponent<GravityBody>().duration = BHDuration;
+                    BHBool = false;
+                }
+                if (pool) //poolscript
+                {
+                    GameObject PoolObj = Instantiate(PoolInst, new Vector3(col.transform.position.x, 1, col.transform.position.z), PoolInst.transform.rotation, transform);
+                    PoolObj.transform.parent = null;
+                    PoolObj.transform.localScale = new Vector3(1, 2, 2);
+                    Poolscript curPool = PoolObj.GetComponent<Poolscript>();
+                    curPool.TriggerKillMe(Poolduration);
+                    curPool.damage = PoolDamage;
+                    curPool.FrostBoltSlow = FrostBoltSlow;
+                    curPool.SlowPercent = SlowPercent;
+                    curPool.SlowDuration = SlowDuration;
+                    curPool.FireBallBurn = FireBallBurn;
+                    curPool.BurnPercent = BurnPercent;
+                    curPool.BurnDuration = BurnDuration;
+                    curPool.LBBounce = LBBounce;
+                    curPool.LBBounceAmount = LBBounceAmount;
+                    curPool.Unmodified = Unmodified;
+                    curPool.projectilespeed = projectilespeed;
+                    curPool.ghostCast = ghostCast;
+                    curPool.spellName = spellName;
+                    pool = false;
                 }
             }
+        }
         if (ColCounter == 0)
         {
             spell.CompChanCollider = false;
@@ -1336,7 +1340,7 @@ public class SpellProjectile : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        
+
         if (aoeSizeMeteor >= 1 && !channeling)
         {
             if (other.tag == "Floor" || other.tag == "Wall")
@@ -1356,7 +1360,7 @@ public class SpellProjectile : MonoBehaviour {
                 {
                     other.GetComponent<Monster>().pushDir = directionF;
                     other.GetComponent<Monster>().pushed = true;
-                   // other.GetComponent<Monster>().BaseVel = other.GetComponent<Rigidbody>().velocity;
+                    // other.GetComponent<Monster>().BaseVel = other.GetComponent<Rigidbody>().velocity;
                 }
 
                 other.GetComponent<Monster>().Slow(FrostBoltSlow, SlowDuration, SlowPercent);
@@ -1369,7 +1373,8 @@ public class SpellProjectile : MonoBehaviour {
                     damage *= 0.9f;
                 }
 
-                if (TempTestTarget !=null) { //Blessed aim testing
+                if (TempTestTarget != null)
+                { //Blessed aim testing
                     TempTestTarget.GetComponent<Monster>().chainList.Add(chainID);
                 }
 
@@ -1412,7 +1417,7 @@ public class SpellProjectile : MonoBehaviour {
 
             }
 
-            if (other.tag == "MirrorWall" && !channeling && tag != "ChaosOrb" && tag !="CompOrb")
+            if (other.tag == "MirrorWall" && !channeling && tag != "ChaosOrb" && tag != "CompOrb")
             {
                 other.GetComponent<MirrorWall>().BoltBounce(LBBounce, channeling, Unmodified, gameObject, enemyCastingspell);
                 if (!ghostCast)
@@ -1420,9 +1425,9 @@ public class SpellProjectile : MonoBehaviour {
                     Stop();
                 }
             }
-            
 
-                if (other.tag == "Player" && enemyCastingspell == true)
+
+            if (other.tag == "Player" && enemyCastingspell == true)
             {
                 other.GetComponent<Player>().TakeDamage(damage); // ToDo create player slow aswell.
                 other.GetComponent<Player>().Burn(FireBallBurn, BurnDuration, BurnPercent, damage);
@@ -1436,7 +1441,7 @@ public class SpellProjectile : MonoBehaviour {
             Stop();
         }
 
-        if ((other.tag != "Monster" && other.tag != "Player" && other.tag != "Illusion" && other.tag != "Ressing" && other.tag != "MirrorWall" && other.tag != "Untagged") && cone == false && !channeling ) 
+        if ((other.tag != "Monster" && other.tag != "Player" && other.tag != "Illusion" && other.tag != "Ressing" && other.tag != "MirrorWall" && other.tag != "Untagged") && cone == false && !channeling)
         {
             Stop();
 
@@ -1514,117 +1519,117 @@ public class SpellProjectile : MonoBehaviour {
                 pool = false;
             }
         }
-        
+
 
     }
     public void Meteorattack()
     {
-        
-            Collider[] cols = Physics.OverlapSphere(transform.position, aoeSizeMeteor);
 
-            foreach (Collider c in cols)
+        Collider[] cols = Physics.OverlapSphere(transform.position, aoeSizeMeteor);
+
+        foreach (Collider c in cols)
+        {
+            if (!enemyCastingspell)
             {
-                if (!enemyCastingspell)
+                Monster e = c.GetComponent<Monster>();
+                if (e != null)
                 {
-                    Monster e = c.GetComponent<Monster>();
-                    if (e != null)
-                    {
 
-                        directionF = (e.transform.position - transform.position).normalized;
+                    directionF = (e.transform.position - transform.position).normalized;
 
-                        e.GetComponent<Monster>().Slow(FrostBoltSlow, SlowDuration, SlowPercent);
-                        e.GetComponent<Monster>().Burn(FireBallBurn, BurnDuration, BurnPercent, damage);
-                        e.GetComponent<Monster>().BoltBounce(LBBounce, channeling, Unmodified, gameObject, chainID);
-                        e.GetComponent<Monster>().TakeDamage(damage);
+                    e.GetComponent<Monster>().Slow(FrostBoltSlow, SlowDuration, SlowPercent);
+                    e.GetComponent<Monster>().Burn(FireBallBurn, BurnDuration, BurnPercent, damage);
+                    e.GetComponent<Monster>().BoltBounce(LBBounce, channeling, Unmodified, gameObject, chainID);
+                    e.GetComponent<Monster>().TakeDamage(damage);
 
-                        if (TempTestTarget != null)
-                        { //Blessed aim testing, So blessed aim boltbounce wont attack current target.
-                            TempTestTarget.GetComponent<Monster>().chainList.Add(chainID);
-                        }
-
-
-                        if (Push)
-                        {
-                            e.GetComponent<Monster>().pushDir = directionF;
-                            e.GetComponent<Monster>().pushed = true;
-                            // other.GetComponent<Monster>().BaseVel = other.GetComponent<Rigidbody>().velocity;
-                        }
-
-                        if (BHBool) //blackholescript
-                        {
-                            GameObject blackH = Instantiate(BlackHole, transform.position, transform.rotation, transform);
-                            blackH.transform.parent = null;
-                            blackH.transform.localScale = BHSize;
-                            blackH.GetComponent<GravityBody>().pullRadius = BHRadius;
-                            blackH.GetComponent<GravityBody>().pullForce = BHStrenght;
-                            blackH.GetComponent<GravityBody>().duration = BHDuration;
-                            BHBool = false;
-                        }
-
-                        if (pool) //poolscript
-                        {
-                            GameObject PoolObj = Instantiate(PoolInst, new Vector3(transform.position.x, 1, transform.position.z), PoolInst.transform.rotation, transform);
-                            PoolObj.transform.parent = null;
-                            PoolObj.transform.localScale = new Vector3(1, 2, 2);
-                            Poolscript curPool = PoolObj.GetComponent<Poolscript>();
-                            curPool.TriggerKillMe(Poolduration);
-                            curPool.damage = PoolDamage;
-                            curPool.FrostBoltSlow = FrostBoltSlow;
-                            curPool.SlowPercent = SlowPercent;
-                            curPool.SlowDuration = SlowDuration;
-                            curPool.FireBallBurn = FireBallBurn;
-                            curPool.BurnPercent = BurnPercent;
-                            curPool.BurnDuration = BurnDuration;
-                            curPool.LBBounce = LBBounce;
-                            curPool.LBBounceAmount = LBBounceAmount;
-                            curPool.Unmodified = Unmodified;
-                            curPool.projectilespeed = projectilespeed;
-                            curPool.ghostCast = ghostCast;
-                            curPool.spellName = spellName;
-                            pool = false;
-                        }
+                    if (TempTestTarget != null)
+                    { //Blessed aim testing, So blessed aim boltbounce wont attack current target.
+                        TempTestTarget.GetComponent<Monster>().chainList.Add(chainID);
                     }
-                }
-                else
-                {
-                    Player e = c.GetComponent<Player>();
-                    if (e != null)
+
+
+                    if (Push)
                     {
-                        directionF = (e.transform.position - transform.position).normalized;
-                        e.GetComponent<Player>().Slow(FrostBoltSlow, SlowDuration, SlowPercent);
-                        e.GetComponent<Player>().TakeDamage(damage);
+                        e.GetComponent<Monster>().pushDir = directionF;
+                        e.GetComponent<Monster>().pushed = true;
+                        // other.GetComponent<Monster>().BaseVel = other.GetComponent<Rigidbody>().velocity;
                     }
-                }
-            }
 
-            
+                    if (BHBool) //blackholescript
+                    {
+                        GameObject blackH = Instantiate(BlackHole, transform.position, transform.rotation, transform);
+                        blackH.transform.parent = null;
+                        blackH.transform.localScale = BHSize;
+                        blackH.GetComponent<GravityBody>().pullRadius = BHRadius;
+                        blackH.GetComponent<GravityBody>().pullForce = BHStrenght;
+                        blackH.GetComponent<GravityBody>().duration = BHDuration;
+                        BHBool = false;
+                    }
 
-            if (enemyCastingspell)//only for bigboy atm
-            {
-                Instantiate(BigBoyFrost, transform.position, transform.rotation);
-            }
-
-            if (spellName != "Lightningbolt")
-            {
-                if (transform.childCount == 5)
-                {
-                    GameObject Boom = transform.GetChild(4).gameObject;
-                    Boom.SetActive(true);
-                    Boom.transform.parent = null;
-                    Destroy(Boom, 2);
+                    if (pool) //poolscript
+                    {
+                        GameObject PoolObj = Instantiate(PoolInst, new Vector3(transform.position.x, 1, transform.position.z), PoolInst.transform.rotation, transform);
+                        PoolObj.transform.parent = null;
+                        PoolObj.transform.localScale = new Vector3(1, 2, 2);
+                        Poolscript curPool = PoolObj.GetComponent<Poolscript>();
+                        curPool.TriggerKillMe(Poolduration);
+                        curPool.damage = PoolDamage;
+                        curPool.FrostBoltSlow = FrostBoltSlow;
+                        curPool.SlowPercent = SlowPercent;
+                        curPool.SlowDuration = SlowDuration;
+                        curPool.FireBallBurn = FireBallBurn;
+                        curPool.BurnPercent = BurnPercent;
+                        curPool.BurnDuration = BurnDuration;
+                        curPool.LBBounce = LBBounce;
+                        curPool.LBBounceAmount = LBBounceAmount;
+                        curPool.Unmodified = Unmodified;
+                        curPool.projectilespeed = projectilespeed;
+                        curPool.ghostCast = ghostCast;
+                        curPool.spellName = spellName;
+                        pool = false;
+                    }
                 }
             }
             else
             {
-                GameObject Boom = transform.GetChild(2).gameObject;
+                Player e = c.GetComponent<Player>();
+                if (e != null)
+                {
+                    directionF = (e.transform.position - transform.position).normalized;
+                    e.GetComponent<Player>().Slow(FrostBoltSlow, SlowDuration, SlowPercent);
+                    e.GetComponent<Player>().TakeDamage(damage);
+                }
+            }
+        }
+
+
+
+        if (enemyCastingspell)//only for bigboy atm
+        {
+            Instantiate(BigBoyFrost, transform.position, transform.rotation);
+        }
+
+        if (spellName != "Lightningbolt")
+        {
+            if (transform.childCount == 5)
+            {
+                GameObject Boom = transform.GetChild(4).gameObject;
                 Boom.SetActive(true);
                 Boom.transform.parent = null;
                 Destroy(Boom, 2);
             }
+        }
+        else
+        {
+            GameObject Boom = transform.GetChild(2).gameObject;
+            Boom.SetActive(true);
+            Boom.transform.parent = null;
+            Destroy(Boom, 2);
+        }
 
 
-            Stop();
-        
+        Stop();
+
 
     }
 

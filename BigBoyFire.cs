@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BigBoyFire : MonoBehaviour {
+public class BigBoyFire : MonoBehaviour
+{
 
     public float duration;
     public float damage;
@@ -29,10 +30,10 @@ public class BigBoyFire : MonoBehaviour {
         if (PoolNumb > 0)
         {
             Vector3 Pos = new Vector3(transform.position.x, 1.5f, transform.position.z);
-            GameObject PoolObj = Instantiate(this.gameObject, Pos + (transform.forward*4), transform.rotation, transform);
+            GameObject PoolObj = Instantiate(this.gameObject, Pos + (transform.forward * 4), transform.rotation, transform);
 
             PoolObj.transform.parent = null;
-            PoolObj.GetComponent<BigBoyFire>().PoolNumb = PoolNumb-1;
+            PoolObj.GetComponent<BigBoyFire>().PoolNumb = PoolNumb - 1;
 
         }
     }
@@ -52,7 +53,7 @@ public class BigBoyFire : MonoBehaviour {
             enemy.TakeDamage(damage * Time.deltaTime);
         }
 
-        if (other.tag =="Monster" && PlayerCasting)
+        if (other.tag == "Monster" && PlayerCasting)
         {
             Monster enemy = other.GetComponent<Monster>();
             enemy.Slow(FrostBoltSlow, SlowDuration, SlowPercent);

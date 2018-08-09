@@ -25,7 +25,6 @@ public class BigBoyFire : MonoBehaviour
         Invoke("AnotherOne", 0.15f);
         Invoke("ActivatePool", 0.2f);
     }
-
     void AnotherOne()
     {
         if (PoolNumb > 0)
@@ -38,8 +37,6 @@ public class BigBoyFire : MonoBehaviour
 
         }
     }
-
-
     void ActivatePool()
     {
         ActPool.SetActive(true);
@@ -47,16 +44,10 @@ public class BigBoyFire : MonoBehaviour
     public void OnTriggerStay(Collider other)
     {
         IDamageable unit = other.GetComponent<IDamageable>();
-
-//<<<<<<< Updated upstream
-//        if (other.tag == "Monster" && PlayerCasting)
-//=======
         if (unit == null || DamagingSelf(unit))
-//>>>>>>> Stashed changes
         {
             return;
         }
-
         unit.Slow(FrostBoltSlow, SlowDuration, SlowPercent);
         unit.Burn(FireBallBurn, BurnDuration, BurnPercent, damage * Time.deltaTime);
         unit.TakeDamage(damage * Time.deltaTime);
@@ -64,7 +55,6 @@ public class BigBoyFire : MonoBehaviour
 
     private bool DamagingSelf(IDamageable unit)
     {
-
         if (unit is Player && PlayerCasting)
         {
             return true;

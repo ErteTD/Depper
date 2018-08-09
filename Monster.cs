@@ -62,7 +62,6 @@ public class Monster : MonoBehaviour, IDamageable {
     private float BoostBurnPer;
     private float BoostSlowPer;
     private float BoostSlowDur;
-
     [HideInInspector] public bool pushed;
     [HideInInspector] public Vector3 pushDir;
     [HideInInspector] public Vector3 BaseVel;

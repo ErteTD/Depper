@@ -41,9 +41,6 @@ public class Player : MonoBehaviour, IDamageable {
     private float attackingDuration = 0.25f;
 
     public float MovementSpeed, MovementSpeed_, slowedDur;
-
-
-    public GameObject[] trees;
     public GameObject[] Monsters;
     public Text CritText;
     public GameObject CritObj;
@@ -68,28 +65,18 @@ public class Player : MonoBehaviour, IDamageable {
         fullhealth = health;
         HealthText.text = health.ToString("F0");
         MovementSpeed_ = MovementSpeed;
-
-        trees = GameObject.FindGameObjectsWithTag("Tree");
-
-        //  InvokeRepeating("UnderATree", 0.1f, 0.5f);
         InvokeRepeating("IlluArmor", 1, 0.5f);
-
     }
     void Update()
     {
-        AmIBurning(); // checks if burning currently
+        AmIBurning();
         AmISlowed();
         agent.speed = MovementSpeed;
 
-        // Teeeest
         float inputX = Input.GetAxisRaw("Horizontal");
         float inputY = Input.GetAxisRaw("Vertical");
 
         Vector3 moveDir = new Vector3(inputX, 0, inputY).normalized;
-        // Vector3 targetMoveAmount = moveDir * MovementSpeed;
-        //moveAmount = Vector3.SmoothDamp(moveAmount, targetMoveAmount, ref smoothMoveVelocity, .15f);
-
-        //Vector3 localMove = transform.TransformDirection(moveAmount) * Time.fixedDeltaTime;
 
         if (inputX != 0 || inputY != 0)
         {
@@ -112,14 +99,12 @@ public class Player : MonoBehaviour, IDamageable {
                         curSpellProjectile_.Add(item);
                     }
                 }
-
                 foreach (var item in curSpellProjectile_)
                 {
                     curSpellProjectile.Remove(item);
                 }
             }
         }
-
         if ((Input.GetMouseButtonDown(0) || (inputX != 0 || inputY != 0)) && channelingNow == true && curSpellProjectile.Count > 0)
         {
             foreach (var item in curSpellProjectile)
@@ -136,27 +121,19 @@ public class Player : MonoBehaviour, IDamageable {
             }
         }
 
-
-
-
-
         if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject() && channelingNow == false)
         {
-
             rightclick = false;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); // Raycast things, checks where mouse clicks
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
                 float dist = Vector3.Distance(hit.point, transform.position); // distance between click point and PC
-
-
                 if (Input.GetMouseButtonDown(0) && (hit.collider.tag == "Floor" || hit.collider.tag == "Door"))
                 {
                     Vector3 DaPoint = new Vector3(hit.point.x, hit.point.y + 0.1f, hit.point.z);
                     Instantiate(MousePing, DaPoint, Quaternion.Euler(0, 0, 0));
                 }
-
 
                 if (dist > 0.1f)
                 {
@@ -164,20 +141,9 @@ public class Player : MonoBehaviour, IDamageable {
                     move = true; // when move true, character moves unless rightclick is true.
                     agent.stoppingDistance = 0f;
                 }
-
-                //if (hit.collider.gameObject.tag == "Monster") // if mouse clicks on a object with the tag Monster, PC will start tracking it and following it.
-                //{
-                //   Monster enemy = hit.collider.GetComponent<Monster>();
-                //   trackTarget = GameObject.Find(enemy.name);
-                //    agent.stoppingDistance = 1.5f; // stops a bit before reaching the Monster.
-                //}
-
                 if (hit.collider.gameObject.tag == "Token") // if mouse clicks on a object with the tag Monster, PC will start tracking it and following it.
                 {
                     activeToken = hit.collider.gameObject;
-                    //TokenScript token = hit.collider.GetComponent<TokenScript>();
-                    //trackTarget = GameObject.Find(token.name);
-                    //agent.stoppingDistance = 1f; // stops a bit before reaching the Token.
                 }
                 else if (activeToken != null)
                 {
@@ -200,28 +166,14 @@ public class Player : MonoBehaviour, IDamageable {
         if (Input.GetMouseButton(1) && !EventSystem.current.IsPointerOverGameObject())
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                CastSpell.GetComponent<CastSpell>().spellCastLocation = hit.point; // On right click, send the CastSpell script the location of the click, so it can use it for Meteor-like attacks.
-                                                                                   // float dist = Vector3.Distance(hit.point, transform.position);
+                CastSpell.GetComponent<CastSpell>().spellCastLocation = hit.point;                                                                        // float dist = Vector3.Distance(hit.point, transform.position);
                 targetPosition = hit.point;
-
-                //trackTarget = null;
                 agent.stoppingDistance = 0f;
-
-
                 move = true;
                 rightclick = true;
-
-
-                //if (hit.collider.gameObject.tag == "Monster") // same function as earlier, PC still moves toward clicked area/monster if out of range.
-                //{
-                //    Monster enemy = hit.collider.GetComponent<Monster>();
-                //    trackTarget = GameObject.Find(enemy.name);
-                //    agent.stoppingDistance = 1.5f;
-                //}
             }
         }
 
@@ -232,39 +184,32 @@ public class Player : MonoBehaviour, IDamageable {
                 float dist = Vector3.Distance(targetPosition, transform.position); // distance between clicked area and PC.
                 if (dist < spellrange) // If in range, set speed to 0, enable rotation without Navmesh things.
                 {
-                    //  agent.speed = 0;
                     agent.destination = this.transform.position;
                     Vector3 direction = (targetPosition - transform.position).normalized;
 
                     Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));    // flattens the vector3             
                     transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 999f);
-
-                    // float dot = Vector3.Dot(transform.forward, (targetPosition - transform.position).normalized); 
-                    // if (dot > 0.9f && channelingNow == false) // Checks that PC is facing the clicked spot. When facing, call function that casts the spell.
-                    // { // WAS MESSING UP WHEN UNDER A enemy, as you were not facing it properly. Not sure if script needed anymore with instant rotations.
-                    if (channelingNow == false)
+                     if (channelingNow == false)
                     {
                         SendSpellCast();
 
-                    }
-                    // }                                                    
+                    }                                                 
                 }
                 else if (channelingNow == false)
                 {
                     agent.destination = targetPosition;
                 }
             }
-
-
-            //if (trackTarget != null && !rightclick && !attackingRightNow)
-            //{
-            //    agent.destination = trackTarget.transform.position;
-            //    animChild.GetComponent<MonsterAnim>().PlayerMove();
-            //}
             if (!rightclick && !attackingRightNow)
             {
                 agent.destination = targetPosition;
-                animChild.GetComponent<MonsterAnim>().PlayerMove();
+                float distanceToTarget = Vector3.Distance(transform.position, agent.destination);
+                float velocity = agent.velocity.magnitude / agent.speed;
+                if (distanceToTarget > 0.75f || velocity > 0.9f)
+                {
+                    animChild.GetComponent<MonsterAnim>().PlayerMove();
+                }
+
             }
 
         }
@@ -273,10 +218,8 @@ public class Player : MonoBehaviour, IDamageable {
             animChild.GetComponent<MonsterAnim>().PlayerIdle();
         }
 
-
         if (attackingRightNow)
         {
-
             if (attackingDuration <= 0f)
             {
                 if (!channelingNow)
@@ -287,10 +230,7 @@ public class Player : MonoBehaviour, IDamageable {
             }
             attackingDuration -= Time.deltaTime;
         }
-
         CheckDestinationReached();
-
-
     }
 
     void CheckDestinationReached()
@@ -302,26 +242,10 @@ public class Player : MonoBehaviour, IDamageable {
         }
     }
 
-    //void UnderATree()
-    //{
-    //    foreach (GameObject tree in trees)
-    //    {
-    //        if (Vector3.Distance(transform.position, tree.transform.position) < 5f)
-    //        {
-    //            tree.GetComponent<Renderer>().material.SetFloat("_Cutoff", 1f);
-    //        } else if (tree.GetComponent<Renderer>().material.GetFloat("_Cutoff") == 1f)
-    //            {
-    //            tree.GetComponent<Renderer>().material.SetFloat("_Cutoff", 0.797f);
-    //        }
-    //    }
-    //}
-
-
     void IlluArmor()
     {
         if (CastSpell.GetComponent<CastWeapon>().spellSlot2rdy == true && CastSpell.GetComponent<CastWeapon>().CurrentArmor == 2)
         {
-
             Monsters = GameObject.FindGameObjectsWithTag("Monster");
             foreach (GameObject monster in Monsters)
             {
@@ -332,10 +256,6 @@ public class Player : MonoBehaviour, IDamageable {
             }
         }
     }
-
-
-
-
 
     public void Channeling()
     {

@@ -4,9 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 
-public class Monster : MonoBehaviour
-{
-    
+public class Monster : MonoBehaviour, IDamageable {
+
     public float health;
     public float damage;
     public float meleeRange;
@@ -117,6 +116,8 @@ public class Monster : MonoBehaviour
     public bool TheBlob;
     public Vector3 LootLoc;
     public GameObject BossHealthAct;
+    public Room BossRoom;
+
     //Spidy
     [Header("Spider")]
     public GameObject SBAttack;
@@ -267,6 +268,8 @@ public class Monster : MonoBehaviour
 
         if (Boss) //Boss health bar
         {
+            AddToRoomMonsterList(gameObject);
+
             BossHealthAct = GameObject.Find("BossHealthActive");
             BossHealthAct.transform.GetChild(0).gameObject.SetActive(true);
             BossHealthAct.transform.GetChild(1).gameObject.SetActive(true);
@@ -313,6 +316,13 @@ public class Monster : MonoBehaviour
         }
 
     }
+
+
+  public  void AddToRoomMonsterList(GameObject Monster_)
+    {
+        BossRoom.AddMonster(Monster_);
+    }
+
 
     void ChangeColorBlob()
     {
@@ -509,6 +519,7 @@ public class Monster : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         GameObject CurBlob = Instantiate(BlobAttack1Object, transform.position, transform.rotation, transform);
+        AddToRoomMonsterList(CurBlob);
         Monster CurBlob_ = CurBlob.GetComponent<Monster>();
         if (!heal)
         {
@@ -1089,6 +1100,8 @@ public class Monster : MonoBehaviour
     {
 
         GameObject Spider = Instantiate(SpiderSwarm, transform.position - (transform.forward * 3), transform.rotation);
+
+        AddToRoomMonsterList(Spider);
         Spider.GetComponent<Monster>().AggroRange = 50;
         Spider.GetComponent<Monster>().MovementSpeed = 3f;
         Spider.GetComponent<Monster>().damage = 0.5f;
@@ -1151,6 +1164,7 @@ public class Monster : MonoBehaviour
                     {
                         Vector3 Pos = TimeKeeperPoints[i].transform.position;
                         GameObject MMI = Instantiate(gameObject, Pos, transform.rotation);
+                        AddToRoomMonsterList(MMI);
                         Monster Illu = MMI.GetComponent<Monster>();
 
                         //   var FakeMaxHealth = health / health2;
@@ -1233,6 +1247,10 @@ public class Monster : MonoBehaviour
         {
             Brother.GetComponent<Monster>().health -= damage;
             Brother.GetComponent<Monster>().Healthbar.fillAmount = health / health2;
+            if (!Boss)
+            {
+                Brother.GetComponent<Monster>().BossHealthAct.transform.GetChild(3).gameObject.GetComponent<Text>().text = health.ToString("F1") + " / " + health2;
+            }
         }
         Healthbar.fillAmount = health / health2;
         if (Boss)
@@ -2091,6 +2109,7 @@ public class Monster : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             GameObject SmallHelp = Instantiate(Smallboy, transform.position + (transform.forward * 3), transform.rotation, transform);
+            AddToRoomMonsterList(SmallHelp);
             SmallHelp.GetComponent<Monster>().AggroRange = 50;
             SmallHelp.GetComponent<Monster>().MovementSpeed = 5f;
             SmallHelp.GetComponent<Monster>().damage = 1f;

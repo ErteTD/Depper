@@ -34,8 +34,7 @@ public class Room : MonoBehaviour
 
     void Start()
     {
-        //   InvokeRepeating("GetChildObject", 0.01f, 0.5f);
-        InvokeRepeating("OpenDoorsIfNoMonsters", 0.01f, 0.5f);
+        InvokeRepeating("OpenDoorsIfNoMonsters", 0.1f, 0.5f);
         Invoke("GetDoors", 0.001f);
         Invoke("ColorMiniMapRed", 0.1f);
     }
@@ -90,6 +89,7 @@ public class Room : MonoBehaviour
             if (SBHC)
             {
                 GameObject Spider = Instantiate(Boss, transform);
+                Spider.GetComponent<Monster>().BossRoom=this;
                 Spider.transform.localPosition = new Vector3(0, 1, 13.75f);
                 SBHC = false;
             }
@@ -142,6 +142,7 @@ public class Room : MonoBehaviour
         if (Monsters.Count == 0)
         {
             OpenDoors();
+            CancelInvoke("OpenDoorsIfNoMonsters");
         }
         else
         {

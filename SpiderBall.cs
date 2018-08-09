@@ -22,6 +22,8 @@ public class SpiderBall : MonoBehaviour
                 Spider.GetComponent<Monster>().health2 = 3;
                 Spider.GetComponent<Monster>().MonsterTypeSubLayer = 2;
                 Spider.transform.parent = GameObject.FindGameObjectWithTag("SpiderBossRoom").transform;
+                Spider.GetComponent<Monster>().BossRoom = Spider.transform.parent.GetComponent<Room>();
+                Spider.GetComponent<Monster>().AddToRoomMonsterList(Spider);
 
             }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ public class BigBoyFire : MonoBehaviour
 
     private void Start()
     {
-        Invoke("KillMe", duration);
+        Destroy(gameObject, duration);
         Invoke("AnotherOne", 0.15f);
         Invoke("ActivatePool", 0.2f);
     }
@@ -45,29 +46,34 @@ public class BigBoyFire : MonoBehaviour
     }
     public void OnTriggerStay(Collider other)
     {
-        if (other.tag == "Player" && !PlayerCasting)
+        IDamageable unit = other.GetComponent<IDamageable>();
+
+//<<<<<<< Updated upstream
+//        if (other.tag == "Monster" && PlayerCasting)
+//=======
+        if (unit == null || DamagingSelf(unit))
+//>>>>>>> Stashed changes
         {
-            Player enemy = other.GetComponent<Player>();
-            enemy.Slow(FrostBoltSlow, SlowDuration, SlowPercent);
-            enemy.Burn(FireBallBurn, BurnDuration, BurnPercent, damage * Time.deltaTime);
-            enemy.TakeDamage(damage * Time.deltaTime);
+            return;
         }
 
-        if (other.tag == "Monster" && PlayerCasting)
-        {
-            Monster enemy = other.GetComponent<Monster>();
-            enemy.Slow(FrostBoltSlow, SlowDuration, SlowPercent);
-            enemy.Burn(FireBallBurn, BurnDuration, BurnPercent, damage * Time.deltaTime);
-            enemy.TakeDamage(damage * Time.deltaTime);
-        }
+        unit.Slow(FrostBoltSlow, SlowDuration, SlowPercent);
+        unit.Burn(FireBallBurn, BurnDuration, BurnPercent, damage * Time.deltaTime);
+        unit.TakeDamage(damage * Time.deltaTime);
     }
 
-
-
-
-
-    public void KillMe()
+    private bool DamagingSelf(IDamageable unit)
     {
-        Destroy(gameObject);
+
+        if (unit is Player && PlayerCasting)
+        {
+            return true;
+        }
+
+        if (unit is Monster && !PlayerCasting)
+        {
+            return true;
+        }
+        return false;
     }
 }

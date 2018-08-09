@@ -42,6 +42,7 @@ public class Monster : MonoBehaviour, IDamageable {
     [HideInInspector] public float health2;
 
     public GameObject animChild;
+    private MonsterAnim anim;
     public int MonsterType;
     public int MonsterTypeSubLayer;
     public float PushResistance;
@@ -212,6 +213,10 @@ public class Monster : MonoBehaviour, IDamageable {
 
     void Start()
     {
+        if (animChild != null)
+        {
+            anim = animChild.GetComponent<MonsterAnim>();
+        }
         targetColor = Color.green;
         AttackDelay_ = AttackDelay;
         HelpPos = transform.position;
@@ -264,7 +269,6 @@ public class Monster : MonoBehaviour, IDamageable {
             StartOpponent.GetComponent<Monster>().Healthbar.fillAmount = health / health2;
         }
 
-
         if (Boss) //Boss health bar
         {
             AddToRoomMonsterList(gameObject);
@@ -287,7 +291,7 @@ public class Monster : MonoBehaviour, IDamageable {
             tag = "Illusion";
             Invoke("TKFight", 8.5f);
             Invoke("TimeKeeperAlive", 2f);
-            animChild.GetComponent<MonsterAnim>().SpawnTK(-0.01f);
+            anim.SpawnTK(-0.01f);
             MirrorImageCD_ += 6;
             Ratatatata_ += 6;
             TKSpawning = true;
@@ -295,7 +299,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
         if (BigBoy) // Starting anim for BigBoyBoss.
         {
-            animChild.GetComponent<MonsterAnim>().Spawn();
+            anim.Spawn();
 
             AggroRange = 40f;
             Invoke("BigBoyAggro", 3.6f);
@@ -366,9 +370,6 @@ public class Monster : MonoBehaviour, IDamageable {
     void TheBlobAttack()
     {
         BlobAttackCD_ -= Time.deltaTime;
-
-
-
         if (BlobAttackCD_ < 0)
         {
             if (HealTimeCounter < 7)
@@ -401,8 +402,6 @@ public class Monster : MonoBehaviour, IDamageable {
                 HealTimeCounter = 0;
                 BlobAttackCD_ = BlobAttackCD * 1.5f;
             }
-
-
         }
     }
 
@@ -456,9 +455,7 @@ public class Monster : MonoBehaviour, IDamageable {
         for (int i = 0; i < 100; i++)
         {
             RotateDir = new Vector3(0, yAxis, 0);
-
             yAxis += 11;
-
             StartCoroutine(Blob1(gameObject, false, 2, RotateDir, 0, 2, 15, 4, AttackDelay_));
             AttackDelay_ += 0.07f;
         }
@@ -555,9 +552,10 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             CurBlob.transform.position += CurBlob.transform.forward * 4;
         }
-
+        ParticleSystem ps2 = CurBlob_.BlobPS2;
+        var main2 = ps2.main;
         main.startColor = BossLight.color;
-        CurBlob_.BlobPS2.startColor = BossLight.color;
+        main2.startColor = BossLight.color;
         CurBlob_.health = BHealth;
         CurBlob_.health2 = BHealth;
         CurBlob_.Healboss = heal;
@@ -579,7 +577,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
     void TimeKeeperAlive()
     {
-        animChild.GetComponent<MonsterAnim>().SpawnTK(-0.75f);
+        anim.SpawnTK(-0.75f);
     }
     void TKFight()
     {
@@ -622,8 +620,6 @@ public class Monster : MonoBehaviour, IDamageable {
     // Update is called once per frame
     void Update()
     {
-
-
         if (Boss)
         {
             BossHealthAct.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().fillAmount = health / health2;
@@ -704,11 +700,11 @@ public class Monster : MonoBehaviour, IDamageable {
                 {
                     if (hardCodeDansGame <= 0 && agent.velocity.magnitude > 0.5f) // makes so the attack animation does not get canceled by run animation. && makes sure if they are not currently in attack animation and they are moving the running animation is active.
                     {
-                        if (MonsterType == 1) { animChild.GetComponent<MonsterAnim>().RunAnim(); }
-                        if (MonsterType == 2) { animChild.GetComponent<MonsterAnim>().RunAnimation(); }
-                        if (MonsterType == 3) { animChild.GetComponent<MonsterAnim>().RunAnimation2(); }
-                        if (MonsterType == 4) { animChild.GetComponent<MonsterAnim>().PlayerIdle(); } // Timekeeper
-                        if (MonsterType == 6) { animChild.GetComponent<MonsterAnim>().RunAnimation3(MonsterTypeSubLayer); }
+                        if (MonsterType == 1) { anim.RunAnim(); }
+                        if (MonsterType == 2) { anim.RunAnimation(); }
+                        if (MonsterType == 3) { anim.RunAnimation2(); }
+                        if (MonsterType == 4) { anim.PlayerIdle(); } // Timekeeper
+                        if (MonsterType == 6) { anim.RunAnimation3(MonsterTypeSubLayer); }
                     }
                 }
                 if (callForHelpCD <= 0f)
@@ -731,11 +727,11 @@ public class Monster : MonoBehaviour, IDamageable {
                 agent.destination = startPosition;
                 if (Vector3.Distance(transform.position, agent.destination) < 2f)
                 {
-                    if (MonsterType == 1) { animChild.GetComponent<MonsterAnim>().IdleAnim(); }
-                    if (MonsterType == 2) { animChild.GetComponent<MonsterAnim>().IdleAnimation(); }
-                    if (MonsterType == 3) { animChild.GetComponent<MonsterAnim>().IdleAnimation2(); }
-                    if (MonsterType == 4) { animChild.GetComponent<MonsterAnim>().PlayerIdle(); } // Timekeeper
-                    if (MonsterType == 6) { animChild.GetComponent<MonsterAnim>().IdleAnimation3(); }
+                    if (MonsterType == 1) { anim.IdleAnim(); }
+                    if (MonsterType == 2) { anim.IdleAnimation(); }
+                    if (MonsterType == 3) { anim.IdleAnimation2(); }
+                    if (MonsterType == 4) { anim.PlayerIdle(); } // Timekeeper
+                    if (MonsterType == 6) { anim.IdleAnimation3(); }
                 }
             }
             if (SpiderBoss)
@@ -743,11 +739,11 @@ public class Monster : MonoBehaviour, IDamageable {
                 agent.destination = startPosition;
                 if (!Swarm)
                 {
-                    animChild.GetComponent<MonsterAnim>().IdleAnimation2();
+                    anim.IdleAnimation2();
                 }
                 else
                 {
-                    animChild.GetComponent<MonsterAnim>().RunAnimation2();
+                    anim.RunAnimation2();
                 }
             }
             if (TimeKSpin) // Timekeeper special attack, chaning destination.
@@ -770,11 +766,11 @@ public class Monster : MonoBehaviour, IDamageable {
                 if (attackCountdown <= 0f)
                 {
 
-                    if (MonsterType == 1) { animChild.GetComponent<MonsterAnim>().AttackAnim(); }
-                    if (MonsterType == 2) { animChild.GetComponent<MonsterAnim>().AttackAnimation(); }
-                    if (MonsterType == 3 && !SpiderBoss) { animChild.GetComponent<MonsterAnim>().AttackAnimation2(); }
-                    if (MonsterType == 4) { animChild.GetComponent<MonsterAnim>().TimeKeeperAttack(); }
-                    if (MonsterType == 6) { animChild.GetComponent<MonsterAnim>().AttackAnimation3(); }
+                    if (MonsterType == 1) { anim.AttackAnim(); }
+                    if (MonsterType == 2) { anim.AttackAnimation(); }
+                    if (MonsterType == 3 && !SpiderBoss) { anim.AttackAnimation2(); }
+                    if (MonsterType == 4) { anim.TimeKeeperAttack(); }
+                    if (MonsterType == 6) { anim.AttackAnimation3(); }
                     Invoke("Attack", AttackDelay);
 
                     if (MonsterType == 1 || MonsterType == 3 || MonsterType == 5 || MonsterType == 6 || SpiderBoss) // non casters
@@ -1081,7 +1077,6 @@ public class Monster : MonoBehaviour, IDamageable {
     }
     public void ReturnType5MovementSpeed(float time) // never called?
     {
-        Debug.Log("Hello=?");
         Invoke("RT5MS", time);
     }
     private void RT5MS() // never called?
@@ -1345,13 +1340,13 @@ public class Monster : MonoBehaviour, IDamageable {
 
             //}
         }
-        if (MonsterType == 1) { animChild.GetComponent<MonsterAnim>().DieAnim(); }
-        if (MonsterType == 2) { animChild.GetComponent<MonsterAnim>().DieAnimation(); }
+        if (MonsterType == 1) { anim.DieAnim(); }
+        if (MonsterType == 2) { anim.DieAnimation(); }
 
-        if (MonsterType == 4) { animChild.GetComponent<MonsterAnim>().DieTK(); }
+        if (MonsterType == 4) { anim.DieTK(); }
         if (MonsterType == 3)
         {
-            animChild.GetComponent<MonsterAnim>().DieAnimation2();
+            anim.DieAnimation2();
             if (!SpiderBoss && MonsterTypeSubLayer != 2)
             {
                 Instantiate(SpiderPoison, new Vector3(transform.position.x, 2f, transform.position.z), transform.rotation);
@@ -1363,8 +1358,8 @@ public class Monster : MonoBehaviour, IDamageable {
             Destroy(transform.GetChild(0).gameObject, 0.99f);
             transform.GetChild(0).gameObject.transform.parent = null;
         }
-        if (MonsterType == 6 && Resurrect && !Immortal) { animChild.GetComponent<MonsterAnim>().DieAnimation3(); }
-        if (MonsterType == 6 && !Resurrect && !Immortal) { animChild.GetComponent<MonsterAnim>().DieAnimation4(); }
+        if (MonsterType == 6 && Resurrect && !Immortal) { anim.DieAnimation3(); }
+        if (MonsterType == 6 && !Resurrect && !Immortal) { anim.DieAnimation4(); }
 
         if (IamIllu)
         {
@@ -1455,7 +1450,7 @@ public class Monster : MonoBehaviour, IDamageable {
     }
     void KingResAnim()
     {
-        animChild.GetComponent<MonsterAnim>().SkeletonRise();
+        anim.SkeletonRise();
     }
 
     public void Resurected()
@@ -1831,17 +1826,17 @@ public class Monster : MonoBehaviour, IDamageable {
 
         if (!RealDeath)
         {
-            animChild.GetComponent<MonsterAnim>().StartDeadAnim();
+            anim.StartDeadAnim();
             Healthbar.transform.parent.gameObject.transform.parent.gameObject.SetActive(false);
         }
         else if (!OldKing)
         {
             Healthbar.transform.parent.gameObject.transform.parent.gameObject.SetActive(false);
-            animChild.GetComponent<MonsterAnim>().DieAnimation5();
+            anim.DieAnimation5();
         }
         else if (OldKing)
         {
-            animChild.GetComponent<MonsterAnim>().DieAnimation5();
+            anim.DieAnimation5();
             OldKingSpecialAttack_1 = 6f;
             Invoke("LongLiveTheKing", 2.5f);
             BossHealthAct.transform.GetChild(3).gameObject.GetComponent<Text>().text = health.ToString("F1") + " / " + health2;
@@ -1960,7 +1955,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
         }
 
-        animChild.GetComponent<MonsterAnim>().OldKingSpecialAttack1();
+        anim.OldKingSpecialAttack1();
         Invoke("OldKingAttackEnd", 3.89f);
     }
     void OldKingAttack2()
@@ -1968,7 +1963,7 @@ public class Monster : MonoBehaviour, IDamageable {
         var RandomMinion = Random.Range(0, SkeletonListAlive.Count);
         transform.LookAt(SkeletonListAlive[RandomMinion].gameObject.transform);
         StartCoroutine(SacrificeMinion(SkeletonListAlive[RandomMinion], 1f));
-        animChild.GetComponent<MonsterAnim>().OldKingSpecialAttack1();
+        anim.OldKingSpecialAttack1();
         Invoke("OldKingAttackEnd", 3.89f);
         GameObject Visual = Instantiate(Skill2Projectile, transform);
         Visual.transform.position = new Vector3(transform.position.x, 3, transform.position.z);
@@ -1981,7 +1976,7 @@ public class Monster : MonoBehaviour, IDamageable {
     }
     void OldKingAttack3()
     {
-        animChild.GetComponent<MonsterAnim>().OldKingSpecialAttack1();
+        anim.OldKingSpecialAttack1();
         Invoke("OldKingAttackEnd", 3.89f);
 
         float OrbFacing = transform.rotation.eulerAngles.x;
@@ -2006,7 +2001,7 @@ public class Monster : MonoBehaviour, IDamageable {
         Skel.StartRessing();
         Skel.hardCodeDansGame = 0;
         Skel.AggroRange = 99;
-        Skel.animChild.GetComponent<MonsterAnim>().SkeletonRise();
+        Skel.anim.SkeletonRise();
         Skel.health = ((Skel.health2 * HP));
 
         Skel.Healthbar.transform.parent.gameObject.transform.parent.gameObject.SetActive(true);
@@ -2120,7 +2115,7 @@ public class Monster : MonoBehaviour, IDamageable {
             SmallHelp.transform.parent = transform.parent;
             SmallHelp.transform.position = new Vector3(SmallHelp.transform.position.x + RandomSpot, SmallHelp.transform.position.y, SmallHelp.transform.position.z + RandomSpot2);
             SmallHelp.transform.localScale = new Vector3(1, 1, 1);
-            SmallHelp.GetComponent<Monster>().animChild.GetComponent<MonsterAnim>().Spawn();
+            SmallHelp.GetComponent<Monster>().anim.Spawn();
             SmallHelp.GetComponent<UnityEngine.AI.NavMeshAgent>().isStopped = true;
             SmallHelp.GetComponent<Monster>().BBStill = true;
             SmallHelp.GetComponent<Monster>().Invoke("SmallSpawnAnimStop", 3f);
@@ -2197,7 +2192,7 @@ public class Monster : MonoBehaviour, IDamageable {
         MovementSpeed_ = MovementSpeed;
         agent.speed = MovementSpeed;
         AttackDelay = 0.75f;
-        animChild.GetComponent<MonsterAnim>().anim.speed = 0.75f;
+        anim.anim.speed = 0.75f;
     }
     void SlowDown2()
     {
@@ -2205,7 +2200,7 @@ public class Monster : MonoBehaviour, IDamageable {
         MovementSpeed_ = MovementSpeed;
         agent.speed = MovementSpeed;
         AttackDelay = AttackDelay_;
-        animChild.GetComponent<MonsterAnim>().anim.speed = 0.5f;
+        anim.anim.speed = 0.5f;
         //  ChangeColor = false;
     }
 
@@ -2237,11 +2232,11 @@ public class Monster : MonoBehaviour, IDamageable {
 
     void BBRoar()
     {
-        animChild.GetComponent<MonsterAnim>().RoarAnim();
+        anim.RoarAnim();
     }
     void BBRoar2()
     {
-        animChild.GetComponent<MonsterAnim>().RoarAnim2();
+        anim.RoarAnim2();
     }
     public void BigBoyAttack()
     {
@@ -2307,7 +2302,7 @@ public class Monster : MonoBehaviour, IDamageable {
             agent.isStopped = true;
             BBStill = true;
             RotateTowards(PC.transform);
-            animChild.GetComponent<MonsterAnim>().AttackAnim();
+            anim.AttackAnim();
             BigBoySpecial1_ = BigBoySpecial1;
             switch (BigBoyCurrentAttack)
             {

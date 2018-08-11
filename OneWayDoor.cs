@@ -70,16 +70,16 @@ public class OneWayDoor : MonoBehaviour
             switch (MoveMMCam)
             {
                 case 1:
-                    MiniCamera.transform.position += new Vector3(-7f, 0, 7f);
+                    MiniCamera.transform.position += new Vector3(-3.5f, 0, 3.5f);
                     break;
                 case 2:
-                    MiniCamera.transform.position += new Vector3(7f, 0, -7f);
+                    MiniCamera.transform.position += new Vector3(3.5f, 0, -3.5f);
                     break;
                 case 3:
-                    MiniCamera.transform.position += new Vector3(-7f, 0, -7f);
+                    MiniCamera.transform.position += new Vector3(-3.5f, 0, -3.5f);
                     break;
                 case 4:
-                    MiniCamera.transform.position += new Vector3(7f, 0, 7f);
+                    MiniCamera.transform.position += new Vector3(3.5f, 0, 3.5f);
                     break;
                 case 5:
                     MiniCamera.transform.position = new Vector3(-1000, 100, 100);

@@ -10,7 +10,10 @@ public class Player : MonoBehaviour, IDamageable {
 
     public GameObject MousePing;
     public GameObject animChild;
+    private MonsterAnim anim;
     public GameObject CastSpell;
+
+    private CastSpell CS;
     //  [HideInInspector] public GameObject curSpellProjectile;
     [HideInInspector] public List<GameObject> curSpellProjectile = new List<GameObject>();
     [HideInInspector] public List<GameObject> curSpellProjectile_ = new List<GameObject>();
@@ -57,8 +60,13 @@ public class Player : MonoBehaviour, IDamageable {
     private int ChanCount;
     Vector3 moveAmount;
     Vector3 smoothMoveVelocity;
+
+    private float inputX;
+    private float inputY;
     void Start()
     {
+        CS = CastSpell.GetComponent<CastSpell>();
+        anim = animChild.GetComponent<MonsterAnim>();
         CritObj.SetActive(false);
         targetPosition = transform.position;
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
@@ -73,13 +81,12 @@ public class Player : MonoBehaviour, IDamageable {
         AmISlowed();
         agent.speed = MovementSpeed;
 
-        float inputX = Input.GetAxisRaw("Horizontal");
-        float inputY = Input.GetAxisRaw("Vertical");
-
-        Vector3 moveDir = new Vector3(inputX, 0, inputY).normalized;
+        inputX = Input.GetAxisRaw("Horizontal");
+        inputY = Input.GetAxisRaw("Vertical");
 
         if (inputX != 0 || inputY != 0)
         {
+            Vector3 moveDir = new Vector3(inputX, 0, inputY).normalized;
             targetPosition = transform.position + moveDir;
             move = true;
             rightclick = false;
@@ -88,7 +95,7 @@ public class Player : MonoBehaviour, IDamageable {
 
         if (channelingNow == true)
         {
-            animChild.GetComponent<MonsterAnim>().PlayerAttack();
+            anim.PlayerAttack();
             if (Input.GetMouseButtonDown(1) && curSpellProjectile.Count > 0)
             {
                 foreach (var item in curSpellProjectile)
@@ -169,7 +176,7 @@ public class Player : MonoBehaviour, IDamageable {
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                CastSpell.GetComponent<CastSpell>().spellCastLocation = hit.point;                                                                        // float dist = Vector3.Distance(hit.point, transform.position);
+                CS.spellCastLocation = hit.point;
                 targetPosition = hit.point;
                 agent.stoppingDistance = 0f;
                 move = true;
@@ -184,7 +191,11 @@ public class Player : MonoBehaviour, IDamageable {
                 float dist = Vector3.Distance(targetPosition, transform.position); // distance between clicked area and PC.
                 if (dist < spellrange) // If in range, set speed to 0, enable rotation without Navmesh things.
                 {
-                    agent.destination = this.transform.position;
+
+                    if (Vector3.Distance(agent.destination, transform.position) > 1)
+                    {
+                        agent.destination = this.transform.position;
+                    }
                     Vector3 direction = (targetPosition - transform.position).normalized;
 
                     Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));    // flattens the vector3             
@@ -192,7 +203,6 @@ public class Player : MonoBehaviour, IDamageable {
                      if (channelingNow == false)
                     {
                         SendSpellCast();
-
                     }                                                 
                 }
                 else if (channelingNow == false)
@@ -202,12 +212,15 @@ public class Player : MonoBehaviour, IDamageable {
             }
             if (!rightclick && !attackingRightNow)
             {
-                agent.destination = targetPosition;
+                if (Vector3.Distance(agent.destination, targetPosition) > 1)
+                {
+                    agent.destination = targetPosition;
+                }
                 float distanceToTarget = Vector3.Distance(transform.position, agent.destination);
                 float velocity = agent.velocity.magnitude / agent.speed;
                 if (distanceToTarget > 0.75f || velocity > 0.9f)
                 {
-                    animChild.GetComponent<MonsterAnim>().PlayerMove();
+                    anim.PlayerMove();
                 }
 
             }
@@ -215,7 +228,7 @@ public class Player : MonoBehaviour, IDamageable {
         }
         else if (!attackingRightNow)
         {
-            animChild.GetComponent<MonsterAnim>().PlayerIdle();
+            PlayerIsIdle();
         }
 
         if (attackingRightNow)
@@ -231,6 +244,11 @@ public class Player : MonoBehaviour, IDamageable {
             attackingDuration -= Time.deltaTime;
         }
         CheckDestinationReached();
+    }
+
+    public void PlayerIsIdle()
+    {
+        anim.PlayerIdle();
     }
 
     void CheckDestinationReached()
@@ -320,8 +338,6 @@ public class Player : MonoBehaviour, IDamageable {
     public void HastenVis()
     {
         GameObject Haste = Instantiate(HastenVisual, transform);
-        //Haste.name = "haste";
-        //Invoke("HastenDestory", 2.5f);
         Destroy(Haste, 2.5f);
     }
     public void MultiVis(float Position)
@@ -331,31 +347,21 @@ public class Player : MonoBehaviour, IDamageable {
         Destroy(Multi, 0.8f);
     }
 
-
-    //public void HastenDestory()
-    //{
-    //    Transform result = gameObject.transform.Find("haste");
-    //    if (result)
-    //    {
-    //        Destroy(transform.Find("haste").gameObject);
-    //    }
-    //}
-
     public void SendSpellCast()
     {
         move = false;  // can't move when casting spells.
-        CastSpell.GetComponent<CastSpell>().CastCurrentSpell();
+        CS.CastCurrentSpell();
     }
     public void Die()
     {
-        animChild.GetComponent<MonsterAnim>().PlayerDie();
+        anim.PlayerDie();
         animChild.transform.parent = null;
         this.GetComponent<Player>().enabled = false;
     }
 
     public void AttackAnim()
     {
-        animChild.GetComponent<MonsterAnim>().PlayerAttack();
+        anim.PlayerAttack();
         attackingRightNow = true;
     }
 

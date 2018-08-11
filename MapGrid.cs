@@ -353,7 +353,7 @@ public class MapGrid : MonoBehaviour
 
             foreach (var Mini in MiniMapList)//creates Minimap.
             {
-                GameObject MiniMapBlock = Instantiate(RoomBlock, new Vector3((Mini.x * 7f) - 1000, 0, Mini.y * 7f), transform.rotation, transform); // the -1000 is kinda hacky, just to move it out of the scene to ignore lights. Could do with script. RenderWithShader but MEH.
+                GameObject MiniMapBlock = Instantiate(RoomBlock, new Vector3((Mini.x * 3.5f) - 1000, 0, Mini.y * 3.5f), transform.rotation, transform); // the -1000 is kinda hacky, just to move it out of the scene to ignore lights. Could do with script. RenderWithShader but MEH.
                 RoomList[Counter].GetComponent<Room>().MimiMapBlock = MiniMapBlock;
 
                 foreach (var item in RoomList[Counter].GetComponent<Room>().MiniMapDoors)

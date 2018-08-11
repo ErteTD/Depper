@@ -147,6 +147,7 @@ public class CastSpell : MonoBehaviour
     private bool MultiChan2;
     private bool MultiChan3;
     private int MultiChanCounter;
+    public Player player_;
 
     public void CastCurrentSpell()
     {
@@ -167,8 +168,7 @@ public class CastSpell : MonoBehaviour
 
         if (curSlotcd)
         {
-
-            Player.FindObjectOfType<Player>().AttackAnim();
+            player_.AttackAnim();
             curSlotcd = false;
 
             if (cone || channel || aoeSizeMeteor > 0)
@@ -345,19 +345,19 @@ public class CastSpell : MonoBehaviour
                 {
 
                     Invoke("DoubleCastSpell1", 0.15f);
-                    Player.FindObjectOfType<Player>().MultiVis(0);
+                    player_.MultiVis(0);
                 }
                 if (MultiCast > 75)
                 {
 
                     Invoke("DoubleCastSpell1", 0.3f);
-                    Player.FindObjectOfType<Player>().MultiVis(1);
+                    player_.MultiVis(1);
                 }
                 if (MultiCast > 90)
                 {
 
                     Invoke("DoubleCastSpell1", 0.45f);
-                    Player.FindObjectOfType<Player>().MultiVis(-1);
+                    player_.MultiVis(-1);
                 }
 
 
@@ -397,7 +397,6 @@ public class CastSpell : MonoBehaviour
 
             }
 
-
             if (ChaosOrb_) // Testing.
             {
                 spell.ChaosOrbReseveObject = currentspellObjectChaosOrbReserve;
@@ -416,13 +415,11 @@ public class CastSpell : MonoBehaviour
             if (CompOrb) // teesting.
             {
                 spellSlotCD = CompOrbCD;
-            }
-
-
+            }     
             SetSlotCD(currentSlot);    // CompanionOrb, fixed CD. fix
-
-
-
+        }else if(!player_.channelingNow && !player_.attackingRightNow)
+        {
+            player_.PlayerIsIdle();
         }
     }
     public void DoubleCastSpell1()
@@ -659,7 +656,7 @@ public class CastSpell : MonoBehaviour
                 {
                     CD1 = 0.5f;
                     CD1_ = 0.5f;
-                    Player.FindObjectOfType<Player>().HastenVis();
+                    player_.HastenVis();
                 }
             }
         }
@@ -676,7 +673,7 @@ public class CastSpell : MonoBehaviour
                     CD2 = 0.5f;
                     CD2_ = 0.5f;
 
-                    Player.FindObjectOfType<Player>().HastenVis();
+                    player_.HastenVis();
                 }
             }
         }
@@ -692,7 +689,7 @@ public class CastSpell : MonoBehaviour
                 {
                     CD3 = 0.5f;
                     CD3_ = 0.5f;
-                    Player.FindObjectOfType<Player>().HastenVis();
+                    player_.HastenVis();
                 }
             }
 

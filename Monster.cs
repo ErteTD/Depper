@@ -24,7 +24,7 @@ public class Monster : MonoBehaviour, IDamageable {
     private float AttackDelay_;
     private bool InCombat;
     [HideInInspector] public bool AttackFriend;
-
+    private Vector3 destination;
     [HideInInspector] public UnityEngine.AI.NavMeshAgent agent;
     private GameObject PC;
     private GameObject PC_;
@@ -40,6 +40,8 @@ public class Monster : MonoBehaviour, IDamageable {
 
     public Image Healthbar;
     [HideInInspector] public float health2;
+
+    private Rigidbody rb;
 
     public GameObject animChild;
     private MonsterAnim anim;
@@ -58,6 +60,7 @@ public class Monster : MonoBehaviour, IDamageable {
     private bool OnlyOnce = false;
     private bool CurrentlyFrozen;
 
+   
     private float BoostBurnDamage;
     private float BoostBurnDur;
     private float BoostBurnPer;
@@ -213,6 +216,8 @@ public class Monster : MonoBehaviour, IDamageable {
 
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
+
         if (animChild != null)
         {
             anim = animChild.GetComponent<MonsterAnim>();
@@ -252,7 +257,6 @@ public class Monster : MonoBehaviour, IDamageable {
             if (StartScene)
             {
                 attackCountdown = StartSceneAS;
-
             }
         }
         if (!IamIllu)
@@ -264,7 +268,6 @@ public class Monster : MonoBehaviour, IDamageable {
             OldKingSpecialAttack_1 = OldKingSpecialAttack;
             health -= 300;
             Healthbar.fillAmount = health / health2;
-
             StartOpponent.GetComponent<Monster>().health -= 11;
             StartOpponent.GetComponent<Monster>().Healthbar.fillAmount = health / health2;
         }
@@ -680,9 +683,10 @@ public class Monster : MonoBehaviour, IDamageable {
 
                 if (MonsterType != 5)
                 {
-                    if (agent.isOnNavMesh)
+                    if (agent.isOnNavMesh && Vector3.Distance(destination, PC.transform.position) > 1)
                     {
-                        agent.destination = PC.transform.position;
+                        destination = PC.transform.position;
+                        agent.destination = destination;
                     }
                 }
 
@@ -724,7 +728,14 @@ public class Monster : MonoBehaviour, IDamageable {
             }
             else if (dist > AggroRange + 2 && !SpiderBoss && MonsterType != 5)
             {
-                agent.destination = startPosition;
+
+                if (InCombat)
+                {
+                    ResetMonsterPosition();
+                    //  agent.destination = startPosition;
+                    InCombat = false;
+                }
+                       
                 if (Vector3.Distance(transform.position, agent.destination) < 2f)
                 {
                     if (MonsterType == 1) { anim.IdleAnim(); }
@@ -736,7 +747,8 @@ public class Monster : MonoBehaviour, IDamageable {
             }
             if (SpiderBoss)
             {
-                agent.destination = startPosition;
+
+              //  agent.destination = startPosition;
                 if (!Swarm)
                 {
                     anim.IdleAnimation2();
@@ -827,6 +839,11 @@ public class Monster : MonoBehaviour, IDamageable {
         }
 
 
+    }
+
+    void ResetMonsterPosition()
+    {
+        agent.destination = startPosition;
     }
 
     void OnTriggerEnter(Collider other)
@@ -1473,17 +1490,16 @@ public class Monster : MonoBehaviour, IDamageable {
 
         if (BlobAttackNoTarget)
         {
-            //Vector3 dir = transform.forward;
             float distThisFrame = MovementSpeed * Time.deltaTime;
-
-            //transform.Translate(dir.normalized * distThisFrame, Space.World);
 
             if (BlobAttack4)
             {
-                transform.Rotate(Vector3.up * Time.deltaTime * Blob4RotSpeed);
+               // var rotation_ = (Vector3.up * Time.deltaTime * Blob4RotSpeed);
+                 transform.Rotate(Vector3.up * Time.deltaTime * Blob4RotSpeed);
+               // rb.rotation = Quaternion.Euler(rotation_); // currently not working, but would be better to use rigidbody for transform.
             }
 
-            transform.position += transform.forward * distThisFrame;
+            rb.position += transform.forward * distThisFrame;
 
         }
 
@@ -1676,7 +1692,6 @@ public class Monster : MonoBehaviour, IDamageable {
 
     public void BoltBounce(bool bounce, bool channel, GameObject bolt, GameObject Current, string chainID)
     {
-
         if (channel && ChannelTimer > 0)
         {
             noBounce = true;
@@ -1685,7 +1700,6 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             noBounce = false;
         }
-
         if (bounce && noBounce == false && !CurrentlyRessing)
         {
             List<GameObject> MonsterList = new List<GameObject>();
@@ -1703,17 +1717,14 @@ public class Monster : MonoBehaviour, IDamageable {
                 var randomTarget = Random.Range(0, MonsterList.Count);
                 var Rot = Quaternion.LookRotation((MonsterList[randomTarget].transform.position - transform.position).normalized);
                 var Pos2 = Vector3.MoveTowards(this.transform.position, MonsterList[randomTarget].transform.position, BounceDistance);
-
                 GameObject Bounce = Instantiate(bolt, new Vector3(Pos2.x, 2.6f, Pos2.z), Rot, this.transform);
                 SpellProjectile spell = Bounce.GetComponent<SpellProjectile>();
-
                 if (Current.GetComponent<SpellProjectile>() != null)
                 {
                     if (!spell.enabled)
                     {
                         spell.enabled = true;
                     }
-
                     SpellProjectile curr = Current.GetComponent<SpellProjectile>();
                     spell.damage = curr.damage;
                     spell.projectilespeed = curr.projectilespeed;
@@ -1740,27 +1751,17 @@ public class Monster : MonoBehaviour, IDamageable {
                     spell.enemyCastingspell = false;
                     spell.LBCopy = true;
                 }
-
-
-
                 Bounce.transform.parent = null;
                 Bounce.transform.localScale = new Vector3(1, 1, 1);
-
                 spell.spellCastLocation = MonsterList[randomTarget].transform.position;
-
                 spell.channeling = false;
                 spell.cone = false;
                 spell.aoeSizeMeteor = 0;
-
-
                 spell.BHBool = false;
-
                 if (spell.LBBounceAmount <= 0)
                 {
                     spell.LBBounce = false; // could make it count --;
                 }
-
-
                 if (channel)
                 {
                     Bounce.gameObject.GetComponent<Collider>().enabled = true;
@@ -1774,21 +1775,15 @@ public class Monster : MonoBehaviour, IDamageable {
                     //    noBounce = true;
                     ChannelTimer = 0.75f;
                 }
-
-
             }
             MonsterList.Clear();
         }
-
         ChannelTimer -= Time.deltaTime;
     }
-
-
     public void CantBounce()
     {
         noBounce = false;
     }
-
 
     public void Loot() // make it better, different monster can drop different loot, different drop rate. 
     {
@@ -2103,22 +2098,23 @@ public class Monster : MonoBehaviour, IDamageable {
         for (int i = 0; i < 5; i++)
         {
             GameObject SmallHelp = Instantiate(Smallboy, transform.position + (transform.forward * 3), transform.rotation, transform);
+            Monster SmallHelp_ = SmallHelp.GetComponent<Monster>();
             AddToRoomMonsterList(SmallHelp);
-            SmallHelp.GetComponent<Monster>().AggroRange = 50;
-            SmallHelp.GetComponent<Monster>().MovementSpeed = 5f;
-            SmallHelp.GetComponent<Monster>().damage = 1f;
-            SmallHelp.GetComponent<Monster>().health = 3;
-            SmallHelp.GetComponent<Monster>().health2 = 3;
+            SmallHelp_.AggroRange = 50;
+            SmallHelp_.MovementSpeed = 5f;
+            SmallHelp_.damage = 1f;
+            SmallHelp_.health = 3;
+            SmallHelp_.health2 = 3;
 
             float RandomSpot = Random.Range(0, 5);
             float RandomSpot2 = Random.Range(0, 5);
             SmallHelp.transform.parent = transform.parent;
             SmallHelp.transform.position = new Vector3(SmallHelp.transform.position.x + RandomSpot, SmallHelp.transform.position.y, SmallHelp.transform.position.z + RandomSpot2);
             SmallHelp.transform.localScale = new Vector3(1, 1, 1);
-            SmallHelp.GetComponent<Monster>().anim.Spawn();
+            SmallHelp_.animChild.GetComponent<MonsterAnim>().Spawn(); // FIX ME!
             SmallHelp.GetComponent<UnityEngine.AI.NavMeshAgent>().isStopped = true;
-            SmallHelp.GetComponent<Monster>().BBStill = true;
-            SmallHelp.GetComponent<Monster>().Invoke("SmallSpawnAnimStop", 3f);
+            SmallHelp_.BBStill = true;
+            SmallHelp_.Invoke("SmallSpawnAnimStop", 3f);
         }
     }
     void SmallSpawnAnimStop()

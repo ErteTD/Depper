@@ -62,11 +62,11 @@ public class TokenScript : MonoBehaviour
     public void DisableAgent()
     {
         Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
-        transform.position = new Vector3(transform.position.x, 2, transform.position.z);
+        transform.position = new Vector3(transform.position.x, 1.5f, transform.position.z);
     }
     void Update()
     {
-        transform.Rotate(0, 0, speed * Time.deltaTime);
+        transform.Rotate(0,speed * Time.deltaTime,0);
 
         float dist = Vector3.Distance(Player_.transform.position, transform.position);
 
@@ -85,6 +85,7 @@ public class TokenScript : MonoBehaviour
     public void PickUp()
     {
         GameObject effect = Instantiate(child_, new Vector3(this.transform.position.x, 2f, this.transform.position.z), this.transform.rotation, this.transform);
+        Destroy(effect, 2f);
         effect.transform.parent = null;
 
         GameManager manager = GameManager.FindObjectOfType<GameManager>();

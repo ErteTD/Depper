@@ -25,6 +25,10 @@ public class OneWayDoor : MonoBehaviour
     public bool BossNextLevel;
     public float CamCenter;
 
+    public bool TimekeeperHardCodeDeleteRings;
+    public GameObject RingOne;
+    public GameObject RingTwo;
+
     public void Start()
     {
         Player_ = GameObject.Find("Player");
@@ -121,6 +125,11 @@ public class OneWayDoor : MonoBehaviour
 
         if (BossNextLevel) // starts the next level.
         {
+            if (TimekeeperHardCodeDeleteRings)
+            {
+                Destroy(RingOne);
+                Destroy(RingTwo);
+            }
             FindObjectOfType<MapGrid>().NextLevel();
         }
 

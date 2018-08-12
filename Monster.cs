@@ -60,7 +60,8 @@ public class Monster : MonoBehaviour, IDamageable {
     private bool OnlyOnce = false;
     private bool CurrentlyFrozen;
 
-   
+    [HideInInspector] public bool MonsterHasLoot;
+    [HideInInspector] public GameObject MonsterLoot;
     private float BoostBurnDamage;
     private float BoostBurnDur;
     private float BoostBurnPer;
@@ -193,6 +194,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public GameObject CurDefile;
     public List<GameObject> SkeletonList = new List<GameObject>();
     public List<GameObject> SkeletonListAlive = new List<GameObject>();
+    public List<GameObject> AllDefiles = new List<GameObject>();
 
     [Header("The Blob")]
     public GameObject BlobAttack1Object;
@@ -1044,7 +1046,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
                 if (MonsterType == 4)
                 {
-                    float RandomSpeed = Random.Range(10, 30);
+                    float RandomSpeed = Random.Range(15, 20);
 
 
                     if (MonsterTypeSubLayer == 3)
@@ -1293,8 +1295,6 @@ public class Monster : MonoBehaviour, IDamageable {
         }
     }
 
-
-
     void KillMonster()
     {
         if (Immortal)
@@ -1309,7 +1309,6 @@ public class Monster : MonoBehaviour, IDamageable {
             BossHealthAct.transform.GetChild(2).gameObject.SetActive(false);
             BossHealthAct.transform.GetChild(3).gameObject.SetActive(false);
         }
-
         // Explode! if boosted and burning.
         if (BurnDur > 0 && CheckIfBurnBoosted)
         {
@@ -1320,16 +1319,6 @@ public class Monster : MonoBehaviour, IDamageable {
             Exp.GetComponent<ExplodeScript>().BurnDamage = BurnDamage;
             Exp.GetComponent<ExplodeScript>().BoostTotalBurn = BoostBurnDamage;
             Exp.GetComponent<ExplodeScript>().FireTrueFrostFalse = true;
-            //Collider[] cols2 = Physics.OverlapSphere(transform.position, 5f);
-            //foreach (Collider c in cols2)
-            //{
-            //    Monster e = c.GetComponent<Monster>();
-            //    if (e != null && e.gameObject != gameObject && !e.CurrentlyRessing && e.OnlyOnce == false)
-            //    {        
-            //        e.Burn(true, BoostBurnDur, BoostBurnPer, BurnDamage * BoostBurnPer);
-            //        e.TakeDamage(BurnDamage * BoostBurnPer);
-            //    }
-            //}
         }
 
         if (slowedDur > 0 && CheckIfFrostBoosted)
@@ -1339,23 +1328,6 @@ public class Monster : MonoBehaviour, IDamageable {
             Exp.GetComponent<ExplodeScript>().BoostBurnDur = BoostSlowDur;
             Exp.GetComponent<ExplodeScript>().BoostBurnPer = BoostSlowPer;
             Exp.GetComponent<ExplodeScript>().FireTrueFrostFalse = false;
-
-            //Collider[] cols2 = Physics.OverlapSphere(transform.position, 5f);
-            //foreach (Collider c in cols2)
-            //{
-            //    Monster e = c.GetComponent<Monster>();
-            //    if (e != null && e.gameObject != gameObject && !e.CurrentlyRessing) //&& e.MonsterType != 5)
-            //    {
-            //        e.Slow(true, 4f, 1.4f); //hardcoded atm. CHANGE!!!!!!!
-            //            e.StopAgent();
-            //    }
-            //    //if (e != null && e.gameObject != gameObject && !e.CurrentlyRessing && e.MonsterType == 5)
-            //    //    {  
-            //    //        e.Slow(true, 3, 9999);
-            //    //        e.StopAgent();
-            //    //    }
-
-            //}
         }
         if (MonsterType == 1) { anim.DieAnim(); }
         if (MonsterType == 2) { anim.DieAnimation(); }
@@ -1472,12 +1444,12 @@ public class Monster : MonoBehaviour, IDamageable {
 
     public void Resurected()
     {
-        tag = "Monster";
-        hardCodeDansGame = 0;
-        GetComponent<Collider>().GetComponent<CapsuleCollider>().enabled = true;
-        CurrentlyRessing = false;
-        OnlyOnce = false;
-        Resurrect = false;
+            tag = "Monster";
+            hardCodeDansGame = 0;
+            GetComponent<Collider>().GetComponent<CapsuleCollider>().enabled = true;
+            CurrentlyRessing = false;
+            OnlyOnce = false;
+            Resurrect = false;
     }
 
     public void FixedUpdate()
@@ -1787,21 +1759,26 @@ public class Monster : MonoBehaviour, IDamageable {
 
     public void Loot() // make it better, different monster can drop different loot, different drop rate. 
     {
-        if (Boss && !TheBlob) // or any other boss
+        if (Boss) // or any other boss
         {
-
             var RandomLoot = Random.Range(0, 2);
             switch (RandomLoot)
             {
                 case 0:
                     GameObject BossLoot = Instantiate(BossWeapon, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), GameObject.FindGameObjectWithTag("SpiderBossRoom").transform);
                     BossLoot.transform.localPosition = LootLoc;
+                    BossLoot.transform.parent = null;
                     break;
                 case 1:
                     GameObject BossLoot2 = Instantiate(BossArmor, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), GameObject.FindGameObjectWithTag("SpiderBossRoom").transform);
                     BossLoot2.transform.localPosition = LootLoc;
+                    BossLoot2.transform.parent = null;
                     break;
             }
+        }
+        else if (MonsterHasLoot)
+        {
+            Instantiate(MonsterLoot, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z));
         }
     }
 
@@ -1844,15 +1821,19 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             StartRessing();
             hardCodeDansGame = 0;
-            foreach (var Skelly in SkeletonListAlive)
+
+            for (int i = SkeletonListAlive.Count-1; i >= 0; i--)
             {
+                var Skelly = SkeletonListAlive[i];
                 GameObject Heal = Instantiate(Skill1Projectile, Skelly.transform);
                 Heal.transform.position = new Vector3(Skelly.transform.position.x, 3, Skelly.transform.position.z);
                 Heal.GetComponent<OldKingProjectile>().Skeleton = Skelly.GetComponent<Monster>().StartOpponent;
                 Heal.GetComponent<OldKingProjectile>().CurHealth = Skelly.GetComponent<Monster>().health;
                 Heal.GetComponent<OldKingProjectile>().distance = 10f;
                 Heal.GetComponent<OldKingProjectile>().HealKing = true;
+                Skelly.GetComponent<Monster>().RegenLife = false;
                 Skelly.GetComponent<Monster>().health = 0;
+                Skelly.GetComponent<Monster>().CancelInvoke("Resurected");
                 Skelly.GetComponent<Monster>().KillMonster();
             }
         }
@@ -1862,6 +1843,12 @@ public class Monster : MonoBehaviour, IDamageable {
             BossHealthAct.transform.GetChild(1).gameObject.SetActive(false);
             BossHealthAct.transform.GetChild(2).gameObject.SetActive(false);
             BossHealthAct.transform.GetChild(3).gameObject.SetActive(false);
+
+            for (int i = AllDefiles.Count - 1; i >= 0; i--)
+            {
+                Destroy(AllDefiles[i].gameObject);
+            }
+
             Loot();
             transform.parent.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true); // hard code to open door after skellyboss
         }
@@ -2006,6 +1993,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
         if (Skel.Defiling)
         {
+            AllDefiles.Remove(Skel.CurDefile);
             Destroy(Skel.CurDefile);
         }
     }
@@ -2021,6 +2009,7 @@ public class Monster : MonoBehaviour, IDamageable {
         Defi.transform.parent = null;
         Skel.Defiling = true;
         Skel.CurDefile = Defi;
+        AllDefiles.Add(Defi);
     }
 
     void OldKingAttackEnd()

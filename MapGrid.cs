@@ -62,6 +62,7 @@ public class MapGrid : MonoBehaviour
     List<Vector2Int> MiniMapList = new List<Vector2Int>();
     List<GameObject> RoomList = new List<GameObject>();
     List<Vector3> MonRanDPosList = new List<Vector3>();
+    List<Monster> MonstersThatCanDropLoot = new List<Monster>();
     List<GameObject> MonsterType_;
 
     private int iterations;
@@ -101,6 +102,8 @@ public class MapGrid : MonoBehaviour
 
         var RandomObstacle = Random.Range(0, Obstacle.Count);
         Instantiate(Obstacle[RandomObstacle], Base.transform);
+        Base.GetComponent<Room>().BuildRoomNavMesh();
+
         GridList.Add(new Vector2Int(0, 0));
         MiniMapList.Add(new Vector2Int(0, 0));
         RoomList.Add(Base);
@@ -225,6 +228,8 @@ public class MapGrid : MonoBehaviour
                         Monst.transform.localPosition = MonRanDPosList[RandomPos];
                         MonRanDPosList.RemoveAt(RandomPos);
 
+                        MonstersThatCanDropLoot.Add(Monst.GetComponent<Monster>());
+
                         room.AddMonster(Monst);
                         if (Monst.GetComponent<Monster>().MonsterType == 5)
                         {
@@ -238,6 +243,8 @@ public class MapGrid : MonoBehaviour
 
                 var RandomObstacle = Random.Range(0, Obstacle.Count);
                 Instantiate(Obstacle[RandomObstacle], Base.transform);
+
+                Base.GetComponent<Room>().BuildRoomNavMesh();
 
                 Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material = FloorType[CurrentLevel];
                 Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(Base.GetComponent<Room>().Floor.transform.localScale.x, Base.GetComponent<Room>().Floor.transform.localScale.z);
@@ -343,13 +350,15 @@ public class MapGrid : MonoBehaviour
                 GameObject Rubble = Instantiate(Obstacle[RandomObstacle], BossRoom.transform);
                 Rubble.transform.position = new Vector3(BossRoom.transform.position.x, BossRoom.transform.position.y, BossRoom.transform.position.z - 2f);
             }
+            BossRoom.GetComponent<Room>().BuildRoomNavMesh();
 
             BossRoom.SetActive(false);
             BRoom.HasLoot = true;
             //End of Boss Script.
 
             //Calling Loot Script.
-            SpawnLoot();
+            //  SpawnLoot(); Not used atm.
+            GiveMonstersLoot();
 
             foreach (var Mini in MiniMapList)//creates Minimap.
             {
@@ -503,11 +512,12 @@ public class MapGrid : MonoBehaviour
     {
         foreach (Transform child in transform)
         {
-            GameObject.Destroy(child.gameObject);
+            //  GameObject.Destroy(child.gameObject); // This was crashing the game.
+            child.gameObject.SetActive(false);
         }
         CurrentLevel++;
         maxRoom++;
-
+        MonstersThatCanDropLoot.Clear();
         GridList.Clear();
         MiniMapList.Clear();
         RoomList.Clear();
@@ -534,10 +544,37 @@ public class MapGrid : MonoBehaviour
         GenerateFirstRoom();
     }
 
-
-    public void SpawnLoot()
+    private void GiveMonstersLoot()
     {
 
+        var RandomLoot = Random.Range(0, MonstersThatCanDropLoot.Count);
+        var RandomPotion = Random.Range(0, MonstersThatCanDropLoot.Count);
+
+        if (AmountOfLoot > 0)
+        {
+            var LootBag = Random.Range(0, Tokens.Count);
+
+            MonstersThatCanDropLoot[RandomLoot].MonsterHasLoot = true;
+            MonstersThatCanDropLoot[RandomLoot].MonsterLoot = Tokens[LootBag];
+            MonstersThatCanDropLoot.RemoveAt(RandomLoot);
+
+            AmountOfLoot--;
+            GiveMonstersLoot();
+        }
+
+        if (AmountOfPotions > 0)
+        {
+            MonstersThatCanDropLoot[RandomPotion].MonsterHasLoot = true;
+            MonstersThatCanDropLoot[RandomPotion].MonsterLoot = Healing[0];
+            MonstersThatCanDropLoot.RemoveAt(RandomPotion);
+
+            AmountOfPotions--;
+            GiveMonstersLoot();
+        }
+    }
+
+    public void SpawnLoot() // Not used currently!! Changed that loot spawns from monsters instead of directly into room.
+    {
         var RandLoot = Random.Range(0, RoomList.Count);
         var RandPot = Random.Range(0, RoomList.Count);
 
@@ -545,53 +582,24 @@ public class MapGrid : MonoBehaviour
         {
             var LootBag = Random.Range(0, 15);
             GameObject Loot = Instantiate(Tokens[LootBag], RoomList[RandLoot].transform);
-            Loot.transform.localPosition = new Vector3(0, 3, 0);
+            var CurPos = Loot.transform.position;
+            Loot.transform.parent = null;
             RoomList[RandLoot].GetComponent<Room>().HasLoot = true;
             AmountOfLoot--;
         }
         if (RoomList[RandPot].GetComponent<Room>().HasLoot == false && AmountOfPotions > 0)
         {
             GameObject Loot = Instantiate(Healing[0], RoomList[RandPot].transform);
-            Loot.transform.localPosition = new Vector3(0, 3, 0);
+            var CurPos = Loot.transform.position;
+            Loot.transform.parent = null;
             RoomList[RandPot].GetComponent<Room>().HasLoot = true;
             AmountOfPotions--;
-
         }
 
         if (AmountOfLoot > 0 || AmountOfPotions > 0)
         {
             SpawnLoot();
         }
-
-
-
-        //foreach (var room in RoomList)
-        //{
-
-        //    room.GetComponent<Room>().GetDoors();
-        //    if ((room.GetComponent<Room>().DoorList.Count == 1) && (room.GetComponent<Room>().HasLoot == false) && (AmountOfLoot >0))
-        //    {       
-
-        //        var LootBag = Random.Range(0, 15);
-        //        GameObject Loot = Instantiate(Tokens[LootBag], room.transform);
-        //        Loot.transform.localPosition = new Vector3(0, 1, 0);
-        //        room.GetComponent<Room>().HasLoot = true;
-        //        AmountOfLoot--;
-        //    }
-
-        //    if ((room.GetComponent<Room>().HasLoot == false) && (AmountOfPotions > 0))
-        //    {
-        //        var RandomPotion = Random.Range(0, 3);
-        //        if (RandomPotion == 0)
-        //        {
-        //            GameObject Loot = Instantiate(Healing[0], room.transform);
-        //            Loot.transform.localPosition = new Vector3(0, 1, 0);
-        //            room.GetComponent<Room>().HasLoot = true;
-        //            AmountOfPotions--;
-
-        //        }
-        //    }
-        //}      
     }
 
 

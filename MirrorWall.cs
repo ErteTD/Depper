@@ -61,8 +61,6 @@ public class MirrorWall : MonoBehaviour
                     {
                         spell.enabled = true;
                     }
-
-
                     SpellProjectile curr = Current.GetComponent<SpellProjectile>();
                     spell.damage = curr.damage;
                     spell.projectilespeed = curr.projectilespeed;
@@ -85,10 +83,8 @@ public class MirrorWall : MonoBehaviour
                     spell.enemyCastingspell = Monster;
                 }
 
-
-
                 Bounce.transform.parent = null;
-                Bounce.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+                Bounce.transform.localScale = new Vector3(1f, 1f, 1f);
 
                 spell.spellCastLocation = MonsterList2[randomTarget].transform.position;
 
@@ -104,7 +100,6 @@ public class MirrorWall : MonoBehaviour
                     spell.LBBounce = false; // could make it count --;
                 }
 
-
                 if (channel)
                 {
                     Bounce.gameObject.GetComponent<Collider>().enabled = true;
@@ -114,16 +109,11 @@ public class MirrorWall : MonoBehaviour
                     spell.lightChild4.GetComponent<ParticleSystemRenderer>().lengthScale = 1;
                     spell.lightChild5.GetComponent<ParticleSystemRenderer>().lengthScale = 1;
                     spell.lightChild6.GetComponent<ParticleSystemRenderer>().lengthScale = 1;
-                    //   Invoke("CantBounce", 0.5f); // can't bounce again for 0.5s
-                    //    noBounce = true;
                     ChannelTimer = 0.75f;
                 }
-
-
             }
             MonsterList2.Clear();
         }
-
         ChannelTimer -= Time.deltaTime;
     }
 }

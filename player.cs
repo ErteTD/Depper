@@ -212,7 +212,7 @@ public class Player : MonoBehaviour, IDamageable {
             }
             if (!rightclick && !attackingRightNow)
             {
-                if (Vector3.Distance(agent.destination, targetPosition) > 1)
+                if (Vector3.Distance(agent.destination, targetPosition) > 1 || (inputX != 0 || inputY != 0))
                 {
                     agent.destination = targetPosition;
                 }

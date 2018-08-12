@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-
+using UnityEngine.AI;
 public class Room : MonoBehaviour
 {
     public GameObject Floor;
+    public NavMeshSurface NavGen;
     [Header("Boss Stuff")]
     public bool BossRoom;
     public bool RoomBeforeBoss;
@@ -15,11 +16,8 @@ public class Room : MonoBehaviour
     public GameObject InnerRing;
     public Vector3 StartLocation;
     public float CamTop, CamBot, CamLeft, CamRight;
-
     public float CamCenter;
     private float ASD;
-
-
     [Header("Other stuff")]
     public int Monsters_;
     public GameObject MimiMapBlock;
@@ -27,9 +25,6 @@ public class Room : MonoBehaviour
     public List<int> MiniMapDoors = new List<int>();
     public GameObject Boss;
     public bool HasLoot;
-    // Use this for initialization
-
-
     private List<GameObject> Monsters = new List<GameObject>();
 
     void Start()
@@ -37,38 +32,29 @@ public class Room : MonoBehaviour
         InvokeRepeating("OpenDoorsIfNoMonsters", 0.1f, 0.5f);
         Invoke("GetDoors", 0.001f);
         Invoke("ColorMiniMapRed", 0.1f);
+
+        if (TIMEK)
+        {
+            OuterRing.transform.parent = null;
+            InnerRing.transform.parent = null;
+        }
     }
 
-
-
+    public void BuildRoomNavMesh()
+    {
+        NavGen.BuildNavMesh();
+    }
     public void AddMonster(GameObject monster)
     {
         Monsters.Add(monster);
     }
-
-    //void MiniMapRooms(){
-
-    //    foreach (var item in DoorList)
-    //    {
-    //        if (item.transform.GetChild(0).gameObject.GetComponent<OneWayDoor>().ConRoom.GetComponent<Room>().MimiMapBlock.activeInHierarchy == false)
-    //        {
-    //            item.transform.GetChild(0).gameObject.GetComponent<OneWayDoor>().ConRoom.GetComponent<Room>().MimiMapBlock.SetActive(true);
-    //            item.transform.GetChild(0).gameObject.GetComponent<OneWayDoor>().ConRoom.GetComponent<Room>().MimiMapBlock.GetComponent<Renderer>().material.color = Color.white;
-    //        }
-    //    }
-    //}
-
-
     void Update()
     {
-
         if (TIMEK)
         {
             ASD += Time.deltaTime * 5;
             OuterRing.transform.rotation = Quaternion.Euler(new Vector3(90, ASD, 0));
             InnerRing.transform.rotation = Quaternion.Euler(new Vector3(90, -ASD, 0));
-
-
         }
     }
 
@@ -93,10 +79,10 @@ public class Room : MonoBehaviour
                 Spider.transform.localPosition = new Vector3(0, 1, 13.75f);
                 SBHC = false;
             }
-            if (TIMEK)
-            {
-                // Invoke("ActivateBoss", 2f); // no need to activate currently.
-            }
+            //if (TIMEK)
+            //{
+                
+            //}
         }
     }
     void ColorMiniMapRed()

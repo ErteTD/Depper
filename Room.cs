@@ -32,6 +32,10 @@ public class Room : MonoBehaviour
         InvokeRepeating("OpenDoorsIfNoMonsters", 0.1f, 0.5f);
         Invoke("GetDoors", 0.001f);
         Invoke("ColorMiniMapRed", 0.1f);
+        if (!BossRoom)
+        {
+            BuildRoomNavMesh();
+        }
 
         if (TIMEK)
         {
@@ -60,17 +64,20 @@ public class Room : MonoBehaviour
 
     public void GetDoors()
     {
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            Transform child = transform.GetChild(i);
-            if (child.tag == "Door")
-            {
-                DoorList.Add(child.gameObject);
-            }
-        }
+        
 
         if (BossRoom)
-        { // pretty bad code, the Fakedoor of bossroom needs to be the first child in order for it to work. Also dat tag...
+        {
+            for (int i = 0; i < transform.childCount; i++) // all other doors connected through MapGrid.
+            {
+                Transform child = transform.GetChild(i);
+                if (child.tag == "Door")
+                {
+                    DoorList.Add(child.gameObject);
+                }
+            }
+
+            // pretty bad code, the Fakedoor of bossroom needs to be the first child in order for it to work. Also dat tag...
             transform.GetChild(0).gameObject.transform.GetChild(0).GetComponent<OneWayDoor>().BossNextLevel = true;
             if (SBHC)
             {
@@ -100,28 +107,6 @@ public class Room : MonoBehaviour
             Boss.SetActive(true);
         }
     }
-
-
-    //public void GetChildObject()
-    //{
-    //    Monsters_ = 0;
-    //    for (int i = 0; i < transform.childCount; i++)
-    //    {
-    //        Transform child = transform.GetChild(i);
-    //        if (child.tag == "Monster" || child.tag == "Illusion" || child.tag == "Ressing")
-    //        {
-    //            Monsters_++;
-    //        }
-    //    }
-    //    if (Monsters_ == 0)
-    //    {
-    //        foreach (var door in DoorList)
-    //        {
-    //            door.transform.GetChild(0).gameObject.SetActive(true);
-    //        }
-    //    }
-    //}
-
 
     void OpenDoorsIfNoMonsters()
     {

@@ -239,7 +239,7 @@ public class Monster : MonoBehaviour, IDamageable {
         meleeRange_ = meleeRange;
         MirrorImageCD_ = MirrorImageCD;
         Ratatatata_ = Ratatatata;
-        BlobAttackCD_ = BlobAttackCD;
+        BlobAttackCD_ = BlobAttackCD/2;
 
         if (BigBoyColor != null)
         {
@@ -268,7 +268,7 @@ public class Monster : MonoBehaviour, IDamageable {
         if (OldKing)
         {
             OldKingSpecialAttack_1 = OldKingSpecialAttack;
-            health -= 300;
+            health -= 250;
             Healthbar.fillAmount = health / health2;
             StartOpponent.GetComponent<Monster>().health -= 11;
             StartOpponent.GetComponent<Monster>().Healthbar.fillAmount = health / health2;

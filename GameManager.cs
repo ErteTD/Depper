@@ -125,6 +125,11 @@ public class GameManager : MonoBehaviour
     private float SetTime;
     private GameObject CurrentRoom;
 
+    [Header("MiniMapLarge")]
+    public GameObject MiniMapLargeCamera;
+    public GameObject MiniMapLargePanel;
+    private bool ToggleBoolLargeCamera;
+
 
     void Start()
     {
@@ -207,26 +212,32 @@ public class GameManager : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetKey(KeyCode.RightArrow))
-        {
-            MiniCamera.transform.position += new Vector3(10f, 0, 0f) * Time.deltaTime;
-            changeInX += 10 * Time.deltaTime;
-        }
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            MiniCamera.transform.position += new Vector3(-10f, 0, 0f) * Time.deltaTime;
-            changeInX += -10 * Time.deltaTime;
-        }
-        if (Input.GetKey(KeyCode.UpArrow))
-        {
-            MiniCamera.transform.position += new Vector3(0, 0, 10f) * Time.deltaTime;
-            changeInZ += 10 * Time.deltaTime;
-        }
-        if (Input.GetKey(KeyCode.DownArrow))
-        {
-            MiniCamera.transform.position += new Vector3(0f, 0, -10f) * Time.deltaTime;
-            changeInZ += -10 * Time.deltaTime;
-        }
+        //if (Input.GetKey(KeyCode.RightArrow)) // Minimap control system, currently not used.
+        //{
+        //    MiniCamera.transform.position += new Vector3(10f, 0, 0f) * Time.deltaTime;
+        //    changeInX += 10 * Time.deltaTime;
+        //}
+        //if (Input.GetKey(KeyCode.LeftArrow))
+        //{
+        //    MiniCamera.transform.position += new Vector3(-10f, 0, 0f) * Time.deltaTime;
+        //    changeInX += -10 * Time.deltaTime;
+        //}
+        //if (Input.GetKey(KeyCode.UpArrow))
+        //{
+        //    MiniCamera.transform.position += new Vector3(0, 0, 10f) * Time.deltaTime;
+        //    changeInZ += 10 * Time.deltaTime;
+        //}
+        //if (Input.GetKey(KeyCode.DownArrow))
+        //{
+        //    MiniCamera.transform.position += new Vector3(0f, 0, -10f) * Time.deltaTime;
+        //    changeInZ += -10 * Time.deltaTime;
+        //}
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    MiniCamera.transform.position -= new Vector3(changeInX, 0, changeInZ);
+        //    changeInZ = 0;
+        //    changeInX = 0;
+        //}
 
         if (Input.GetKeyDown(KeyCode.H))
         {
@@ -234,13 +245,9 @@ public class GameManager : MonoBehaviour
             ControlMenu.SetActive(ShowHide2);
         }
 
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            MiniCamera.transform.position -= new Vector3(changeInX, 0, changeInZ);
-            changeInZ = 0;
-            changeInX = 0;
-
+            ToggleLargeMiniMap();
         }
 
         // Reset scene with R
@@ -262,20 +269,11 @@ public class GameManager : MonoBehaviour
         //    TokenTT3.SetActive(ShowHide);
         //    TokenTT4.SetActive(ShowHide);
         //}
-
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            //Application.Quit();    
-
             ShowEscMenu();
-
         }
-        CurrentTokens();
-
-
-
-
-
+        CurrentTokens();  
         //TokenStoken.
         if (SpiderWeaponToken >= 1)
         {
@@ -325,6 +323,14 @@ public class GameManager : MonoBehaviour
         }
 
     }
+
+    public void ToggleLargeMiniMap()
+    {
+        ToggleBoolLargeCamera = !ToggleBoolLargeCamera;
+        MiniMapLargeCamera.SetActive(ToggleBoolLargeCamera);
+        MiniMapLargePanel.SetActive(ToggleBoolLargeCamera);
+    }
+
 
     public void EscButton()
     {

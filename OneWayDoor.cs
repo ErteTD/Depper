@@ -13,7 +13,8 @@ public class OneWayDoor : MonoBehaviour
     public GameObject MiniCamera;
     public GameObject ConRoom;
     public GameObject CurRoom;
-    public GameObject ConnectingRoom;
+    public GameObject ConnectingDoor;
+    public GameObject ThisDoorsMiniMapBlock;
     private GameObject[] Monsters;
     private bool clicked;
     public float leftEdge;
@@ -28,12 +29,15 @@ public class OneWayDoor : MonoBehaviour
     public bool TimekeeperHardCodeDeleteRings;
     public GameObject RingOne;
     public GameObject RingTwo;
+    private bool CantClickDoorDuringLoad;
+    public GameObject LoadSceneManager;
 
     public void Start()
     {
         Player_ = GameObject.Find("Player");
         MainCamera = GameObject.Find("MainCamera");
         MiniCamera = GameObject.Find("MiniMapCamera");
+        LoadSceneManager = GameObject.Find("LoadScreenTrigger");
         //   doorHeight = doorHeight2;
         //   Monsters = GameObject.FindGameObjectsWithTag("Monster");
         if (ConRoom != null)
@@ -45,55 +49,18 @@ public class OneWayDoor : MonoBehaviour
     void Update()
     {
         float dist = Vector3.Distance(Player_.transform.position, transform.position);
-        if (dist < 6 && clicked == true)
+        if (dist < 6 && clicked == true && !CantClickDoorDuringLoad)
         {
             clicked = false;
-
-
-
-            if (ConRoom != null && CurRoom != null)
-            {
-                ConRoom.SetActive(true);
-                CurRoom.SetActive(false);
-                GetComponent<Light>().color = Color.green;
-                ConnectingRoom.transform.GetChild(0).GetComponent<Light>().color = Color.green;
-
-                //MiniMapStuff
-                ConRoom.GetComponent<Room>().MimiMapBlock.SetActive(true);
-                CurRoom.GetComponent<Room>().MimiMapBlock.GetComponent<Renderer>().material.color = roomCol;
-                ConRoom.GetComponent<Room>().MimiMapBlock.GetComponent<Renderer>().material.color = Color.green;
-            }
-            else if (ConRoom != null) // bossroom stuff.
-            {
-                ConRoom.SetActive(true);
-            }
-
-
-
-            ResetCamera(); // resets any movement
-            switch (MoveMMCam)
-            {
-                case 1:
-                    MiniCamera.transform.position += new Vector3(-3.5f, 0, 3.5f);
-                    break;
-                case 2:
-                    MiniCamera.transform.position += new Vector3(3.5f, 0, -3.5f);
-                    break;
-                case 3:
-                    MiniCamera.transform.position += new Vector3(-3.5f, 0, -3.5f);
-                    break;
-                case 4:
-                    MiniCamera.transform.position += new Vector3(3.5f, 0, 3.5f);
-                    break;
-                case 5:
-                    MiniCamera.transform.position = new Vector3(-1000, 100, 100);
-                    break;
-                default: // if 0, move it back. So after boss level.
-                    MiniCamera.transform.position = new Vector3(-1000, 100, 0);
-                    break;
-            }
-            EnterRoom();
+            CantClickDoorDuringLoad = true;
+            LoadSceneManager.GetComponent<LoadScreen>().FadeToLevel(this);
         }
+    }
+
+    void ColorMiniMapDoorsGreen()
+    {
+            ThisDoorsMiniMapBlock.GetComponent<Renderer>().material.color = Color.green;
+            ConnectingDoor.transform.GetChild(0).GetComponent<OneWayDoor>().ThisDoorsMiniMapBlock.GetComponent<Renderer>().material.color = Color.green;
     }
 
     public void ResetCamera()
@@ -101,23 +68,60 @@ public class OneWayDoor : MonoBehaviour
         MiniCamera.transform.position -= new Vector3(GameManager.FindObjectOfType<GameManager>().changeInX, 0, GameManager.FindObjectOfType<GameManager>().changeInZ);
         GameManager.FindObjectOfType<GameManager>().changeInX = 0;
         GameManager.FindObjectOfType<GameManager>().changeInZ = 0;
+
+        switch (MoveMMCam)
+        {
+            case 1:
+                MiniCamera.transform.position += new Vector3(-3.5f, 0, 3.5f);
+                break;
+            case 2:
+                MiniCamera.transform.position += new Vector3(3.5f, 0, -3.5f);
+                break;
+            case 3:
+                MiniCamera.transform.position += new Vector3(-3.5f, 0, -3.5f);
+                break;
+            case 4:
+                MiniCamera.transform.position += new Vector3(3.5f, 0, 3.5f);
+                break;
+            case 5:
+                MiniCamera.transform.position = new Vector3(-1000, 100, 100);
+                break;
+            default: // if 0, move it back. So after boss level.
+                MiniCamera.transform.position = new Vector3(-1000, 100, 0);
+                break;
+        }
     }
 
     public void EnterRoom()
     {
+
+        if (ConRoom != null && CurRoom != null)
+        {
+            ConRoom.SetActive(true);
+            CurRoom.SetActive(false);
+            GetComponent<Light>().color = Color.green;
+            ConnectingDoor.transform.GetChild(0).GetComponent<Light>().color = Color.green;
+
+            //MiniMapStuff
+            ConRoom.GetComponent<Room>().MimiMapBlock.SetActive(true);
+            CurRoom.GetComponent<Room>().MimiMapBlock.GetComponent<Renderer>().material.color = roomCol;
+            ConRoom.GetComponent<Room>().MimiMapBlock.GetComponent<Renderer>().material.color = Color.blue;
+
+            ColorMiniMapDoorsGreen();
+        }
+        else if (ConRoom != null) // bossroom stuff.
+        {
+            ConRoom.SetActive(true);
+        }
+
+        ResetCamera();
         FindObjectOfType<CastWeapon>().TelePortDoor = true;
-        // MainCamera.GetComponent<CamController>().CameraRoom(doorHeight, doorHeight2);
-        // ResetMonsters();
         FindObjectOfType<GameManager>().SetCurrentRoom(ConRoom);
-
         Player_.GetComponent<Player>().agent.Warp(DoorPortal);
-
         MainCamera.GetComponent<CamController>().zLevel = doorHeight;
         MainCamera.GetComponent<CamController>().zLevel2 = doorHeight2;
-
         MainCamera.GetComponent<CamController>().xLimit1 = leftEdge;
         MainCamera.GetComponent<CamController>().xLimit2 = rightEdge;
-
         MainCamera.GetComponent<CamController>().zTest = CamCenter;
         Player_.GetComponent<Player>().targetPosition = Player_.transform.position;
         Invoke("TrustMe", 1f);
@@ -138,6 +142,7 @@ public class OneWayDoor : MonoBehaviour
     private void TrustMe()
     {
         clicked = false;
+        CantClickDoorDuringLoad = false;
     }
 
     //private void ResetMonsters() //useless currently.

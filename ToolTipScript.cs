@@ -106,6 +106,7 @@ public class ToolTipScript : MonoBehaviour
     public GameObject RoidRobe;
     public GameObject IKArmor;
 
+
     // for the current spell.
     List<string> curSpellname = new List<string>();
     float curDamage;
@@ -143,6 +144,9 @@ public class ToolTipScript : MonoBehaviour
         curSpellname.Add("");
         curSpellname.Add("");
     }
+
+
+
 
     public void Slvl1S1(int slvl)
     {

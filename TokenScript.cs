@@ -70,11 +70,19 @@ public class TokenScript : MonoBehaviour
 
         float dist = Vector3.Distance(Player_.transform.position, transform.position);
 
+
+        if (dist < 15 && dist >5)
+        {
+            Vector3 dir = new Vector3(Player_.transform.position.x, 1.5f, Player_.transform.position.z) - this.transform.position;
+            float distThisFrame = 0.5f * Time.deltaTime;
+            transform.parent.transform.Translate(dir.normalized * distThisFrame, Space.World);
+        }
+
+
         if (dist < 2.6 && clicked == true)
         {
             PickUp();
         }
-
     }
 
     public void ClickedElsewhere()

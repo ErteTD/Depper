@@ -244,7 +244,7 @@ public class MapGrid : MonoBehaviour
                 var RandomObstacle = Random.Range(0, Obstacle.Count);
                 Instantiate(Obstacle[RandomObstacle], Base.transform);
 
-                Base.GetComponent<Room>().BuildRoomNavMesh();
+            //    Base.GetComponent<Room>().BuildRoomNavMesh();
 
                 Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material = FloorType[CurrentLevel];
                 Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(Base.GetComponent<Room>().Floor.transform.localScale.x, Base.GetComponent<Room>().Floor.transform.localScale.z);
@@ -325,7 +325,7 @@ public class MapGrid : MonoBehaviour
 
             //var RandomFloor = Random.Range(0, FloorType.Count);
             BRoom.Floor.GetComponent<MeshRenderer>().material = FloorType[CurrentLevel];
-            BRoom.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(BRoom.GetComponent<Room>().Floor.transform.localScale.x, BRoom.GetComponent<Room>().Floor.transform.localScale.z);
+            BRoom.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(BRoom.GetComponent<Room>().Floor.transform.localScale.x * 0.75f, BRoom.GetComponent<Room>().Floor.transform.localScale.z * 0.75f);
 
 
             Doors.transform.Find("LightAndTrigger").GetComponent<OneWayDoor>().DoorPortal = new Vector3(BossRoom.transform.position.x + BRoom.StartLocation.x, BossRoom.transform.position.y + +BRoom.StartLocation.y, BossRoom.transform.position.z + +BRoom.StartLocation.z);
@@ -350,7 +350,10 @@ public class MapGrid : MonoBehaviour
                 GameObject Rubble = Instantiate(Obstacle[RandomObstacle], BossRoom.transform);
                 Rubble.transform.position = new Vector3(BossRoom.transform.position.x, BossRoom.transform.position.y, BossRoom.transform.position.z - 2f);
             }
-            BossRoom.GetComponent<Room>().BuildRoomNavMesh();
+
+            RoomList[Indeex].GetComponent<Room>().DoorList.Add(Doors);
+            BossRoom.GetComponent<Room>().BuildRoomNavMesh(); // For some reason navmesh for bossroom has to be built now or things fuck up. 
+
 
             BossRoom.SetActive(false);
             BRoom.HasLoot = true;
@@ -371,17 +374,17 @@ public class MapGrid : MonoBehaviour
                     switch (item)
                     {
                         case 1:
-                            MMD.transform.localPosition = new Vector3(-0.35f, 1, 0.35f);
+                            MMD.transform.localPosition = new Vector3(-0.35f, 1, 0.35f); // top left 
                             break;
                         case 2:
-                            MMD.transform.localPosition = new Vector3(0.35f, 1, -0.35f);
+                            MMD.transform.localPosition = new Vector3(0.35f, 1, -0.35f); // bottom right 
                             break;
                         case 3:
-                            MMD.transform.localPosition = new Vector3(-0.35f, 1, -0.35f);
+                            MMD.transform.localPosition = new Vector3(-0.35f, 1, -0.35f); // bottom left 
                             Lastdoor = MMD;
                             break;
                         case 4:
-                            MMD.transform.localPosition = new Vector3(0.35f, 1, 0.35f);
+                            MMD.transform.localPosition = new Vector3(0.35f, 1, 0.35f); // top right
                             Lastdoor = MMD;
                             break;
                         case 5:
@@ -391,7 +394,15 @@ public class MapGrid : MonoBehaviour
                         default:
                             break;
                     }
+                    foreach (var door in RoomList[Counter].GetComponent<Room>().DoorList)
+                    {
+                        if (door.transform.GetChild(0).GetComponent<OneWayDoor>().MoveMMCam == item)
+                        {
+                            door.transform.GetChild(0).GetComponent<OneWayDoor>().ThisDoorsMiniMapBlock = MMD;
+                        }
+                    }
                 }
+               // RoomList[Counter].GetComponent<Room>().DoorList[item]
                 LastRoom = MiniMapBlock;
 
                 if (Counter > 0) // so wont deactive first room
@@ -400,7 +411,7 @@ public class MapGrid : MonoBehaviour
                 }
                 else
                 {
-                    RoomList[Counter].GetComponent<Room>().MimiMapBlock.GetComponent<Renderer>().material.color = Color.green;
+                    RoomList[Counter].GetComponent<Room>().MimiMapBlock.GetComponent<Renderer>().material.color = Color.blue;
                 }
 
                 Counter++;
@@ -493,8 +504,12 @@ public class MapGrid : MonoBehaviour
         Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().ConRoom = CurrentRoom;
         Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().CurRoom = Base;
 
-        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().ConnectingRoom = Doors2;
-        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().ConnectingRoom = Doors;
+        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().ConnectingDoor = Doors2;
+        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().ConnectingDoor = Doors;
+
+        CurrentRoom.GetComponent<Room>().DoorList.Add(Doors);
+        Base.GetComponent<Room>().DoorList.Add(Doors2);
+
 
         Doors.transform.GetChild(0).gameObject.SetActive(false);
         Doors2.transform.GetChild(0).gameObject.SetActive(false);
@@ -514,6 +529,9 @@ public class MapGrid : MonoBehaviour
         {
             //  GameObject.Destroy(child.gameObject); // This was crashing the game.
             child.gameObject.SetActive(false);
+            float DestroyTimer = Random.Range(3f, 4);
+            Destroy(child.gameObject, DestroyTimer);
+
         }
         CurrentLevel++;
         maxRoom++;

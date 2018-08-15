@@ -135,8 +135,9 @@ public class Player : MonoBehaviour, IDamageable {
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                float dist = Vector3.Distance(hit.point, transform.position); // distance between click point and PC
-                if (Input.GetMouseButtonDown(0) && (hit.collider.tag == "Floor" || hit.collider.tag == "Door"))
+                Vector3 HitGroundlevel = new Vector3(hit.point.x, 1, hit.point.z);
+                float dist = Vector3.Distance(HitGroundlevel, transform.position); // distance between click point and PC
+                if (Input.GetMouseButtonDown(0) && (hit.collider.tag == "Floor" || hit.collider.tag == "Door" || hit.collider.tag == "Wall"))
                 {
                     Vector3 DaPoint = new Vector3(hit.point.x, hit.point.y + 0.1f, hit.point.z);
                     Instantiate(MousePing, DaPoint, Quaternion.Euler(0, 0, 0));
@@ -144,7 +145,7 @@ public class Player : MonoBehaviour, IDamageable {
 
                 if (dist > 0.1f)
                 {
-                    targetPosition = hit.point;
+                    targetPosition = HitGroundlevel;
                     move = true; // when move true, character moves unless rightclick is true.
                     agent.stoppingDistance = 0f;
                 }

@@ -4,67 +4,42 @@ using UnityEngine;
 using UnityEngine.UI;
 public class ToolTipScript : MonoBehaviour
 {
-    public GameObject CurSpellToolTipBox;
+  //  public GameObject CurSpellToolTipBox;
     public GameObject CurSpellToolTipBox2;
 
-    [Header("Level1")]
-    public GameObject Fireball;
-    public GameObject FrostBolt;
-    public GameObject LightningBolt;
-    [Header("Level2")]
-    public GameObject Meteor;
-    public GameObject Cone;
-    public GameObject GhostCast;
-    [Header("Level3")]
-    public GameObject DoubleCast;
-    public GameObject SplitCast;
-    public GameObject CompOrb;
-    [Header("Level4")]
-    public GameObject Boost;
-    public GameObject Hasten;
-    public GameObject Empower;
-    [Header("Level5")]
-    public GameObject BlackHole;
-    public GameObject Push;
-    public GameObject Pool;
-    [Header("Level6")]
-    public GameObject ChaosOrb;
-    public GameObject Channeling;
-    public GameObject BlessedAim;
+    public List<GameObject> AllSpells = new List<GameObject>();
+    public List<GameObject> AllWeapons = new List<GameObject>();
+    public List<GameObject> AllArmors = new List<GameObject>();
 
+    private Fireball fire;
+    private FrostBolt frost;
+    private LightningBolt lightning;
+    private Meteor meteor;
+    private Cone cone;
+    private GhostCast ghostcast;
+    private DoubleCast doublecast;
+    private SplitCast splitcast;
+    private Companion companion;
+    private Boost boost;
+    private Hasten hasten;
+    private Empower empower;
+    private BlackHole blackhole;
+    private Push push;
+    private Pool pool;
+    private ChaosOrb chaosorb;
+    private Channeling channling;
+    private BlessedAim blessedaim;
 
-
-    [Header("Names lvl1")]
-    public Text Spellname;
-    public Text Damage;
-    public Text Manacost;
-    public Text Cooldown;
     public Text Effect0;
-    [Header("Names lvl2")]
-    public Text Spellname2;
-    public Text ExtraCD;
-    public Text DamageModifierlvl2;
+
+    [Header("Spell modifier tooltip")]
+    public GameObject SpellModifierPanel;
+    public Text Spellname;
+    public Text DamagePure;
+    public Text DamagePercet;
+    public Text CooldownSeconds;
+    public Text CooldownPercent;
     public Text Effect;
-    [Header("Names lvl3")]
-    public Text Spellname3;
-    public Text DamageModifierlvl3;
-    public Text ExtraCD2;
-    public Text Effect2;
-    [Header("Names lvl4")]
-    public Text Spellname4;
-    public Text DamageModifierlvl4;
-    public Text DamageModifierlvl4_2;
-    public Text ExtraCD3;
-    public Text Effect3;
-    [Header("Names lvl5")]
-    public Text Spellname5;
-    public Text ExtraCD4;
-    public Text Effect4;
-    [Header("Names lvl6")]
-    public Text Spellname6;
-    public Text DamageModifierlvl5;
-    public Text ExtraCD5;
-    public Text Effect5;
 
     [Header("SpellCombination")]
     public Text curTSpellname;
@@ -108,7 +83,7 @@ public class ToolTipScript : MonoBehaviour
 
 
     // for the current spell.
-    List<string> curSpellname = new List<string>();
+    List<string> curSpellname = new List<string>() {"", "", "", "", "", "" };
     float curDamage;
     float curCooldown;
     float curDamageModifierlvl2 = 0;
@@ -137,224 +112,121 @@ public class ToolTipScript : MonoBehaviour
     private int CurItemID;
     public void Start()
     {
-        curSpellname.Add(""); // must be here for the spell name combination.
-        curSpellname.Add("");
-        curSpellname.Add("");
-        curSpellname.Add("");
-        curSpellname.Add("");
-        curSpellname.Add("");
+        fire = AllSpells[0].GetComponent<Fireball>();
+        frost = AllSpells[1].GetComponent<FrostBolt>();
+        lightning = AllSpells[2].GetComponent<LightningBolt>();
+        meteor = AllSpells[5].GetComponent<Meteor>();
+        cone = AllSpells[3].GetComponent<Cone>();
+        ghostcast = AllSpells[4].GetComponent<GhostCast>();
+        doublecast = AllSpells[6].GetComponent<DoubleCast>();
+        splitcast = AllSpells[7].GetComponent<SplitCast>();
+        companion = AllSpells[8].GetComponent<Companion>();
+        boost = AllSpells[9].GetComponent<Boost>();
+        hasten = AllSpells[10].GetComponent<Hasten>();
+        empower = AllSpells[11].GetComponent<Empower>();
+        blackhole = AllSpells[12].GetComponent<BlackHole>();
+        push = AllSpells[13].GetComponent<Push>();
+        pool = AllSpells[14].GetComponent<Pool>();
+        chaosorb = AllSpells[15].GetComponent<ChaosOrb>();
+        channling = AllSpells[16].GetComponent<Channeling>();
+        blessedaim = AllSpells[17].GetComponent<BlessedAim>();
     }
 
-
-
-
-    public void Slvl1S1(int slvl)
+    public void GetSpellClassFrom(MasterSpell spell)
     {
-        Fireball fire = Fireball.GetComponent<Fireball>();
-        FrostBolt frost = FrostBolt.GetComponent<FrostBolt>();
-        LightningBolt lightning = LightningBolt.GetComponent<LightningBolt>();
+        SpellModifierPanel.SetActive(true);
+        Spellname.text = spell.spellname;
+        DamagePure.text = "Pure damage: +"+spell.damagePure.ToString("F1");
+        DamagePercet.text = "Percentual damage: *" + (spell.damagePercent).ToString("F2");
+        CooldownSeconds.text = "Cooldown: +" + spell.cooldownSeconds.ToString("F1") + " seconds";
+        CooldownPercent.text = "Percentual cooldown: *" + (spell.cooldownPercent).ToString("F2");
+        Effect.text = spell.effect;
 
-        switch (slvl)
-        {
-            case 1:
-                Spellname.text = fire.spellname;
-                Damage.text = "Damage: " + fire.damage.ToString();
-                Cooldown.text = "Cooldown: " + fire.cooldown.ToString();
+        if (spell.damagePure == 0) { DamagePure.text = ""; }
+        if (spell.damagePercent == 0) { DamagePercet.text = ""; }
+        if (spell.cooldownSeconds == 0) { CooldownSeconds.text = ""; }
+        if (spell.cooldownPercent == 0) { CooldownPercent.text = ""; }
 
-                break;
-            case 2:
-                Spellname.text = frost.spellname;
-                Damage.text = "Damage: " + frost.damage.ToString();
-                Cooldown.text = "Cooldown: " + frost.cooldown.ToString();
-
-                break;
-            case 3:
-                Spellname.text = lightning.spellname;
-                Damage.text = "Damage: " + lightning.damage.ToString();
-                Cooldown.text = "Cooldown: " + lightning.cooldown.ToString();
-
-                break;
-        }
     }
+
     public void Slvl2S1(int slvl)
     {
-        Meteor meteor = Meteor.GetComponent<Meteor>();
-        Cone cone = Cone.GetComponent<Cone>();
-        GhostCast ghostcast = GhostCast.GetComponent<GhostCast>();
-
         switch (slvl)
         {
             case 1:
-                Spellname2.text = meteor.spellname;
-                DamageModifierlvl2.text = "Damage: +" + (meteor.damageReduction).ToString("F1");
-                ExtraCD.text = "Cooldown Modifier: +" + meteor.extraCD.ToString("F2") + "s";
-                Effect.text = "Effect: " + meteor.effect.ToString();
+                GetSpellClassFrom(meteor);
                 break;
             case 2:
-                Spellname2.text = cone.spellname;
-                DamageModifierlvl2.text = "Damage: +" + (cone.damageModifier).ToString("F1");
-                ExtraCD.text = "Cooldown Modifier: +" + cone.extraCD.ToString("F2") + "s";
-                Effect.text = "Effect: " + cone.effect.ToString();
+                GetSpellClassFrom(cone);
                 break;
             case 3:
-                Spellname2.text = ghostcast.spellname;
-                DamageModifierlvl2.text = "";
-                ExtraCD.text = "Cooldown Modifier: +" + ghostcast.extraCD.ToString("F2") + "s";
-                Effect.text = "Effect: " + ghostcast.effect.ToString();
+                GetSpellClassFrom(ghostcast);
                 break;
         }
     }
     public void Slvl3S1(int slvl)
     {
-        DoubleCast doublecast = DoubleCast.GetComponent<DoubleCast>();
-        SplitCast splitCast = SplitCast.GetComponent<SplitCast>();
-        Companion Corb = CompOrb.GetComponent<Companion>();
-
         switch (slvl)
         {
             case 1:
-                Spellname3.text = doublecast.spellname;
-                ExtraCD2.text = "Cooldown Modifier: " + (doublecast.extraCD * 100).ToString("F2") + "%";
-                DamageModifierlvl3.text = "Damage: " + ((doublecast.DamageModifier) * 100).ToString("F0") + "%";
-                Effect2.text = "Effect: " + doublecast.effect.ToString();
+                GetSpellClassFrom(doublecast);
                 break;
             case 2:
-
-                Spellname3.text = splitCast.spellname;
-                ExtraCD2.text = "Cooldown Modifier: " + (splitCast.extraCD * 100).ToString("F2") + "%";
-                DamageModifierlvl3.text = "Damage: " + ((splitCast.DamageModifier) * 100).ToString("F0") + "%";
-                Effect2.text = "Effect: " + splitCast.effect.ToString();
+                GetSpellClassFrom(splitcast);
                 break;
             case 3:
-                Spellname3.text = Corb.spellname;
-                ExtraCD2.text = "";
-                DamageModifierlvl3.text = "";
-                Effect2.text = "Effect: " + Corb.effect.ToString();
+                GetSpellClassFrom(companion);
                 break;
         }
-
     }
     public void Slvl4S1(int slvl)
     {
-        Boost boost = Boost.GetComponent<Boost>();
-        Hasten hasten = Hasten.GetComponent<Hasten>();
-        Empower empower = Empower.GetComponent<Empower>();
-
         switch (slvl)
         {
             case 1:
-                Spellname4.text = boost.spellname;
-                //  DamageModifierlvl4.text = "";
-                DamageModifierlvl4_2.text = "Damage: +" + (boost.damageModifierPure).ToString("F0") + " and " + ((boost.damageModifierPercent) * 100).ToString("F0") + "%";
-                ExtraCD3.text = "";
-                Effect3.text = "Effect: " + boost.effect.ToString();
-
+                GetSpellClassFrom(boost);
                 break;
             case 2:
-
-                Spellname4.text = hasten.spellname;
-                //  DamageModifierlvl4.text = "";
-                DamageModifierlvl4_2.text = "";
-                ExtraCD3.text = "Cooldown Modifier: " + ((hasten.CDModifier) * 100).ToString("F2") + "%";
-                Effect3.text = "Effect: " + hasten.effect.ToString();
+                GetSpellClassFrom(hasten);
                 break;
             case 3:
-                Spellname4.text = empower.spellname;
-                //  DamageModifierlvl4.text = "";
-                DamageModifierlvl4_2.text = "";
-                ExtraCD3.text = "";
-                Effect3.text = empower.effect.ToString();
+                GetSpellClassFrom(empower);
                 break;
         }
     }
     public void Slvl5S1(int slvl)
     {
-        //Boost boost = Boost.GetComponent<Boost>();
-        //Hasten hasten = Hasten.GetComponent<Hasten>();
-        //Empower empower = Empower.GetComponent<Empower>();
-        BlackHole BH = BlackHole.GetComponent<BlackHole>();
-        Push push = Push.GetComponent<Push>();
-        Pool pool = Pool.GetComponent<Pool>();
-
-
         switch (slvl)
         {
             case 1:
-                Spellname5.text = BH.spellname;
-                ExtraCD4.text = "Cooldown Modifier: +" + (BH.CDmodifier).ToString("F2") + " seconds";
-                Effect4.text = "Effect: " + BH.effect.ToString();
-
+                GetSpellClassFrom(blackhole);
                 break;
             case 2:
-
-                Spellname5.text = push.spellname;
-                ExtraCD4.text = "Cooldown Modifier: +" + (push.CDmodifier).ToString("F2") + " seconds";
-                Effect4.text = "Effect: " + push.effect.ToString();
+                GetSpellClassFrom(push);
                 break;
             case 3:
-
-                Spellname5.text = pool.spellname;
-                ExtraCD4.text = "Cooldown Modifier: +" + (pool.CDmodifier).ToString("F2") + " seconds";
-                Effect4.text = "Effect: " + pool.effect.ToString();
+                GetSpellClassFrom(pool);
                 break;
         }
     }
-
     public void Slvl6S1(int slvl)
     {
-        ChaosOrb Chaos = ChaosOrb.GetComponent<ChaosOrb>();
-        Channeling chan = Channeling.GetComponent<Channeling>();
-        BlessedAim Aim = BlessedAim.GetComponent<BlessedAim>();
-
         switch (slvl)
         {
             case 1:
-                Spellname6.text = Chaos.spellname;
-                ExtraCD5.text = "Cooldown Modifier: +" + (Chaos.CoolDownMod * 100).ToString("F2") + "% and +" + (Chaos.CoolDownSec).ToString("F0") + " second";
-                DamageModifierlvl5.text = "";
-                Effect5.text = "Effect: " + Chaos.effect.ToString();
-
+                GetSpellClassFrom(chaosorb);
                 break;
             case 2:
-                Spellname6.text = chan.spellname;
-                ExtraCD5.text = "Cooldown Modifier: +" + (chan.extraCD * 100).ToString("F2") + "%";
-                DamageModifierlvl5.text = "Damage: " + ((chan.damageModifier) * 100).ToString("F0") + "%";
-                Effect5.text = "Effect: " + chan.effect.ToString();
+                GetSpellClassFrom(channling);
                 break;
             case 3:
-                Spellname6.text = Aim.spellname;
-                ExtraCD5.text = "Cooldown Modifier: +" + (Aim.CoolDownMod * 100).ToString("F2") + "%";
-                DamageModifierlvl5.text = "Damage: " + ((Aim.DamageMod) * 100).ToString("F0") + "%";
-                Effect5.text = "Effect: " + Aim.effect.ToString();
+                GetSpellClassFrom(blessedaim);
                 break;
         }
     }
-
-
-
 
     public void SpellCombTip(int lvlAndnumber)
     {
-        Fireball fire = Fireball.GetComponent<Fireball>();
-        FrostBolt frost = FrostBolt.GetComponent<FrostBolt>();
-        LightningBolt lightning = LightningBolt.GetComponent<LightningBolt>();
-        Meteor meteor = Meteor.GetComponent<Meteor>();
-        Cone cone = Cone.GetComponent<Cone>();
-        GhostCast ghostcast = GhostCast.GetComponent<GhostCast>();
-        DoubleCast doublecast = DoubleCast.GetComponent<DoubleCast>();
-        SplitCast splitCast = SplitCast.GetComponent<SplitCast>();
-        Companion Corb = CompOrb.GetComponent<Companion>();
-        Boost boost = Boost.GetComponent<Boost>();
-        Hasten hasten = Hasten.GetComponent<Hasten>();
-        Empower empower = Empower.GetComponent<Empower>();
-        BlackHole BH = BlackHole.GetComponent<BlackHole>();
-        Push push = Push.GetComponent<Push>();
-        Pool pool = Pool.GetComponent<Pool>();
-        ChaosOrb Chaos = ChaosOrb.GetComponent<ChaosOrb>();
-        Channeling chan = Channeling.GetComponent<Channeling>();
-        BlessedAim Aim = BlessedAim.GetComponent<BlessedAim>();
-
-        CurSpellToolTipBox.SetActive(true);
         CurSpellToolTipBox2.SetActive(true);
 
         if (spellCombTip1 == true && lvlAndnumber <= 3)
@@ -386,8 +258,8 @@ public class ToolTipScript : MonoBehaviour
         {
             case 1:
                 curSpellname[0] = fire.spellname;
-                curDamage = fire.damage;
-                curCooldown = fire.cooldown;
+                curDamage = fire.damagePure;
+                curCooldown = fire.cooldownSeconds;
                 spellCombTip1 = true;
 
                 if (GameManager.FindObjectOfType<GameManager>().empowerToken_)
@@ -399,18 +271,16 @@ public class ToolTipScript : MonoBehaviour
                     Effect0.text = fire.effect;
                 }
 
-
-
-                SpellImage1.sprite = Fireball.GetComponent<Image>().sprite;
+                SpellImage1.sprite = fire.GetComponent<Image>().sprite;
 
                 break;
             case 2:
                 curSpellname[0] = frost.spellname;
-                curDamage = frost.damage;
-                curCooldown = frost.cooldown;
+                curDamage = frost.damagePure;
+                curCooldown = frost.cooldownSeconds;
                 spellCombTip1 = true;
                 Effect0.text = frost.effect;
-                SpellImage1.sprite = FrostBolt.GetComponent<Image>().sprite;
+                SpellImage1.sprite = frost.GetComponent<Image>().sprite;
 
                 if (GameManager.FindObjectOfType<GameManager>().empowerToken_2)
                 {
@@ -421,15 +291,14 @@ public class ToolTipScript : MonoBehaviour
                     Effect0.text = frost.effect;
                 }
 
-
                 break;
             case 3:
                 curSpellname[0] = lightning.spellname;
-                curDamage = lightning.damage;
-                curCooldown = lightning.cooldown;
+                curDamage = lightning.damagePure;
+                curCooldown = lightning.cooldownSeconds;
                 spellCombTip1 = true;
                 Effect0.text = lightning.effect;
-                SpellImage1.sprite = LightningBolt.GetComponent<Image>().sprite;
+                SpellImage1.sprite = lightning.GetComponent<Image>().sprite;
 
                 if (GameManager.FindObjectOfType<GameManager>().empowerToken_3)
                 {
@@ -440,131 +309,113 @@ public class ToolTipScript : MonoBehaviour
                     Effect0.text = lightning.effect;
                 }
 
-
                 break;
 
             case 21:
                 curSpellname[1] = "-" + meteor.spellname;
-                curDamageModifierlvl2 = meteor.damageReduction;
-                curExtraCD = meteor.extraCD;
-
+                curDamageModifierlvl2 = meteor.damagePure;
+                curExtraCD = meteor.cooldownSeconds;
                 spellCombTip2 = true;
-                SpellImage2.sprite = Meteor.GetComponent<Image>().sprite;
+                SpellImage2.sprite = meteor.GetComponent<Image>().sprite;
                 break;
             case 22:
                 curSpellname[1] = "-" + cone.spellname;
-                //  curDamageModifier = cone.damageReduction;
-                curExtraCD = cone.extraCD;
-                curDamageModifierlvl2 = cone.damageModifier;
+                curExtraCD = cone.cooldownSeconds;
+                curDamageModifierlvl2 = cone.damagePure;
                 spellCombTip2 = true;
-                SpellImage2.sprite = Cone.GetComponent<Image>().sprite;
+                SpellImage2.sprite = cone.GetComponent<Image>().sprite;
                 break;
             case 23:
                 curSpellname[1] = "-" + ghostcast.spellname;
-                curDamageModifierlvl2 = ghostcast.damageReduction;
-                curExtraCD = ghostcast.extraCD;
-
+                curDamageModifierlvl2 = ghostcast.damagePure;
+                curExtraCD = ghostcast.cooldownSeconds;
                 spellCombTip2 = true;
-                SpellImage2.sprite = GhostCast.GetComponent<Image>().sprite;
+                SpellImage2.sprite = ghostcast.GetComponent<Image>().sprite;
                 break;
-
             case 31:
                 curSpellname[2] = "-" + doublecast.spellname;
-                curExtraCD2 = doublecast.extraCD;
-                curDamageModifierlvl3 = doublecast.DamageModifier;
-
+                curExtraCD2 = doublecast.cooldownPercent;
+                curDamageModifierlvl3 = doublecast.damagePercent;
                 spellCombTip3 = true;
-                SpellImage3.sprite = DoubleCast.GetComponent<Image>().sprite;
+                SpellImage3.sprite = doublecast.GetComponent<Image>().sprite;
                 break;
             case 32:
-                curSpellname[2] = "-" + splitCast.spellname;
-                curExtraCD2 = splitCast.extraCD;
-                curDamageModifierlvl3 = splitCast.DamageModifier;
-
+                curSpellname[2] = "-" + splitcast.spellname;
+                curExtraCD2 = splitcast.cooldownPercent;
+                curDamageModifierlvl3 = splitcast.damagePercent;
                 spellCombTip3 = true;
-                SpellImage3.sprite = SplitCast.GetComponent<Image>().sprite;
+                SpellImage3.sprite = splitcast.GetComponent<Image>().sprite;
                 break;
             case 33:
-                curSpellname[2] = "-" + Corb.spellname;
+                curSpellname[2] = "-" + companion.spellname;
                 curExtraCD2 = 1;
                 curDamageModifierlvl3 = 1;
-
                 spellCombTip3 = true;
-                SpellImage3.sprite = Corb.GetComponent<Image>().sprite;
+                SpellImage3.sprite = companion.GetComponent<Image>().sprite;
                 break;
-            //
-            //DamageModifierlvl4.text = "Damage: " + ((boost.damageModifierPercent) * 100).ToString("F0") + "%";
-            //DamageModifierlvl4_2.text = "Damage: +" + (boost.damageModifierPure).ToString("F0");
-            //ExtraCD3.text = "";
-            //Effect3.text = "Effect: " + boost.effect.ToString();
             case 41:
                 curSpellname[3] = "-" + boost.spellname;
-                curDamageModifierlvl4 = boost.damageModifierPercent;
-                curDamageModifierlvl4_2 = boost.damageModifierPure;
+                curDamageModifierlvl4 = boost.damagePercent;
+                curDamageModifierlvl4_2 = boost.damagePure;
                 spellCombTip4 = true;
-                SpellImage4.sprite = Boost.GetComponent<Image>().sprite;
+                SpellImage4.sprite = boost.GetComponent<Image>().sprite;
                 break;
             case 42:
                 curSpellname[3] = "-" + hasten.spellname;
-                curExtraCD3 = hasten.CDModifier;
+                curExtraCD3 = hasten.cooldownPercent;
                 spellCombTip4 = true;
-                SpellImage4.sprite = Hasten.GetComponent<Image>().sprite;
+                SpellImage4.sprite = hasten.GetComponent<Image>().sprite;
                 break;
             case 43:
                 curSpellname[3] = "-" + empower.spellname;
                 spellCombTip4 = true;
-                SpellImage4.sprite = Empower.GetComponent<Image>().sprite;
+                SpellImage4.sprite = empower.GetComponent<Image>().sprite;
                 break;
             case 51:
-                curSpellname[4] = "-" + BH.spellname;
-                curExtraCD4 = BH.CDmodifier;
+                curSpellname[4] = "-" + blackhole.spellname;
+                curExtraCD4 = blackhole.cooldownSeconds;
                 spellCombTip5 = true;
-                SpellImage5.sprite = BH.GetComponent<Image>().sprite;
+                SpellImage5.sprite = blackhole.GetComponent<Image>().sprite;
                 break;
             case 52:
                 curSpellname[4] = "-" + push.spellname;
-                curExtraCD4 = push.CDmodifier;
+                curExtraCD4 = push.cooldownSeconds;
                 spellCombTip5 = true;
                 SpellImage5.sprite = push.GetComponent<Image>().sprite;
                 break;
             case 53:
                 curSpellname[4] = "-" + pool.spellname;
-                curExtraCD4 = pool.CDmodifier;
+                curExtraCD4 = pool.cooldownSeconds;
                 spellCombTip5 = true;
                 SpellImage5.sprite = pool.GetComponent<Image>().sprite;
                 break;
-            //HERE
             case 61:
-                curSpellname[5] = "-" + Chaos.spellname;
-                curExtraCD5 = Chaos.CoolDownMod;
-                curExtraCD5_2 = Chaos.CoolDownSec;
+                curSpellname[5] = "-" + chaosorb.spellname;
+                curExtraCD5 = chaosorb.cooldownPercent;
+                curExtraCD5_2 = chaosorb.cooldownSeconds;
                 spellCombTip6 = true;
-                SpellImage6.sprite = Chaos.GetComponent<Image>().sprite;
+                SpellImage6.sprite = chaosorb.GetComponent<Image>().sprite;
                 break;
             case 62:
-                curSpellname[5] = "-" + chan.spellname;
-                curExtraCD5 = chan.extraCD;
-                curDamageModifierlvl5 = chan.damageModifier;
+                curSpellname[5] = "-" + channling.spellname;
+                curExtraCD5 = channling.cooldownPercent;
+                curDamageModifierlvl5 = channling.damagePercent;
                 spellCombTip6 = true;
-                SpellImage6.sprite = chan.GetComponent<Image>().sprite;
+                SpellImage6.sprite = channling.GetComponent<Image>().sprite;
                 break;
             case 63:
-                curSpellname[5] = "-" + Aim.spellname;
-                curExtraCD5 = Aim.CoolDownMod;
-                curDamageModifierlvl5 = Aim.DamageMod;
+                curSpellname[5] = "-" + blessedaim.spellname;
+                curExtraCD5 = blessedaim.cooldownPercent;
+                curDamageModifierlvl5 = blessedaim.damagePercent;
                 spellCombTip6 = true;
-                SpellImage6.sprite = Aim.GetComponent<Image>().sprite;
+                SpellImage6.sprite = blessedaim.GetComponent<Image>().sprite;
                 break;
-
             default:
                 break;
         }
-
         curTSpellname.text = curSpellname[0] + curSpellname[1] + curSpellname[2] + curSpellname[3] + curSpellname[4] + curSpellname[5];
         curTDamage.text = "Damage: " + ((curDamage + curDamageModifierlvl2 + curDamageModifierlvl4_2) * curDamageModifierlvl3 * curDamageModifierlvl4 * curDamageModifierlvl5).ToString("F1");
         curTCooldown.text = "Cooldown: " + ((curCooldown + curExtraCD + curExtraCD4 + curExtraCD5_2) * curExtraCD2 * curExtraCD3 * curExtraCD5).ToString("F1");
-
-
     }
 
     public void Empty1()
@@ -617,8 +468,6 @@ public class ToolTipScript : MonoBehaviour
         spellCombTip6 = false;
     }
 
-
-
     public void WeaponTip(bool preview)
     {
         WeaponSpider spider = SpiderStaff.GetComponent<WeaponSpider>();
@@ -626,15 +475,12 @@ public class ToolTipScript : MonoBehaviour
         Blink blink = BlinkStaff.GetComponent<Blink>();
         Blink FireStaff_ = FireStaff.GetComponent<Blink>();
         Blink FireStaff_2 = IKStaff.GetComponent<Blink>();
-        CurSpellToolTipBox.SetActive(true);
         WeaponTipPanel.SetActive(true);
         int CurID = CastSpell.FindObjectOfType<CastWeapon>().CurrentWeapon;
-
         if (preview)
         {
             CurID = CurItemID;
         }
-
         switch (CurID) //TODO give active item..
         {
             case 0:
@@ -677,8 +523,6 @@ public class ToolTipScript : MonoBehaviour
                     WeaponColor.GetComponent<Image>().color = FireStaff_2.ItemColor;
                 }
                 break;
-
-
         }
     }
 
@@ -689,11 +533,8 @@ public class ToolTipScript : MonoBehaviour
         ArmorIllusion illu = IlluArmor.GetComponent<ArmorIllusion>();
         ArmorIllusion Rage = RoidRobe.GetComponent<ArmorIllusion>();
         ArmorIllusion Rage_ = IKArmor.GetComponent<ArmorIllusion>();
-        CurSpellToolTipBox.SetActive(true);
         ArmorTipPanel.SetActive(true);
-
         int CurID = CastSpell.FindObjectOfType<CastWeapon>().CurrentArmor;
-
         if (preview)
         {
             CurID = CurItemID;
@@ -744,25 +585,18 @@ public class ToolTipScript : MonoBehaviour
                 break;
         }
     }
-
-
-
     public void CloseWeapon()
     {
-        CurSpellToolTipBox.SetActive(false);
         WeaponTipPanel.SetActive(false);
     }
     public void CloseArmor()
     {
-        CurSpellToolTipBox.SetActive(false);
         ArmorTipPanel.SetActive(false);
     }
-
     public void CurrentItemID(int ID)
     {
         CurItemID = ID;
     }
-
     public void OpenWeaponSelect()
     {
         SelectArmor.SetActive(false);
@@ -770,7 +604,6 @@ public class ToolTipScript : MonoBehaviour
         showWeaponSelect = showWeaponSelect ? false : true;
         SelectWeapon.SetActive(showWeaponSelect);
     }
-
     public void OpenArmorSelect()
     {
         SelectWeapon.SetActive(false);
@@ -778,8 +611,6 @@ public class ToolTipScript : MonoBehaviour
         showArmorSelect = showArmorSelect ? false : true;
         SelectArmor.SetActive(showArmorSelect);
     }
-
-
 }
 
 

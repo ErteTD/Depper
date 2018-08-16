@@ -131,7 +131,7 @@ public class Spellbook : MonoBehaviour
     public bool unselect5;
     public bool unselect6;
 
-    public GameObject SpellPanel;
+  //  public GameObject SpellPanel;
 
     //Spellslotmemory
     private int slot1Mem1;
@@ -668,6 +668,7 @@ public class Spellbook : MonoBehaviour
             slot1Mem3 = lvl4choice;
             slot1Mem4 = lvl5choice;
             slot1Mem5 = lvl6choice;
+            SlotOneTip();
         }
         if (curSlot == 2)
         {
@@ -682,6 +683,7 @@ public class Spellbook : MonoBehaviour
             slot2Mem3 = lvl4choice;
             slot2Mem4 = lvl5choice;
             slot2Mem5 = lvl6choice;
+            SlotTwoTip();
         }
         if (curSlot == 3)
         {
@@ -697,6 +699,7 @@ public class Spellbook : MonoBehaviour
             slot3Mem3 = lvl4choice;
             slot3Mem4 = lvl5choice;
             slot3Mem5 = lvl6choice;
+            SlotThreeTip();
         }
 
         //toggleSpells = toggleSpells ? false : true;
@@ -730,14 +733,14 @@ public class Spellbook : MonoBehaviour
         slot2.color = Color.white;
         slot3.color = Color.white;
 
-        this.GetComponent<ToolTipScript>().Empty1();
-        this.GetComponent<ToolTipScript>().Empty2();
-        this.GetComponent<ToolTipScript>().Empty3();
-        this.GetComponent<ToolTipScript>().Empty4();
-        this.GetComponent<ToolTipScript>().Empty5();
-        this.GetComponent<ToolTipScript>().Empty6();
-        this.GetComponent<ToolTipScript>().SpellCombTip(0);
-        SpellPanel.SetActive(false);
+        //this.GetComponent<ToolTipScript>().Empty1();
+        //this.GetComponent<ToolTipScript>().Empty2();
+        //this.GetComponent<ToolTipScript>().Empty3();
+        //this.GetComponent<ToolTipScript>().Empty4();
+        //this.GetComponent<ToolTipScript>().Empty5();
+        //this.GetComponent<ToolTipScript>().Empty6();
+        //this.GetComponent<ToolTipScript>().SpellCombTip(0);
+     //   SpellPanel.SetActive(false);
     }
 
     public void SlotOne()
@@ -832,7 +835,7 @@ public class Spellbook : MonoBehaviour
         this.GetComponent<ToolTipScript>().Empty5();
         this.GetComponent<ToolTipScript>().Empty6();
         this.GetComponent<ToolTipScript>().SpellCombTip(0);
-        this.GetComponent<ToolTipScript>().CurSpellToolTipBox.SetActive(false);
+     //   this.GetComponent<ToolTipScript>().CurSpellToolTipBox.SetActive(false);
         this.GetComponent<ToolTipScript>().CurSpellToolTipBox2.SetActive(false);
     }
 
@@ -1227,13 +1230,13 @@ public class Spellbook : MonoBehaviour
         {
             cast.spellname = fire.spellname;
             cast.projectilespeed = fire.projectilespeed;
-            cast.damage1Pure = fire.damage;
+            cast.damage1Pure = fire.damagePure;
             cast.currentspellObject = fire.projectile;
             cast.currentConeObject = fire.Cone;
             cast.currentChannel = fire.Channel;
             cast.currentChannelCone = fire.ChannelCone;
             cast.currentChanMet = fire.ChannelMeteor;
-            cast.cd1Pure = fire.cooldown;
+            cast.cd1Pure = fire.cooldownSeconds;
             cast.FireBallBurn = fire.FireBallBurn;
             cast.BurnDuration = fire.BurnDuration;
             cast.BurnPercent = fire.BurnPercent;
@@ -1247,13 +1250,13 @@ public class Spellbook : MonoBehaviour
         {
             cast.spellname = frost.spellname;
             cast.projectilespeed = frost.projectilespeed;
-            cast.damage1Pure = frost.damage;
+            cast.damage1Pure = frost.damagePure;
             cast.currentspellObject = frost.projectile;
             cast.currentConeObject = frost.Cone;
             cast.currentChannel = frost.Channel;
             cast.currentChannelCone = frost.ChannelCone;
             cast.currentChanMet = frost.ChannelMeteor;
-            cast.cd1Pure = frost.cooldown;
+            cast.cd1Pure = frost.cooldownSeconds;
             cast.FrostBoltSlow = frost.FrostBoltSlow;
             cast.SlowDuration = frost.SlowDuration;
             cast.SlowPercent = frost.SlowPercent;
@@ -1267,11 +1270,11 @@ public class Spellbook : MonoBehaviour
         {
             cast.spellname = lightning.spellname;
             cast.projectilespeed = lightning.projectilespeed;
-            cast.damage1Pure = lightning.damage;
+            cast.damage1Pure = lightning.damagePure;
             cast.currentspellObject = lightning.projectile;
             cast.currentLBmeteor = lightning.LBMeteor;
             cast.currentChannelCone = lightning.ChannelCone;
-            cast.cd1Pure = lightning.cooldown;
+            cast.cd1Pure = lightning.cooldownSeconds;
             cast.FrostBoltSlow = false;
             cast.FireBallBurn = false;
             cast.LBBounce = lightning.LBBounce;
@@ -1304,9 +1307,9 @@ public class Spellbook : MonoBehaviour
 
         if (lvl2choiceNOW == 1)
         { // Meteor
-            cast.damage2Pure = meteor.damageReduction;
+            cast.damage2Pure = meteor.damagePure;
             cast.aoeSizeMeteor = meteor.aoeSize;
-            cast.cd2Pure = meteor.extraCD;
+            cast.cd2Pure = meteor.cooldownSeconds;
             cast.ghostCast = false; // needs to be here to remove ghostchast
             cast.cone = false;
         }
@@ -1314,17 +1317,17 @@ public class Spellbook : MonoBehaviour
         if (lvl2choiceNOW == 2)
         { // Cone - Aoe infront of caster.
             cast.cone = cone.cone;
-            cast.damage2Pure = cone.damageModifier;
-            cast.cd2Pure = cone.extraCD;
+            cast.damage2Pure = cone.damagePure;
+            cast.cd2Pure = cone.cooldownSeconds;
             cast.aoeSizeMeteor = 0f;
             cast.ghostCast = false;
         }
 
         if (lvl2choiceNOW == 3)
         { //GhostCast (spells pass through enemies).
-            cast.damage2Pure = ghost.damageReduction;
+            cast.damage2Pure = ghost.damagePure;
             cast.ghostCast = ghost.ghostCast;
-            cast.cd2Pure = ghost.extraCD;
+            cast.cd2Pure = ghost.cooldownSeconds;
             cast.aoeSizeMeteor = 0f; // needs to be here to remove the meteor thingy.. 
             cast.cone = false;
         }
@@ -1349,9 +1352,9 @@ public class Spellbook : MonoBehaviour
         { // Multicast
 
             cast.doubleCast = dCast.doubleCast;
-            cast.cd1Per = dCast.extraCD;
+            cast.cd1Per = dCast.cooldownPercent;
             cast.splitCast = false;
-            cast.damage1Per = dCast.DamageModifier;
+            cast.damage1Per = dCast.damagePercent;
             cast.CompOrb = false;
         }
 
@@ -1359,8 +1362,8 @@ public class Spellbook : MonoBehaviour
         { // Splitcast
             cast.doubleCast = false;
             cast.splitCast = split.splitCast;
-            cast.cd1Per = split.extraCD;
-            cast.damage1Per = split.DamageModifier;
+            cast.cd1Per = split.cooldownPercent;
+            cast.damage1Per = split.damagePercent;
             cast.CompOrb = false;
         }
 
@@ -1393,8 +1396,8 @@ public class Spellbook : MonoBehaviour
 
         if (lvl4choiceNOW == 1)
         { // Boost
-            cast.damage3Pure = boost.damageModifierPure; //TODO ehum order of damage.
-            cast.damage2Per = boost.damageModifierPercent;
+            cast.damage3Pure = boost.damagePure; //TODO ehum order of damage.
+            cast.damage2Per = boost.damagePercent;
             cast.BoostCrit = boost.BoostCrit;
             cast.CritChance = boost.CritChance;
             cast.CritDamage = boost.CritDamage;
@@ -1403,7 +1406,7 @@ public class Spellbook : MonoBehaviour
         }
         if (lvl4choiceNOW == 2)
         { //Hasten
-            cast.cd2Per = hasten.CDModifier;
+            cast.cd2Per = hasten.cooldownPercent;
             cast.projectilespeed *= hasten.ProjectileSpeed;
             cast.HastenChance = hasten.HastenChance;
             cast.HastenBool = hasten.HastenBool;
@@ -1443,7 +1446,7 @@ public class Spellbook : MonoBehaviour
 
         if (lvl5choiceNOW == 1)
         { // BlackHole
-            cast.cd3Pure = BH.CDmodifier;
+            cast.cd3Pure = BH.cooldownSeconds;
             cast.BHDuration = BH.BHDuration;
             cast.BHSize = BH.BHSize;
             cast.BHRadius = BH.BHRadius;
@@ -1456,7 +1459,7 @@ public class Spellbook : MonoBehaviour
         if (lvl5choiceNOW == 2)
         { //Push
 
-            cast.cd3Pure = push.CDmodifier;
+            cast.cd3Pure = push.cooldownSeconds;
             cast.Push = push.push;
             cast.BHBool = false;
             cast.pool = false;
@@ -1465,7 +1468,7 @@ public class Spellbook : MonoBehaviour
         if (lvl5choiceNOW == 3)
         { //Pool
 
-            cast.cd3Pure = pool.CDmodifier;
+            cast.cd3Pure = pool.cooldownSeconds;
             cast.pool = pool.pool;
             cast.Poolduration = pool.duration;
             cast.PoolDamage = pool.damageMod;
@@ -1494,8 +1497,8 @@ public class Spellbook : MonoBehaviour
         if (lvl6choiceNOW == 1)
         { // Chaos
 
-            cast.cd4Per = Chaos.CoolDownMod;
-            cast.cd4Pure = Chaos.CoolDownSec;
+            cast.cd4Per = Chaos.cooldownPercent;
+            cast.cd4Pure = Chaos.cooldownSeconds;
             cast.ChaosOrb_ = Chaos.ChaosOrbBool;
             cast.damage4Per = 1;
             cast.ChaosOrbAttackCD = Chaos.ChaosOrbAttackCD;
@@ -1507,9 +1510,9 @@ public class Spellbook : MonoBehaviour
         if (lvl6choiceNOW == 2)
         { //Channel
 
-            cast.damage4Per = channel.damageModifier;
+            cast.damage4Per = channel.damagePercent;
             cast.channel = channel.channeling;
-            cast.cd4Per = channel.extraCD;
+            cast.cd4Per = channel.cooldownPercent;
             cast.chanDur = channel.chanDur;
             cast.ChaosOrb_ = false;
             cast.BlessedAim = false;
@@ -1518,8 +1521,8 @@ public class Spellbook : MonoBehaviour
 
         if (lvl6choiceNOW == 3)
         { //Blessed
-            cast.cd4Per = Aim.CoolDownMod;
-            cast.damage4Per = Aim.DamageMod;
+            cast.cd4Per = Aim.cooldownPercent;
+            cast.damage4Per = Aim.damagePercent;
             cast.BlessedAim = Aim.BlessedAimBool;
             cast.cd4Pure = 0;
             cast.channel = false;

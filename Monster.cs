@@ -1023,7 +1023,7 @@ public class Monster : MonoBehaviour, IDamageable {
                 {
                     case 1:
                         spell.projectilespeed = currentSpell.GetComponent<FrostBolt>().projectilespeed;
-                        spell.damage = currentSpell.GetComponent<FrostBolt>().damage;
+                        spell.damage = currentSpell.GetComponent<FrostBolt>().damagePure;
                         spell.FrostBoltSlow = currentSpell.GetComponent<FrostBolt>().FrostBoltSlow;
                         spell.SlowDuration = currentSpell.GetComponent<FrostBolt>().SlowDuration;
                         spell.SlowPercent = currentSpell.GetComponent<FrostBolt>().SlowPercent + 0.1f;
@@ -1031,14 +1031,14 @@ public class Monster : MonoBehaviour, IDamageable {
                         break;
                     case 2:
                         spell.projectilespeed = currentSpell.GetComponent<Fireball>().projectilespeed;
-                        spell.damage = currentSpell.GetComponent<Fireball>().damage - 0.5f;
+                        spell.damage = currentSpell.GetComponent<Fireball>().damagePure - 0.5f;
                         spell.FireBallBurn = currentSpell.GetComponent<Fireball>().FireBallBurn;
                         spell.BurnDuration = currentSpell.GetComponent<Fireball>().BurnDuration;
                         spell.BurnPercent = currentSpell.GetComponent<Fireball>().BurnPercent;
                         break;
                     case 3:
                         spell.projectilespeed = currentSpell.GetComponent<LightningBolt>().projectilespeed;
-                        spell.damage = currentSpell.GetComponent<LightningBolt>().damage;
+                        spell.damage = currentSpell.GetComponent<LightningBolt>().damagePure;
                         spell.LBBounce = currentSpell.GetComponent<LightningBolt>().LBBounce;
                         spell.LBBounceAmount = currentSpell.GetComponent<LightningBolt>().LBBounceAmount = 1;
                         break;
@@ -2132,7 +2132,7 @@ public class Monster : MonoBehaviour, IDamageable {
             GameObject test123 = Instantiate(currentspellObject, castPoint.transform.position, castPoint.transform.rotation, castPoint.transform);
             SpellProjectile spell = test123.GetComponent<SpellProjectile>();
             spell.projectilespeed = currentSpell.GetComponent<FrostBolt>().projectilespeed;
-            spell.damage = currentSpell.GetComponent<FrostBolt>().damage;
+            spell.damage = currentSpell.GetComponent<FrostBolt>().damagePure;
             spell.FrostBoltSlow = currentSpell.GetComponent<FrostBolt>().FrostBoltSlow;
             spell.SlowDuration = currentSpell.GetComponent<FrostBolt>().SlowDuration;
             spell.SlowPercent = currentSpell.GetComponent<FrostBolt>().SlowPercent + 0.1f;

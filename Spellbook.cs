@@ -227,6 +227,9 @@ public class Spellbook : MonoBehaviour
             Slot2Blocked.enabled = false;
             Slot3Blocked.enabled = false;
         }
+
+        this.gameObject.GetComponent<ToolTipScript>().CloseAllItemPanels();
+
         openBool = openBool ? false : true;
     }
 
@@ -1048,7 +1051,7 @@ public class Spellbook : MonoBehaviour
         {
             case 1:
 
-                showSpellBook.transform.position = new Vector3(slot1.transform.position.x, showSpellBook.transform.position.y, showSpellBook.transform.position.z);
+        //        showSpellBook.transform.position = new Vector3(slot1.transform.position.x, showSpellBook.transform.position.y, showSpellBook.transform.position.z);
 
                 if (manager.meteorToken_ == true || manager.coneToken_ == true || manager.ghostToken_ == true)
                 {
@@ -1104,7 +1107,7 @@ public class Spellbook : MonoBehaviour
                 break;
             case 2:
 
-                showSpellBook.transform.position = new Vector3(slot2.transform.position.x, showSpellBook.transform.position.y, showSpellBook.transform.position.z);
+           //     showSpellBook.transform.position = new Vector3(slot2.transform.position.x, showSpellBook.transform.position.y, showSpellBook.transform.position.z);
                 //   SpellPanel.transform.position = new Vector3(showSpellBook.transform.position.x + 500, SpellPanel.transform.position.y, SpellPanel.transform.position.z);
 
                 if (manager.meteorToken_2 == true || manager.coneToken_2 == true || manager.ghostToken_2 == true)
@@ -1160,7 +1163,7 @@ public class Spellbook : MonoBehaviour
                 break;
             case 3:
 
-                showSpellBook.transform.position = new Vector3(slot3.transform.position.x, showSpellBook.transform.position.y, showSpellBook.transform.position.z);
+            //    showSpellBook.transform.position = new Vector3(slot3.transform.position.x, showSpellBook.transform.position.y, showSpellBook.transform.position.z);
                 //  SpellPanel.transform.position = new Vector3(showSpellBook.transform.position.x + 500, SpellPanel.transform.position.y, SpellPanel.transform.position.z);
 
                 if (manager.meteorToken_3 == true || manager.coneToken_3 == true || manager.ghostToken_3 == true)

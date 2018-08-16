@@ -8,6 +8,7 @@ public class CastWeapon : MonoBehaviour
     public int CurrentArmor;
     public int CurrentWeapon;
 
+    public ToolTipScript tooltip;
     private float CD1;
     private float CD1_;
     private bool spellSlot1rdy;
@@ -34,6 +35,7 @@ public class CastWeapon : MonoBehaviour
     public void SelectWeapon(int ID)
     {
         CurrentWeapon = ID;
+        tooltip.OpenWeaponSelect();
 
         if (ID == 3)
         {
@@ -47,6 +49,7 @@ public class CastWeapon : MonoBehaviour
     public void SelectArmor(int ID)
     {
         CurrentArmor = ID;
+        tooltip.OpenArmorSelect();
         if (ID == 3)
         {
             ArmorTrigger();

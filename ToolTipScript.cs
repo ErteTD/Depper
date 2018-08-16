@@ -8,8 +8,8 @@ public class ToolTipScript : MonoBehaviour
     public GameObject CurSpellToolTipBox2;
 
     public List<GameObject> AllSpells = new List<GameObject>();
-    public List<GameObject> AllWeapons = new List<GameObject>();
-    public List<GameObject> AllArmors = new List<GameObject>();
+    public List<MasterItem> AllWeapons_ = new List<MasterItem>();
+    public List<MasterItem> AllArmors_ = new List<MasterItem>();
 
     private Fireball fire;
     private FrostBolt frost;
@@ -63,11 +63,6 @@ public class ToolTipScript : MonoBehaviour
     public GameObject WeaponTipPanel;
     public Text weaponEffect;
     public Text weaponName;
-    public GameObject SpiderStaff;
-    public GameObject BasicStaff;
-    public GameObject BlinkStaff;
-    public GameObject FireStaff;
-    public GameObject IKStaff;
 
     [Header("Armor")]
     public GameObject ArmorColor;
@@ -75,12 +70,6 @@ public class ToolTipScript : MonoBehaviour
     public GameObject ArmorTipPanel;
     public Text armorEffect;
     public Text armorName;
-    public GameObject SpiderArmor;
-    public GameObject BasicArmor;
-    public GameObject IlluArmor;
-    public GameObject RoidRobe;
-    public GameObject IKArmor;
-
 
     // for the current spell.
     List<string> curSpellname = new List<string>() {"", "", "", "", "", "" };
@@ -108,6 +97,9 @@ public class ToolTipScript : MonoBehaviour
 
     private bool showWeaponSelect;
     private bool showArmorSelect;
+
+    private bool toggleArmorTooltip;
+    private bool toggleWeaponTooltip;
 
     private int CurItemID;
     public void Start()
@@ -487,75 +479,35 @@ public class ToolTipScript : MonoBehaviour
     }
     public void WeaponTip(bool preview)
     {
-        WeaponSpider spider = SpiderStaff.GetComponent<WeaponSpider>();
-        WeaponBasic basic = BasicStaff.GetComponent<WeaponBasic>();
-        Blink blink = BlinkStaff.GetComponent<Blink>();
-        Blink FireStaff_ = FireStaff.GetComponent<Blink>();
-        Blink IKStaff_ = IKStaff.GetComponent<Blink>();
-        WeaponTipPanel.SetActive(true);
+        toggleWeaponTooltip = !toggleWeaponTooltip;
+        WeaponTipPanel.SetActive(toggleWeaponTooltip);
         int CurID = CastSpell.FindObjectOfType<CastWeapon>().CurrentWeapon;
         if (preview)
         {
             CurID = CurItemID;
         }
-        switch (CurID)
-        {
-            case 0:
-                GetWeaponClassFrom(basic, preview);
-                break;
-            case 1:
-                GetWeaponClassFrom(spider, preview);
-                break;
-            case 2:
-                GetWeaponClassFrom(blink, preview);
-                break;
-            case 3:
-                GetWeaponClassFrom(FireStaff_, preview);
-                break;
-            case 4:
-                GetWeaponClassFrom(IKStaff_, preview);
-                break;
-        }
+        GetWeaponClassFrom(AllWeapons_[CurID], preview);
     }
     public void ArmorTip(bool preview)
     {
-        ArmorSpider spider = SpiderArmor.GetComponent<ArmorSpider>();
-        ArmorBasic basic = BasicArmor.GetComponent<ArmorBasic>();
-        ArmorIllusion illu = IlluArmor.GetComponent<ArmorIllusion>();
-        ArmorIllusion Rage = RoidRobe.GetComponent<ArmorIllusion>();
-        ArmorIllusion IKArmor_ = IKArmor.GetComponent<ArmorIllusion>();
-        ArmorTipPanel.SetActive(true);
+        toggleArmorTooltip = !toggleArmorTooltip;
+        ArmorTipPanel.SetActive(toggleArmorTooltip);
         int CurID = CastSpell.FindObjectOfType<CastWeapon>().CurrentArmor;
         if (preview)
         {
             CurID = CurItemID;
         }
-        switch (CurID) 
-        {
-            case 0:
-                GetArmorClassFrom(basic, preview);
-                break;
-            case 1:
-                GetArmorClassFrom(spider, preview);
-                break;
-            case 2:
-                GetArmorClassFrom(illu, preview);
-                break;
-            case 3:
-                GetArmorClassFrom(Rage, preview);
-                break;
-            case 4:
-                GetArmorClassFrom(IKArmor_, preview);
-                break;
-        }
+        GetArmorClassFrom(AllArmors_[CurID], preview);
     }
     public void CloseWeapon()
     {
-        WeaponTipPanel.SetActive(false);
+        toggleWeaponTooltip = !toggleWeaponTooltip;
+        WeaponTipPanel.SetActive(toggleWeaponTooltip);
     }
     public void CloseArmor()
     {
-        ArmorTipPanel.SetActive(false);
+        toggleArmorTooltip = !toggleArmorTooltip;
+        ArmorTipPanel.SetActive(toggleArmorTooltip);      
     }
     public void CurrentItemID(int ID)
     {
@@ -574,6 +526,21 @@ public class ToolTipScript : MonoBehaviour
         showWeaponSelect = false;
         showArmorSelect = showArmorSelect ? false : true;
         SelectArmor.SetActive(showArmorSelect);
+    }
+
+
+    public void CloseAllItemPanels()
+    {
+        if (SelectWeapon.activeSelf == true)
+        {
+            showWeaponSelect = showWeaponSelect ? false : true;
+            SelectWeapon.SetActive(showWeaponSelect);
+        }
+        if (SelectArmor.activeSelf == true)
+        {
+            showArmorSelect = showArmorSelect ? false : true;
+            SelectArmor.SetActive(showArmorSelect);
+        }
     }
 }
 

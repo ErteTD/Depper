@@ -96,8 +96,8 @@ public class CastWeapon : MonoBehaviour
                 case 1:
                     WeaponSpider spell = Weapons[CurrentWeapon].GetComponent<WeaponSpider>();
                     spellSlotCD = spell.cooldown;
-                    GameObject spider1 = Instantiate(spell.Spiders, transform.position, transform.rotation, transform);
-                    GameObject spider2 = Instantiate(spell.Spiders, transform.position, transform.rotation, transform);
+                    GameObject spider1 = Instantiate(spell.ItemObject, transform.position, transform.rotation, transform);
+                    GameObject spider2 = Instantiate(spell.ItemObject, transform.position, transform.rotation, transform);
 
                     spider1.transform.position += spider1.transform.right * 2;
                     spider2.transform.position += spider2.transform.right * -2;
@@ -137,7 +137,7 @@ public class CastWeapon : MonoBehaviour
                         // Code Here.
                         Vector3 Pos = new Vector3(Player1.transform.position.x, 1.5f, Player1.transform.position.z);
                         Player1.transform.LookAt(hit2.point);
-                        GameObject PoolObj = Instantiate(spell3.StaffObject, Pos + Player1.transform.forward * 4, transform.rotation, transform);
+                        GameObject PoolObj = Instantiate(spell3.ItemObject, Pos + Player1.transform.forward * 4, transform.rotation, transform);
                         PoolObj.transform.parent = null;
                         PoolObj.transform.localScale = new Vector3(1, 1, 1);
                         PoolObj.GetComponent<BigBoyFire>().PoolNumb = 7;
@@ -160,7 +160,7 @@ public class CastWeapon : MonoBehaviour
                     float attackTimer = 0;
                     for (int i = 0; i < 5; i++)
                     {
-                        GameObject P1 = Instantiate(spell4.StaffObject, transform);
+                        GameObject P1 = Instantiate(spell4.ItemObject, transform);
                         P1.transform.Rotate(0, OrbFacing, 0);
                         P1.transform.position = new Vector3(transform.position.x, 3, transform.position.z) + P1.transform.forward * 1.5f;
                         P1.GetComponent<OldKingAttack3>().FloatUpTimer += attackTimer;
@@ -201,7 +201,7 @@ public class CastWeapon : MonoBehaviour
                 case 1:
                     ArmorSpider spell = Armor[CurrentArmor].GetComponent<ArmorSpider>();
                     spellSlotCD2 = spell.cooldown;
-                    GameObject spider1 = Instantiate(spell.Spiders, transform.position, transform.rotation, transform);
+                    GameObject spider1 = Instantiate(spell.ItemObject, transform.position, transform.rotation, transform);
 
                     spider1.transform.position += spider1.transform.forward * 2;
 
@@ -211,7 +211,7 @@ public class CastWeapon : MonoBehaviour
                 case 2:
                     ArmorIllusion spell2 = Armor[CurrentArmor].GetComponent<ArmorIllusion>();
                     spellSlotCD2 = spell2.cooldown;
-                    GameObject Illu = Instantiate(spell2.Illusion, transform.position, transform.rotation, transform);
+                    GameObject Illu = Instantiate(spell2.ItemObject, transform.position, transform.rotation, transform);
 
 
                     Illu.transform.parent = null;
@@ -233,7 +233,7 @@ public class CastWeapon : MonoBehaviour
                     ArmorIllusion spell4 = Armor[CurrentArmor].GetComponent<ArmorIllusion>();
                     spellSlotCD2 = spell4.cooldown;
 
-                    GameObject Exp = Instantiate(spell4.Illusion, transform.position, transform.rotation, transform);
+                    GameObject Exp = Instantiate(spell4.ItemObject, transform.position, transform.rotation, transform);
                     Exp.transform.parent = null;
                     Exp.GetComponent<ExplodeScript>().BoostBurnDur = 0;
                     Exp.GetComponent<ExplodeScript>().BoostBurnPer = 0;

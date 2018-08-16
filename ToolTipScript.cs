@@ -146,10 +146,9 @@ public class ToolTipScript : MonoBehaviour
         if (spell.damagePercent == 0) { DamagePercet.text = ""; }
         if (spell.cooldownSeconds == 0) { CooldownSeconds.text = ""; }
         if (spell.cooldownPercent == 0) { CooldownPercent.text = ""; }
-
     }
 
-    public void Slvl2S1(int slvl)
+    public void Slvl2S1(int slvl) // Can get rid of all these, just assign through button click the gameobject, works.
     {
         switch (slvl)
         {
@@ -468,120 +467,85 @@ public class ToolTipScript : MonoBehaviour
         spellCombTip6 = false;
     }
 
+    public void GetWeaponClassFrom(MasterItem item, bool preview)
+    {
+        weaponName.text = item.itemname;
+        weaponEffect.text = item.effect;
+        if (!preview)
+        {
+            WeaponColor.GetComponent<Image>().color = item.ItemColor;
+        }
+    }
+    public void GetArmorClassFrom(MasterItem item, bool preview)
+    {
+        armorName.text = item.itemname;
+        armorEffect.text = item.effect;
+        if (!preview)
+        {
+            ArmorColor.GetComponent<Image>().color = item.ItemColor;
+        }
+    }
     public void WeaponTip(bool preview)
     {
         WeaponSpider spider = SpiderStaff.GetComponent<WeaponSpider>();
         WeaponBasic basic = BasicStaff.GetComponent<WeaponBasic>();
         Blink blink = BlinkStaff.GetComponent<Blink>();
         Blink FireStaff_ = FireStaff.GetComponent<Blink>();
-        Blink FireStaff_2 = IKStaff.GetComponent<Blink>();
+        Blink IKStaff_ = IKStaff.GetComponent<Blink>();
         WeaponTipPanel.SetActive(true);
         int CurID = CastSpell.FindObjectOfType<CastWeapon>().CurrentWeapon;
         if (preview)
         {
             CurID = CurItemID;
         }
-        switch (CurID) //TODO give active item..
+        switch (CurID)
         {
             case 0:
-                weaponName.text = basic.itemname;
-                weaponEffect.text = basic.effect;
-                if (!preview)
-                {
-                    WeaponColor.GetComponent<Image>().color = Color.white;
-                }
+                GetWeaponClassFrom(basic, preview);
                 break;
             case 1:
-                weaponName.text = spider.itemname;
-                weaponEffect.text = spider.effect;
-                if (!preview)
-                {
-                    WeaponColor.GetComponent<Image>().color = spider.ItemColor;
-                }
+                GetWeaponClassFrom(spider, preview);
                 break;
             case 2:
-                weaponName.text = blink.itemname;
-                weaponEffect.text = blink.effect;
-                if (!preview)
-                {
-                    WeaponColor.GetComponent<Image>().color = blink.ItemColor;
-                }
+                GetWeaponClassFrom(blink, preview);
                 break;
             case 3:
-                weaponName.text = FireStaff_.itemname;
-                weaponEffect.text = FireStaff_.effect;
-                if (!preview)
-                {
-                    WeaponColor.GetComponent<Image>().color = FireStaff_.ItemColor;
-                }
+                GetWeaponClassFrom(FireStaff_, preview);
                 break;
             case 4:
-                weaponName.text = FireStaff_2.itemname;
-                weaponEffect.text = FireStaff_2.effect;
-                if (!preview)
-                {
-                    WeaponColor.GetComponent<Image>().color = FireStaff_2.ItemColor;
-                }
+                GetWeaponClassFrom(IKStaff_, preview);
                 break;
         }
     }
-
     public void ArmorTip(bool preview)
     {
         ArmorSpider spider = SpiderArmor.GetComponent<ArmorSpider>();
         ArmorBasic basic = BasicArmor.GetComponent<ArmorBasic>();
         ArmorIllusion illu = IlluArmor.GetComponent<ArmorIllusion>();
         ArmorIllusion Rage = RoidRobe.GetComponent<ArmorIllusion>();
-        ArmorIllusion Rage_ = IKArmor.GetComponent<ArmorIllusion>();
+        ArmorIllusion IKArmor_ = IKArmor.GetComponent<ArmorIllusion>();
         ArmorTipPanel.SetActive(true);
         int CurID = CastSpell.FindObjectOfType<CastWeapon>().CurrentArmor;
         if (preview)
         {
             CurID = CurItemID;
         }
-
-        switch (CurID) //TODO give active item..
+        switch (CurID) 
         {
             case 0:
-                armorName.text = basic.itemname;
-                armorEffect.text = basic.effect;
-                if (!preview)
-                {
-                    ArmorColor.GetComponent<Image>().color = Color.white;
-                }
-
+                GetArmorClassFrom(basic, preview);
                 break;
             case 1:
-                armorName.text = spider.itemname;
-                armorEffect.text = spider.effect;
-                if (!preview)
-                {
-                    ArmorColor.GetComponent<Image>().color = spider.ItemColor;
-                }
+                GetArmorClassFrom(spider, preview);
                 break;
             case 2:
-                armorName.text = illu.itemname;
-                armorEffect.text = illu.effect;
-                if (!preview)
-                {
-                    ArmorColor.GetComponent<Image>().color = illu.ItemColor;
-                }
+                GetArmorClassFrom(illu, preview);
                 break;
             case 3:
-                armorName.text = Rage.itemname;
-                armorEffect.text = Rage.effect;
-                if (!preview)
-                {
-                    ArmorColor.GetComponent<Image>().color = Rage.ItemColor;
-                }
+                GetArmorClassFrom(Rage, preview);
                 break;
             case 4:
-                armorName.text = Rage_.itemname;
-                armorEffect.text = Rage_.effect;
-                if (!preview)
-                {
-                    ArmorColor.GetComponent<Image>().color = Rage_.ItemColor;
-                }
+                GetArmorClassFrom(IKArmor_, preview);
                 break;
         }
     }

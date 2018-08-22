@@ -1239,6 +1239,7 @@ public class Spellbook : MonoBehaviour
             cast.currentChannel = fire.Channel;
             cast.currentChannelCone = fire.ChannelCone;
             cast.currentChanMet = fire.ChannelMeteor;
+            cast.currentMeteor = fire.Meteor;
             cast.cd1Pure = fire.cooldownSeconds;
             cast.FireBallBurn = fire.FireBallBurn;
             cast.BurnDuration = fire.BurnDuration;
@@ -1259,6 +1260,7 @@ public class Spellbook : MonoBehaviour
             cast.currentChannel = frost.Channel;
             cast.currentChannelCone = frost.ChannelCone;
             cast.currentChanMet = frost.ChannelMeteor;
+            cast.currentMeteor = frost.Meteor;
             cast.cd1Pure = frost.cooldownSeconds;
             cast.FrostBoltSlow = frost.FrostBoltSlow;
             cast.SlowDuration = frost.SlowDuration;
@@ -1275,8 +1277,10 @@ public class Spellbook : MonoBehaviour
             cast.projectilespeed = lightning.projectilespeed;
             cast.damage1Pure = lightning.damagePure;
             cast.currentspellObject = lightning.projectile;
-            cast.currentLBmeteor = lightning.LBMeteor;
+            cast.currentMeteor = lightning.Meteor;
             cast.currentChannelCone = lightning.ChannelCone;
+            cast.currentChannel = lightning.Channel;
+            cast.currentConeObject = lightning.Cone;
             cast.cd1Pure = lightning.cooldownSeconds;
             cast.FrostBoltSlow = false;
             cast.FireBallBurn = false;

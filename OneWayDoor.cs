@@ -124,6 +124,7 @@ public class OneWayDoor : MonoBehaviour
         MainCamera.GetComponent<CamController>().xLimit2 = rightEdge;
         MainCamera.GetComponent<CamController>().zTest = CamCenter;
         Player_.GetComponent<Player>().targetPosition = Player_.transform.position;
+        Player_.GetComponent<Player>().CurrentRoom = ConRoom;
         Invoke("TrustMe", 1f);
 
 

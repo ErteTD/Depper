@@ -50,7 +50,7 @@ public class CastWeapon : MonoBehaviour
     {
         CurrentArmor = ID;
         tooltip.OpenArmorSelect();
-        if (ID == 3)
+        if (ID == 3 || ID == 5)
         {
             ArmorTrigger();
             if (!spellSlot2rdy)
@@ -65,9 +65,11 @@ public class CastWeapon : MonoBehaviour
             Player1.GetComponent<Player>().MovementSpeed_ = 9;
             Player1.GetComponent<Player>().agent.speed = 9;
             Player1.GetComponent<Player>().CantBeSlowed = false;
-
         }
-
+        if (ID != 5)
+        {
+            Player1.GetComponent<Player>().BlobArmorStatus(false); // Add here code to diable potential particle effect that is active when slippers are used.
+        }
 
         if (ID != 4 && Player1.GetComponent<Player>().fullhealth == 15) // armor 4 non frost explosion stuff.
         {
@@ -119,9 +121,10 @@ public class CastWeapon : MonoBehaviour
                         Tele1Effect = Instantiate(TelePortEffect, Player1.transform.position, Player1.transform.rotation);
                         Tele1Effect.transform.parent = Player1.transform;
 
-                        Instantiate(TelePortEffect, hit.point, Player1.transform.rotation);
+                        ParticleSystem Tele1Effect2 = Instantiate(TelePortEffect, hit.point, Player1.transform.rotation);
                         TeleLoc = hit.point;
-
+                        Destroy(Tele1Effect.transform.gameObject, 3.1f);
+                        Destroy(Tele1Effect2.transform.gameObject, 3.1f);
 
                         Invoke("TelePortPlayer", 1f);
                         spellSlotCD = spell2.cooldown;
@@ -242,10 +245,15 @@ public class CastWeapon : MonoBehaviour
                     Exp.GetComponent<ExplodeScript>().BoostBurnPer = 0;
                     Exp.GetComponent<ExplodeScript>().ArmorProc = true;
                     Exp.GetComponent<ExplodeScript>().FireTrueFrostFalse = false;
+                    break;
 
-
+                case 5:
+                    ArmorIllusion spell5 = Armor[CurrentArmor].GetComponent<ArmorIllusion>();
+                    spellSlotCD2 = spell5.cooldown;
+                    Player1.GetComponent<Player>().BlobArmorStatus(true);
 
                     break;
+
             }
             CD2 = spellSlotCD2;
             CD2_ = spellSlotCD2;

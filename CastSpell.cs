@@ -49,7 +49,7 @@ public class CastSpell : MonoBehaviour
     public GameObject currentConeObject;
     public GameObject currentChannel;
     public GameObject currentChannelCone;
-    public GameObject currentLBmeteor;
+    public GameObject currentMeteor;
     public GameObject currentChanMet;
     [HideInInspector]
     public Vector3 spellCastLocation;
@@ -173,11 +173,11 @@ public class CastSpell : MonoBehaviour
 
             if (cone || channel || aoeSizeMeteor > 0)
             {
-                if (cone && spellname != "Lightningbolt")
+                if (cone)
                 {
                     currentspellObject = currentConeObject;
                 }
-                if (channel && spellname != "Lightningbolt")
+                if (channel)
                 {
                     currentspellObject = currentChannel;
                 }
@@ -185,9 +185,9 @@ public class CastSpell : MonoBehaviour
                 {
                     currentspellObject = currentChannelCone;
                 }
-                if (aoeSizeMeteor > 0 && spellname == "Lightningbolt" && !channel)
+                if (aoeSizeMeteor > 0 && !channel)
                 {
-                    currentspellObject = currentLBmeteor;
+                    currentspellObject = currentMeteor;
                 }
                 if (aoeSizeMeteor > 0 && spellname != "Lightningbolt" && channel)
                 {
@@ -345,19 +345,23 @@ public class CastSpell : MonoBehaviour
                 {
 
                     Invoke("DoubleCastSpell1", 0.15f);
-                    player_.MultiVis(0);
+            //        player_.MultiVis(0);
+
+                   StartCoroutine(MultiVisIE(0, 0.15f));
                 }
                 if (MultiCast > 75)
                 {
 
                     Invoke("DoubleCastSpell1", 0.3f);
-                    player_.MultiVis(1);
+                    //  player_.MultiVis(1);
+                    StartCoroutine(MultiVisIE(1, 0.3f));
                 }
                 if (MultiCast > 90)
                 {
 
                     Invoke("DoubleCastSpell1", 0.45f);
-                    player_.MultiVis(-1);
+                    //          player_.MultiVis(-1);
+                    StartCoroutine(MultiVisIE(-1, 0.45f));
                 }
 
 
@@ -422,6 +426,16 @@ public class CastSpell : MonoBehaviour
             player_.PlayerIsIdle();
         }
     }
+
+    IEnumerator MultiVisIE(float Position, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        player_.MultiVis(Position);
+    }
+
+
+
+
     public void DoubleCastSpell1()
     {
 

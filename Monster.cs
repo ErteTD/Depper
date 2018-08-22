@@ -59,7 +59,6 @@ public class Monster : MonoBehaviour, IDamageable {
     private bool CheckIfFrostBoosted;
     private bool OnlyOnce = false;
     private bool CurrentlyFrozen;
-
     [HideInInspector] public bool MonsterHasLoot;
     [HideInInspector] public GameObject MonsterLoot;
     private float BoostBurnDamage;
@@ -78,7 +77,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public bool SpawnMultiBool;
     public int SpawnMultiNumber;
     public int IntendedLevel;
-
+    
     [Header("Boss Weapon")]
     public GameObject BossWeapon;
     [Header("Boss Armor")]
@@ -198,8 +197,11 @@ public class Monster : MonoBehaviour, IDamageable {
 
     [Header("The Blob")]
     public GameObject BlobAttack1Object;
+    public GameObject BlobAttack2Object;
     public float BlobAttackCD;
     public float BlobAttackCD_;
+    public float BlobAttackCD2;
+    public float BlobAttackCD_2;
     public float BlobAttack1Duration;
     public bool BlobAttackNoTarget;
     public Light BossLight;
@@ -208,6 +210,7 @@ public class Monster : MonoBehaviour, IDamageable {
     private float timeLeft;
     private Color targetColor;
     private int HealTimeCounter;
+    [HideInInspector] public bool BlobAttack2Bool;
     [HideInInspector] public float Blob4RotSpeed;
     [HideInInspector] public bool Healboss;
     public List<GameObject> BlobCornerList;
@@ -240,7 +243,7 @@ public class Monster : MonoBehaviour, IDamageable {
         MirrorImageCD_ = MirrorImageCD;
         Ratatatata_ = Ratatatata;
         BlobAttackCD_ = BlobAttackCD/2;
-
+        BlobAttackCD_2 = 1; // change to 15
         if (BigBoyColor != null)
         {
             lerpedColor = colorIni;
@@ -318,13 +321,11 @@ public class Monster : MonoBehaviour, IDamageable {
             SkeletonStartDead();
         }
 
-        if (BlobDie)
-        {
-            Invoke("BlobExpire", BlobDieTimer);
-        }
-
+        //if (BlobDie)
+        //{
+        //    Invoke("BlobExpire", BlobDieTimer);
+        //}
     }
-
 
   public  void AddToRoomMonsterList(GameObject Monster_)
     {
@@ -375,6 +376,7 @@ public class Monster : MonoBehaviour, IDamageable {
     void TheBlobAttack()
     {
         BlobAttackCD_ -= Time.deltaTime;
+        BlobAttackCD_2 -= Time.deltaTime;
         if (BlobAttackCD_ < 0)
         {
             if (HealTimeCounter < 7)
@@ -407,6 +409,26 @@ public class Monster : MonoBehaviour, IDamageable {
                 HealTimeCounter = 0;
                 BlobAttackCD_ = BlobAttackCD * 1.5f;
             }
+        }
+
+        if (BlobAttackCD_2 < 0)
+        {
+
+            GameObject CurBlob = Instantiate(BlobAttack2Object, transform.position, transform.rotation, transform);
+            CurBlob.transform.position += CurBlob.transform.forward * 4;
+            CurBlob.transform.parent = transform.parent;
+            Monster CurBlob_ = CurBlob.GetComponent<Monster>();
+
+            CurBlob_.BlobAttack2Bool = true;
+            CurBlob_.BossRoom = BossRoom;
+            ParticleSystem ps = CurBlob_.BlobPS;
+            var main = ps.main;
+            ParticleSystem ps2 = CurBlob_.BlobPS2;
+            var main2 = ps2.main;
+            main.startColor = BossLight.color;
+            main2.startColor = BossLight.color;
+
+            BlobAttackCD_2 = BlobAttackCD2;
         }
     }
 
@@ -519,6 +541,11 @@ public class Monster : MonoBehaviour, IDamageable {
     IEnumerator Blob1(GameObject BlobDad, bool heal, int AttackNumb, Vector3 BlobRot, int DirMod, float BHealth, float Bspeed, float lifeTime, float delay)
     {
         yield return new WaitForSeconds(delay);
+        Blob1AttackFunction(BlobDad, heal, AttackNumb,BlobRot,DirMod, BHealth,Bspeed,lifeTime);
+    }
+
+    private void Blob1AttackFunction(GameObject BlobDad, bool heal, int AttackNumb, Vector3 BlobRot, int DirMod, float BHealth, float Bspeed, float lifeTime)
+    {
         GameObject CurBlob = Instantiate(BlobAttack1Object, transform.position, transform.rotation, transform);
         AddToRoomMonsterList(CurBlob);
         Monster CurBlob_ = CurBlob.GetComponent<Monster>();
@@ -556,6 +583,7 @@ public class Monster : MonoBehaviour, IDamageable {
         else // so wont trigger on heal but all other attacks.
         {
             CurBlob.transform.position += CurBlob.transform.forward * 4;
+            CurBlob.transform.parent = transform.parent;
         }
         ParticleSystem ps2 = CurBlob_.BlobPS2;
         var main2 = ps2.main;
@@ -569,7 +597,6 @@ public class Monster : MonoBehaviour, IDamageable {
         CurBlob_.BlobAttackNoTarget = true;
         CurBlob_.BlobDie = true;
         CurBlob_.BlobDieTimer = lifeTime;
-
     }
 
     void BlobExpire()
@@ -701,6 +728,13 @@ public class Monster : MonoBehaviour, IDamageable {
                     transform.Translate(dir.normalized * distThisFrame, Space.World);
                     Quaternion targetRotation = Quaternion.LookRotation(dir);
                     this.transform.rotation = Quaternion.Lerp(this.transform.rotation, targetRotation, Time.deltaTime * MovementSpeed);
+
+                    if (!CurrentlyFrozen && InCombat)
+                    {
+                        MovementSpeed += Time.deltaTime / 6;
+                        MovementSpeed_ += Time.deltaTime / 6;
+                    }
+
                 }
                 if (MonsterType != 5)
                 {
@@ -885,7 +919,7 @@ public class Monster : MonoBehaviour, IDamageable {
                 OnlyOnce = true;
                 if (other.GetComponent<Monster>().health + health <= other.GetComponent<Monster>().health2)
                 {
-                    other.GetComponent<Monster>().TakeDamage(-health); // heals the remaning amount of health this mob has.
+                    other.GetComponent<Monster>().TakeDamage(-health/2); // heals the remaning amount of health this mob has.
                 }
                 transform.GetChild(0).gameObject.SetActive(true);
                 Destroy(transform.GetChild(0).gameObject, 0.99f);
@@ -1075,7 +1109,7 @@ public class Monster : MonoBehaviour, IDamageable {
                 SwarmCD_ = SwarmCD;
 
                 Invoke("StartSwarm", 1.5f);
-                Invoke("StopSwarm", 3f);
+                Invoke("StopSwarm", 5f);
             }
             else
             {
@@ -1134,10 +1168,18 @@ public class Monster : MonoBehaviour, IDamageable {
 
         if (count > 0)
         {
-            SummonSwarm(count - 1);
+            //  SummonSwarm(count - 1);
+            StartCoroutine(NextSpiderInSwarm(count -1, 0.2f));
         }
     }
-    public void IlluMaxTime()
+
+    IEnumerator NextSpiderInSwarm(int spidercount, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SummonSwarm(spidercount);
+    }
+
+        public void IlluMaxTime()
     {
         TakeDamage(0.1f);
     }
@@ -1346,6 +1388,43 @@ public class Monster : MonoBehaviour, IDamageable {
             transform.GetChild(0).gameObject.SetActive(true);
             Destroy(transform.GetChild(0).gameObject, 0.99f);
             transform.GetChild(0).gameObject.transform.parent = null;
+
+            if (BlobAttack2Bool)
+            {
+
+
+                Vector3 RotateDir = transform.rotation.eulerAngles;
+                float yAxis = RotateDir.y;
+
+                for (int i = 0; i < 10; i++)
+                {
+                    RotateDir = new Vector3(0, yAxis, 0);
+
+
+                    GameObject CurBlob = Instantiate(BlobAttack1Object, transform.position, transform.rotation, transform);
+
+                    AddToRoomMonsterList(CurBlob);
+                    Monster CurBlob_ = CurBlob.GetComponent<Monster>();
+                    CurBlob.transform.rotation = Quaternion.Euler(RotateDir);
+                    ParticleSystem ps = BlobPS;
+                    var main = ps.main;
+                    yAxis += 36;
+                    ParticleSystem ps3 = CurBlob_.BlobPS;
+                    var main3 = ps3.main;
+                    ParticleSystem ps4 = CurBlob_.BlobPS2;
+                    var main4 = ps4.main;
+                    main3.startColor = main.startColor;
+                    main4.startColor = main.startColor;
+                    CurBlob_.health = 2;
+                    CurBlob_.health2 = 2;
+                    CurBlob_.Healboss = false;
+                    CurBlob_.MovementSpeed = 8;
+                    CurBlob_.MovementSpeed_ = 8;
+                    CurBlob_.BlobAttackNoTarget = true;
+                    CurBlob_.BlobDie = true;
+                    CurBlob.transform.parent = null;
+                }
+            }
         }
         if (MonsterType == 6 && Resurrect && !Immortal) { anim.DieAnimation3(); }
         if (MonsterType == 6 && !Resurrect && !Immortal) { anim.DieAnimation4(); }
@@ -1730,6 +1809,7 @@ public class Monster : MonoBehaviour, IDamageable {
                 spell.cone = false;
                 spell.aoeSizeMeteor = 0;
                 spell.BHBool = false;
+                spell.pool = false;
                 if (spell.LBBounceAmount <= 0)
                 {
                     spell.LBBounce = false; // could make it count --;

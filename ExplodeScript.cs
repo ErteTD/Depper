@@ -11,7 +11,9 @@ public class ExplodeScript : MonoBehaviour
     public float BoostBurnPer;
     public float BurnDamage;
     public float BoostTotalBurn;
+    public GameObject Explosion;
 
+    public bool IlluExplosion;
     public bool FireTrueFrostFalse;
     public bool ArmorProc;
     public float Area;
@@ -33,7 +35,7 @@ public class ExplodeScript : MonoBehaviour
 
     public void ExplodeNow()
     {
-
+        Explosion.SetActive(true);
         Collider[] cols2 = Physics.OverlapSphere(transform.position, Area);
         foreach (Collider c in cols2)
         {
@@ -45,7 +47,7 @@ public class ExplodeScript : MonoBehaviour
                     e.Burn(true, BoostBurnDur, BoostBurnPer, BurnDamage * BoostBurnPer);
                     e.TakeDamage(BoostTotalBurn * BoostBurnPer);
                 }
-                else
+                else if (!IlluExplosion)
                 {
                     if (e.MonsterType != 5)
                     {

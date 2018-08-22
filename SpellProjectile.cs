@@ -6,11 +6,12 @@ using UnityEngine.UI;
 public class SpellProjectile : MonoBehaviour
 {
 
-    public GameObject effect1;
-    public GameObject effect2;
+    public GameObject HitVisualEffect;
+    public GameObject SecondaryVisualEffect;
+    public float SecondaryVisualEffectDuration;
+    private float VisualEffectDuration = 1;
     //  public GameObject FireCone;
     private bool ChanMetorCone;
-    public LineRenderer lineRenderer;
 
     private Vector3 pos_;
     private Vector3 Direction;
@@ -118,9 +119,23 @@ public class SpellProjectile : MonoBehaviour
     private GameObject NearestEnemy_;
     private float Distance_;
     private float NewTargetTimer;
+    private Transform CurrentRoomASParent;
 
     private void Start()
     {
+
+        if (!CompOrbPlayer)
+        {
+         //   CurrentRoomASParent = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().CurrentRoom.transform;
+         // Problem with setting all spells to current room. Mostly with comp/channeling/blessed aim.
+            ThePlayer = GameObject.FindGameObjectWithTag("Player");
+
+            if (!enemyCastingspell)
+            {
+                ThePlayer.GetComponent<Player>().curSpellProjectile.Add(gameObject);
+            }
+        }
+
         if (CompOrb)
         {
             transform.position = new Vector3(spellCastLocation.x, 1.5f, spellCastLocation.z);
@@ -141,15 +156,7 @@ public class SpellProjectile : MonoBehaviour
         {
             chainID = GetInstanceID().ToString();
         }
-        if (!CompOrbPlayer)
-        {
-            ThePlayer = GameObject.FindGameObjectWithTag("Player");
 
-            if (!enemyCastingspell)
-            {
-                ThePlayer.GetComponent<Player>().curSpellProjectile.Add(gameObject);
-            }
-        }
         if (BoostCrit)
         {
             Crit();
@@ -355,23 +362,30 @@ public class SpellProjectile : MonoBehaviour
             Instantiate(BigBoyFrost, transform.position, transform.rotation);
         }
 
-        if (spellName != "Lightningbolt")
-        {
-            if (transform.childCount == 5)
-            {
-                GameObject Boom = transform.GetChild(4).gameObject;
-                Boom.SetActive(true);
-                Boom.transform.parent = null;
-                Destroy(Boom, 2);
-            }
-        }
-        else
-        {
-            GameObject Boom = transform.GetChild(2).gameObject;
-            Boom.SetActive(true);
-            Boom.transform.parent = null;
-            Destroy(Boom, 2);
-        }
+            //if (spellName != "Lightningbolt")
+            //{
+            //if (transform.childCount == 5)
+            //{
+            //    GameObject Boom = transform.GetChild(4).gameObject;
+            //    Boom.SetActive(true);
+            //    Boom.transform.parent = null;
+            //    Destroy(Boom, 2);
+            //}
+            //if (HitVisualEffect != null)
+            //{
+            //    GameObject effectOne = Instantiate(HitVisualEffect, this.transform);
+            //    effectOne.SetActive(true);
+            //    effectOne.transform.parent = null;
+            //    Destroy(effectOne, 2);
+            //}
+            //}
+            //else
+            //{
+            //    GameObject Boom = transform.GetChild(2).gameObject;
+            //    Boom.SetActive(true);
+            //    Boom.transform.parent = null;
+            //    Destroy(Boom, 2);
+            //}
         Stop();
     }
 
@@ -963,7 +977,7 @@ public class SpellProjectile : MonoBehaviour
                 }
                 if (spellName == "Lightningbolt")
                 {
-                    transform.GetComponent<BoxCollider>().enabled = false;
+                   // transform.GetComponent<BoxCollider>().enabled = false;
 
                     lightChild1.transform.localScale = new Vector3(lightChild1.transform.localScale.x, 1.5f, lightChild1.transform.localScale.z);
                     lightChild2.transform.localScale = new Vector3(lightChild2.transform.localScale.x, 1.5f, lightChild2.transform.localScale.z);
@@ -976,18 +990,18 @@ public class SpellProjectile : MonoBehaviour
         else if (spellName == "Lightningbolt")
         {
             transform.localScale = new Vector3(1, 1, 1);
-            lc1.lengthScale = 5;
-            lc2.lengthScale = 5;
-            lc3.lengthScale = 5;
-            lc4.lengthScale = 5;
-            lc5.lengthScale = 5;
-            lc6.lengthScale = 5;
-            lightChild1.transform.localScale = new Vector3(1, 1, 1);
-            lightChild2.transform.localScale = new Vector3(1, 1, 1);
-            lightChild3.transform.localScale = new Vector3(1, 1, 1);
-            lightChild4.transform.localScale = new Vector3(1, 1, 1);
-            lightChild5.transform.localScale = new Vector3(1, 1, 1);
-            lightChild6.transform.localScale = new Vector3(1, 1, 1);
+            lc1.lengthScale = 2;
+            lc2.lengthScale = 2;
+            lc3.lengthScale = 2;
+            lc4.lengthScale = 2;
+            lc5.lengthScale = 2;
+            lc6.lengthScale = 2;
+            lightChild1.transform.localScale = new Vector3(2.5f, 1, 1);
+            lightChild2.transform.localScale = new Vector3(2.5f, 1, 1);
+            lightChild3.transform.localScale = new Vector3(2.5f, 1, 1);
+            lightChild4.transform.localScale = new Vector3(2.5f, 1, 1);
+            lightChild5.transform.localScale = new Vector3(2.5f, 1, 1);
+            lightChild6.transform.localScale = new Vector3(2.5f, 1, 1);
             Vector3 Asd = lightChild1.transform.position;
             lightChild1.transform.position = new Vector3(Asd.x + 1, Asd.y + 1, Asd.z);
             lightChild2.transform.position = new Vector3(Asd.x - 1, Asd.y - 1, Asd.z);
@@ -1058,13 +1072,12 @@ public class SpellProjectile : MonoBehaviour
     {
         if (!channeling)
         {
-            if (spellName != "Lightningbolt")
-            {
-                transform.localScale += new Vector3(transform.localScale.x * 1.5f, transform.localScale.y * 1.5f, transform.localScale.z * 1.5f);
-                transform.GetChild(3).gameObject.SetActive(true); // meteor extra effect attached to fire/frost visuals.
-                this.transform.Find("SubFire").gameObject.SetActive(false);
-                this.transform.Find("SubFire").gameObject.SetActive(true);
-            }
+            //if (spellName != "Lightningbolt")
+            //{
+            //    transform.localScale += new Vector3(transform.localScale.x * 1.5f, transform.localScale.y * 1.5f, transform.localScale.z * 1.5f);
+            //    this.transform.Find("SubFire").gameObject.SetActive(false);
+            //    this.transform.Find("SubFire").gameObject.SetActive(true);
+            //}
             if (MultiChan1)
             {
                 MultiChanPosX = 2;
@@ -1077,6 +1090,10 @@ public class SpellProjectile : MonoBehaviour
             {
                 MultiChanPosX = 6;
             }
+
+
+            VisualEffectDuration = 1.3f;
+
         }
         Vector3 spellCastLocation_ = spellCastLocation;
         if (!channeling || spellName == "Lightningbolt")
@@ -1105,20 +1122,20 @@ public class SpellProjectile : MonoBehaviour
     }
 
     void SpellIsCone()
-    {
+    { //3,4,5. 
         directionF = ThePlayer.transform.forward;
         if (spellName == "Lightningbolt")
         {
-            transform.localScale += new Vector3(transform.localScale.x * 2f, transform.localScale.y * 3f, transform.localScale.z * 4f);
+           // transform.localScale += new Vector3(transform.localScale.x * 2f, transform.localScale.y * 3f, transform.localScale.z * 4f);
             Vector3 loc = transform.position;
             loc += transform.forward * 2.2f;
             transform.position = loc;
-            lightChild1.transform.localScale = new Vector3(0.8f, 0.6f, 0.4f);
-            lightChild2.transform.localScale = new Vector3(0.8f, 0.6f, 0.4f);
-            lightChild3.transform.localScale = new Vector3(0.8f, 0.6f, 0.4f);
-            lightChild4.transform.localScale = new Vector3(0.8f, 0.6f, 0.4f);
-            lightChild5.transform.localScale = new Vector3(0.8f, 0.6f, 0.4f);
-            lightChild6.transform.localScale = new Vector3(0.8f, 0.6f, 0.4f);
+            //lightChild1.transform.localScale = new Vector3(0.8f, 0.6f, 0.4f);
+            //lightChild2.transform.localScale = new Vector3(0.8f, 0.6f, 0.4f);
+            //lightChild3.transform.localScale = new Vector3(0.8f, 0.6f, 0.4f);
+            //lightChild4.transform.localScale = new Vector3(0.8f, 0.6f, 0.4f);
+            //lightChild5.transform.localScale = new Vector3(0.8f, 0.6f, 0.4f);
+            //lightChild6.transform.localScale = new Vector3(0.8f, 0.6f, 0.4f);
         }
         else
         {
@@ -1137,13 +1154,12 @@ public class SpellProjectile : MonoBehaviour
             damage *= CritDamage;
             if (!CompOrbPlayer) // Comporb testing, making sure the orb is the new "player" for channeling script. OBS! CHANGE! Make so the text can hover over the orb.
             {
-                ThePlayer.GetComponent<Player>().Crit(damage);
+                ThePlayer.GetComponent<Player>().CritVis();
             }
             else
             {
                 GameObject Crit = Instantiate(CritVis, CritVisCompOrb.transform);
-                Text txt = Crit.transform.GetChild(0).gameObject.transform.GetChild(0).GetComponent<Text>();
-                txt.text = damage.ToString("F1");
+                Crit.transform.localPosition = new Vector3(0, 3, 0);
                 Destroy(Crit, 1);
             }
         }
@@ -1151,30 +1167,31 @@ public class SpellProjectile : MonoBehaviour
 
     public void Stop()
     {
-        if (ChaosOrb_ && !CompOrb)
-        {
-            if (transform.childCount == 3)
-            {
-                GameObject Implode = transform.GetChild(2).gameObject;
-                Implode.SetActive(true);
-                Implode.transform.parent = null;
-                Destroy(Implode, 0.99f);
-            }
-        }
+        //if (ChaosOrb_ && !CompOrb)
+        //{
+        //    if (transform.childCount == 3)
+        //    {
+        //        GameObject Implode = transform.GetChild(2).gameObject;
+        //        Implode.SetActive(true);
+        //        Implode.transform.parent = null;
+        //        Destroy(Implode, 0.99f);
+        //    }
+        //}
 
-        if (!cone && !channeling && !CompOrb && !ChaosOrb_)
+        //if (!cone && !channeling && !CompOrb && !ChaosOrb_)
+        if (HitVisualEffect != null)
         {
-            GameObject effectOne = Instantiate(effect1, this.transform);
-            GameObject effectTwo = Instantiate(effect2, this.transform);
-
+            GameObject effectOne = Instantiate(HitVisualEffect, this.transform);
             effectOne.SetActive(true);
-            effectTwo.SetActive(true);
-
             effectOne.transform.parent = null;
-            effectTwo.transform.parent = null;
-            Destroy(effectOne, 1);
-            Destroy(effectTwo, 1);
+            Destroy(effectOne, VisualEffectDuration);
         }
+        if (SecondaryVisualEffect != null) // currently just frostbolt trail
+        {
+            SecondaryVisualEffect.transform.parent =null;
+            Destroy(SecondaryVisualEffect, SecondaryVisualEffectDuration);
+        }
+
         if (channeling && !CompOrb && !CompOrbPlayer && !ChaosOrb_)
         {
             ThePlayer.GetComponent<Player>().StopChanneling();

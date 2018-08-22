@@ -39,6 +39,8 @@ public class Player : MonoBehaviour, IDamageable {
     private GameObject activeDoor;
     private GameObject activeToken;
     private bool DieOnce;
+    public GameObject CurrentRoom;
+    private bool BlobArmorBool;
 
     [HideInInspector] public bool attackingRightNow;
     private float attackingDuration = 0.25f;
@@ -49,6 +51,7 @@ public class Player : MonoBehaviour, IDamageable {
     public GameObject CritObj;
     public GameObject HastenVisual;
     public GameObject MultiCastVisual;
+    public GameObject CritVisual;
     public GameObject BigBoyGlow;
     public GameObject ChangeColor;
 
@@ -193,9 +196,9 @@ public class Player : MonoBehaviour, IDamageable {
                 if (dist < spellrange) // If in range, set speed to 0, enable rotation without Navmesh things.
                 {
 
-                    if (Vector3.Distance(agent.destination, transform.position) > 1)
+                    if (Vector3.Distance(agent.destination, transform.position) > 0.5f && !BlobArmorBool)
                     {
-                        agent.destination = this.transform.position;
+                        Invoke("SpellCastLocationAgentLocation", 0.05f); 
                     }
                     Vector3 direction = (targetPosition - transform.position).normalized;
 
@@ -246,6 +249,17 @@ public class Player : MonoBehaviour, IDamageable {
         }
         CheckDestinationReached();
     }
+
+    private void SpellCastLocationAgentLocation()
+    {
+        agent.destination = this.transform.position;
+    }
+
+    public void BlobArmorStatus(bool status)
+    {
+        BlobArmorBool = status;
+    }
+
 
     public void PlayerIsIdle()
     {
@@ -347,8 +361,16 @@ public class Player : MonoBehaviour, IDamageable {
         Multi.transform.localPosition = new Vector3(Position, 4, 0);
         Destroy(Multi, 0.8f);
     }
+    public void CritVis()
+    {
+        GameObject Crit = Instantiate(CritVisual, transform);
+            Crit.transform.localPosition = new Vector3(0, 5, 0);
+        Destroy(Crit, 0.8f);
+    }
 
-    public void SendSpellCast()
+
+
+        public void SendSpellCast()
     {
         move = false;  // can't move when casting spells.
         CS.CastCurrentSpell();

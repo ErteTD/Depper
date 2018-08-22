@@ -100,6 +100,8 @@ public class MapGrid : MonoBehaviour
 
         Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material = FloorType[CurrentLevel];
 
+        GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().CurrentRoom = Base;
+
         var RandomObstacle = Random.Range(0, Obstacle.Count);
         Instantiate(Obstacle[RandomObstacle], Base.transform);
         Base.GetComponent<Room>().BuildRoomNavMesh();
@@ -198,11 +200,12 @@ public class MapGrid : MonoBehaviour
 
                 TotalRooms--;
                 GameObject Base = Instantiate(BasicRoom, transform.position, transform.rotation, transform);
+                Base.SetActive(false);
                 Base.transform.localPosition = new Vector3(XGrid * 80, 0, YGrid * 40);
 
                 for (int i = -6; i < 7; i += 2)
                 {
-                    for (int i2 = -12; i2 < 13; i2 += 2)
+                    for (int i2 = -11; i2 < 12; i2 += 2)
                     {
                         MonRanDPosList.Add(new Vector3(i, 0, i2));
                     }
@@ -249,7 +252,7 @@ public class MapGrid : MonoBehaviour
                 Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material = FloorType[CurrentLevel];
                 Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(Base.GetComponent<Room>().Floor.transform.localScale.x, Base.GetComponent<Room>().Floor.transform.localScale.z);
 
-                Base.SetActive(false);
+           //     Base.SetActive(false);
                 RoomList.Add(Base);
             }
 
@@ -317,6 +320,7 @@ public class MapGrid : MonoBehaviour
 
             //   var RandomBoss = Random.Range(0, Boss.Count); // Boss room currently does not have a challenge raiting.
             GameObject BossRoom = Instantiate(Boss[CurrentLevel], transform); // 
+
             Room BRoom = BossRoom.GetComponent<Room>();
             BossRoom.transform.position = new Vector3(0f, 0f, (FinalY + 2) * 40);
 

@@ -217,7 +217,7 @@ public class Monster : MonoBehaviour, IDamageable {
     [HideInInspector] public bool BlobAttack4;
     [HideInInspector] public bool BlobDie;
     [HideInInspector] public float BlobDieTimer;
-
+    public bool BlobWeapon;
 
     void Start()
     {
@@ -321,10 +321,10 @@ public class Monster : MonoBehaviour, IDamageable {
             SkeletonStartDead();
         }
 
-        //if (BlobDie)
-        //{
-        //    Invoke("BlobExpire", BlobDieTimer);
-        //}
+        if (BlobDie)
+        {
+            Invoke("BlobExpire", BlobDieTimer);
+        }
     }
 
   public  void AddToRoomMonsterList(GameObject Monster_)
@@ -595,7 +595,7 @@ public class Monster : MonoBehaviour, IDamageable {
         CurBlob_.MovementSpeed = Bspeed;
         CurBlob_.MovementSpeed_ = Bspeed;
         CurBlob_.BlobAttackNoTarget = true;
-        CurBlob_.BlobDie = true;
+        CurBlob_.BlobDie = false;
         CurBlob_.BlobDieTimer = lifeTime;
     }
 
@@ -721,7 +721,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
                 if (MonsterType == 5)
                 {
-                    Vector3 dir = new Vector3(PC.transform.position.x, 2.5f, PC.transform.position.z) - this.transform.position;
+                    Vector3 dir = new Vector3(PC.transform.position.x, 3f, PC.transform.position.z) - this.transform.position;
 
                     float distThisFrame = MovementSpeed * Time.deltaTime;
 
@@ -894,7 +894,7 @@ public class Monster : MonoBehaviour, IDamageable {
                 transform.GetChild(0).gameObject.transform.parent = null;
                 Destroy(gameObject);
             }
-            if (other.tag == "Player")
+            if (other.tag == "Player" && !BlobWeapon)
             {
                 OnlyOnce = true;
                 other.GetComponent<Player>().TakeDamage(damage);
@@ -905,7 +905,7 @@ public class Monster : MonoBehaviour, IDamageable {
                 Destroy(gameObject);
             }
 
-            if (other.tag == "Illusion")
+            if (other.tag == "Illusion" && !BlobWeapon)
             {
                 OnlyOnce = true;
                 other.GetComponent<IlluScript>().TakeDamage(damage);
@@ -921,6 +921,15 @@ public class Monster : MonoBehaviour, IDamageable {
                 {
                     other.GetComponent<Monster>().TakeDamage(-health/2); // heals the remaning amount of health this mob has.
                 }
+                transform.GetChild(0).gameObject.SetActive(true);
+                Destroy(transform.GetChild(0).gameObject, 0.99f);
+                transform.GetChild(0).gameObject.transform.parent = null;
+                Destroy(gameObject);
+            }
+            if (other.tag =="Monster" && BlobWeapon && !OnlyOnce)
+            {
+                OnlyOnce = true;
+                other.GetComponent<Monster>().TakeDamage(damage);
                 transform.GetChild(0).gameObject.SetActive(true);
                 Destroy(transform.GetChild(0).gameObject, 0.99f);
                 transform.GetChild(0).gameObject.transform.parent = null;
@@ -1421,7 +1430,7 @@ public class Monster : MonoBehaviour, IDamageable {
                     CurBlob_.MovementSpeed = 8;
                     CurBlob_.MovementSpeed_ = 8;
                     CurBlob_.BlobAttackNoTarget = true;
-                    CurBlob_.BlobDie = true;
+                    CurBlob_.BlobDie = false;
                     CurBlob.transform.parent = null;
                 }
             }
@@ -1590,6 +1599,7 @@ public class Monster : MonoBehaviour, IDamageable {
                     agent.isStopped = true;
                 }
             }
+            CancelInvoke("StartAgent");
             Invoke("StartAgent", 3f); // HARDCODED
 
             Transform result = gameObject.transform.Find("frozen");

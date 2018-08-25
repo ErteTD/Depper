@@ -45,6 +45,14 @@ public class CastWeapon : MonoBehaviour
         {
             Player1.GetComponent<Player>().BigBoyGlow.SetActive(false);
         }
+        if (ID == 5 && Player1.GetComponent<Player>().BlobWeaponEquppied == false)
+        {
+            WeaponAttack();
+        }
+        if (ID != 5 && Player1.GetComponent<Player>().BlobWeaponEquppied == true)
+        {
+            Player1.GetComponent<Player>().BlobWeaponEquppied = false;
+        }
     }
     public void SelectArmor(int ID)
     {
@@ -160,7 +168,6 @@ public class CastWeapon : MonoBehaviour
                     break;
                 case 4:
                     Blink spell4 = Weapons[CurrentWeapon].GetComponent<Blink>();
-
                     // Code Here.
                     float OrbFacing = transform.rotation.eulerAngles.x;
                     float attackTimer = 0;
@@ -176,6 +183,12 @@ public class CastWeapon : MonoBehaviour
                         attackTimer += 0.2f;
                     }
                     spellSlotCD = spell4.cooldown;
+                    break;
+                case 5:
+                    Blink spell5 = Weapons[CurrentWeapon].GetComponent<Blink>();
+                    Player1.GetComponent<Player>().BlobWeaponEquppied = true;
+                    Player1.GetComponent<Player>().BlobWeaponObject = spell5.ItemObject;
+                    spellSlotCD = spell5.cooldown;
                     break;
             }
             CD1 = spellSlotCD;

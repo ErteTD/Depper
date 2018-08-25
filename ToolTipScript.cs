@@ -40,6 +40,7 @@ public class ToolTipScript : MonoBehaviour
     public Text CooldownSeconds;
     public Text CooldownPercent;
     public Text Effect;
+    public Color PositiveStatColor;
 
     [Header("SpellCombination")]
     public Text curTSpellname;
@@ -104,6 +105,7 @@ public class ToolTipScript : MonoBehaviour
     private int CurItemID;
     public void Start()
     {
+        
         fire = AllSpells[0].GetComponent<Fireball>();
         frost = AllSpells[1].GetComponent<FrostBolt>();
         lightning = AllSpells[2].GetComponent<LightningBolt>();
@@ -128,16 +130,31 @@ public class ToolTipScript : MonoBehaviour
     {
         SpellModifierPanel.SetActive(true);
         Spellname.text = spell.spellname;
-        DamagePure.text = "Pure damage: +"+spell.damagePure.ToString("F1");
-        DamagePercet.text = "Percentual damage: *" + (spell.damagePercent).ToString("F2");
-        CooldownSeconds.text = "Cooldown: +" + spell.cooldownSeconds.ToString("F1") + " seconds";
-        CooldownPercent.text = "Percentual cooldown: *" + (spell.cooldownPercent).ToString("F2");
+        //DamagePure.text = spell.damagePure.ToString("F1");
+      //  DamagePercet.text = ((spell.damagePercent * 100)).ToString("F0");
+      //  CooldownSeconds.text = spell.cooldownSeconds.ToString("F1");
+      //  CooldownPercent.text = ((spell.cooldownPercent * 100)).ToString("F0");
         Effect.text = spell.effect;
 
-        if (spell.damagePure == 0) { DamagePure.text = ""; }
-        if (spell.damagePercent == 0) { DamagePercet.text = ""; }
-        if (spell.cooldownSeconds == 0) { CooldownSeconds.text = ""; }
-        if (spell.cooldownPercent == 0) { CooldownPercent.text = ""; }
+        if (spell.damagePure > 0) { DamagePure.color = PositiveStatColor; DamagePure.text = "+" + spell.damagePure.ToString("F1") +" damage"; }
+        else if (spell.damagePure < 0) { DamagePure.color = Color.red; DamagePure.text = "-" + spell.damagePure.ToString("F1") + " damage"; }
+
+        if (spell.damagePercent > 1) { DamagePercet.color = PositiveStatColor; DamagePercet.text = ((spell.damagePercent * 100)).ToString("F0") + "%"; }
+        else if (spell.damagePercent < 1) { DamagePercet.color = Color.red; DamagePercet.text = ((spell.damagePercent * 100)).ToString("F0") + "%"; }
+
+        if (spell.cooldownSeconds < 0) { CooldownSeconds.color = PositiveStatColor; CooldownSeconds.text = "-" + spell.cooldownSeconds.ToString("F1") + " seconds"; }
+        else if (spell.cooldownSeconds > 0) { CooldownSeconds.color = Color.red; CooldownSeconds.text = "+" + spell.cooldownSeconds.ToString("F1") + " seconds"; }
+
+        if (spell.cooldownPercent < 1) { CooldownPercent.color = PositiveStatColor; CooldownPercent.text = ((spell.cooldownPercent * 100)).ToString("F0") + "%"; }
+        else if (spell.cooldownPercent > 1) { CooldownPercent.color = Color.red; CooldownPercent.text = ((spell.cooldownPercent * 100)).ToString("F0") + "%"; }
+
+
+
+        if (spell.damagePure == 0) { DamagePure.color = Color.black; DamagePure.text = "---"; }
+        if (spell.damagePercent == 0) { DamagePercet.color = Color.black; DamagePercet.text = "---"; }
+        if (spell.cooldownSeconds == 0) { CooldownSeconds.color = Color.black; CooldownSeconds.text = "---"; }
+        if (spell.cooldownPercent == 0) { CooldownPercent.color = Color.black; CooldownPercent.text = "---"; }
+
     }
 
     public void Slvl2S1(int slvl) // Can get rid of all these, just assign through button click the gameobject, works.

@@ -289,11 +289,13 @@ public class CastSpell : MonoBehaviour
                 CD3_ = baseCasttimeCD;
             }
 
-
+            if (player_.BlobWeaponEquppied)
+            {
+                player_.CastExtraBlob(player_.transform.rotation);
+            }
 
             if (doubleCast)
             {
-
                 currentspellObject1 = currentspellObject;
                 projectilespeed1 = projectilespeed;
                 damage1 = damage;
@@ -316,7 +318,6 @@ public class CastSpell : MonoBehaviour
                 CritDamage1 = CritDamage;
                 chanDur1 = chanDur;
                 ChaosOrbDuration1 = ChaosOrbDuration;
-
 
                 //BlackHole
                 BHBool1 = BHBool;
@@ -445,6 +446,11 @@ public class CastSpell : MonoBehaviour
 
         MultiChanCounter++;
 
+        if (player_.BlobWeaponEquppied)
+        {
+            player_.CastExtraBlob(player_.transform.rotation);
+        }
+
         switch (MultiChanCounter)
         {
             case 1:
@@ -519,6 +525,11 @@ public class CastSpell : MonoBehaviour
 
         GameObject test123 = Instantiate(currentspellObject, this.transform.position, splitRot);
         SpellProjectile spell = test123.GetComponent<SpellProjectile>();
+
+        if (player_.BlobWeaponEquppied)
+        {
+            player_.CastExtraBlob(splitRot);
+        }
 
         if (LeftOrRight == 1)
         {

@@ -36,6 +36,7 @@ public class Player : MonoBehaviour, IDamageable {
     public Text HealthText;
     public Image HealthBar;
     [HideInInspector] public bool CantBeSlowed;
+    [HideInInspector] public bool BlobWeaponEquppied;
     private GameObject activeDoor;
     private GameObject activeToken;
     private bool DieOnce;
@@ -54,7 +55,7 @@ public class Player : MonoBehaviour, IDamageable {
     public GameObject CritVisual;
     public GameObject BigBoyGlow;
     public GameObject ChangeColor;
-
+    [HideInInspector] public GameObject BlobWeaponObject;
     [Header("EnemySpellEffects")]
     [HideInInspector]
     public float BurnDamage, TotalBurnDamage, BurnDur;
@@ -63,6 +64,7 @@ public class Player : MonoBehaviour, IDamageable {
     private int ChanCount;
     Vector3 moveAmount;
     Vector3 smoothMoveVelocity;
+    private float InternalSpellCastCD_;
 
     private float inputX;
     private float inputY;
@@ -247,6 +249,7 @@ public class Player : MonoBehaviour, IDamageable {
             }
             attackingDuration -= Time.deltaTime;
         }
+        InternalSpellCastCD_ -= Time.deltaTime;
         CheckDestinationReached();
     }
 
@@ -368,13 +371,39 @@ public class Player : MonoBehaviour, IDamageable {
         Destroy(Crit, 0.8f);
     }
 
-
-
-        public void SendSpellCast()
+    public void SendSpellCast()
     {
-        move = false;  // can't move when casting spells.
-        CS.CastCurrentSpell();
+
+        //move = false;
+        if (InternalSpellCastCD_ < 0)
+        {
+            CS.CastCurrentSpell();
+            //if (BlobWeaponEquppied)
+            //{
+            //    CastExtraBlob();
+            //}
+            InternalSpellCastCD_ = 0.2f;
+        }
     }
+
+
+
+    public void CastExtraBlob(Quaternion rotation)
+    {
+        GameObject Blob = Instantiate(BlobWeaponObject, new Vector3(transform.position.x, 3, transform.position.z), rotation, transform);
+        Blob.tag = "Untagged";
+        Blob.transform.position += transform.forward * 1.5f;
+        Blob.transform.parent = null;
+        Monster B = Blob.GetComponent<Monster>();
+        B.health = 2;
+        B.MovementSpeed = 5;
+        B.BlobAttackNoTarget = true;
+        B.BlobWeapon = true;
+        B.BlobDieTimer = 15;
+        B.BlobDie = true;
+        B.Healthbar.transform.parent.gameObject.transform.parent.gameObject.SetActive(false);
+    }
+
     public void Die()
     {
         anim.PlayerDie();
@@ -387,11 +416,6 @@ public class Player : MonoBehaviour, IDamageable {
         anim.PlayerAttack();
         attackingRightNow = true;
     }
-
-
-
-
-
 
 
     public void Burn(bool burn, float dur, float str, float dmg)

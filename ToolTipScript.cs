@@ -11,9 +11,9 @@ public class ToolTipScript : MonoBehaviour
     public List<MasterItem> AllWeapons_ = new List<MasterItem>();
     public List<MasterItem> AllArmors_ = new List<MasterItem>();
 
-    private Fireball fire;
-    private FrostBolt frost;
-    private LightningBolt lightning;
+    public Fireball fire;
+    public FrostBolt frost;
+    public LightningBolt lightning;
     private Meteor meteor;
     private Cone cone;
     private GhostCast ghostcast;
@@ -41,6 +41,8 @@ public class ToolTipScript : MonoBehaviour
     public Text CooldownPercent;
     public Text Effect;
     public Color PositiveStatColor;
+    public Image SpellImage;
+    public Image NoSpellImage;
 
     [Header("SpellCombination")]
     public Text curTSpellname;
@@ -62,6 +64,7 @@ public class ToolTipScript : MonoBehaviour
     public GameObject WeaponColor;
     public GameObject SelectWeapon;
     public GameObject WeaponTipPanel;
+    public GameObject ForceCloseWeaponPanels;
     public Text weaponEffect;
     public Text weaponName;
 
@@ -69,6 +72,7 @@ public class ToolTipScript : MonoBehaviour
     public GameObject ArmorColor;
     public GameObject SelectArmor;
     public GameObject ArmorTipPanel;
+    public GameObject ForceCloseArmorPanels;
     public Text armorEffect;
     public Text armorName;
 
@@ -103,6 +107,7 @@ public class ToolTipScript : MonoBehaviour
     private bool toggleWeaponTooltip;
 
     private int CurItemID;
+   
     public void Start()
     {
         
@@ -130,10 +135,6 @@ public class ToolTipScript : MonoBehaviour
     {
         SpellModifierPanel.SetActive(true);
         Spellname.text = spell.spellname;
-        //DamagePure.text = spell.damagePure.ToString("F1");
-      //  DamagePercet.text = ((spell.damagePercent * 100)).ToString("F0");
-      //  CooldownSeconds.text = spell.cooldownSeconds.ToString("F1");
-      //  CooldownPercent.text = ((spell.cooldownPercent * 100)).ToString("F0");
         Effect.text = spell.effect;
 
         if (spell.damagePure > 0) { DamagePure.color = PositiveStatColor; DamagePure.text = "+" + spell.damagePure.ToString("F1") +" damage"; }
@@ -148,14 +149,29 @@ public class ToolTipScript : MonoBehaviour
         if (spell.cooldownPercent < 1) { CooldownPercent.color = PositiveStatColor; CooldownPercent.text = ((spell.cooldownPercent * 100)).ToString("F0") + "%"; }
         else if (spell.cooldownPercent > 1) { CooldownPercent.color = Color.red; CooldownPercent.text = ((spell.cooldownPercent * 100)).ToString("F0") + "%"; }
 
-
-
         if (spell.damagePure == 0) { DamagePure.color = Color.black; DamagePure.text = "---"; }
         if (spell.damagePercent == 0) { DamagePercet.color = Color.black; DamagePercet.text = "---"; }
         if (spell.cooldownSeconds == 0) { CooldownSeconds.color = Color.black; CooldownSeconds.text = "---"; }
         if (spell.cooldownPercent == 0) { CooldownPercent.color = Color.black; CooldownPercent.text = "---"; }
 
+        SpellImage.sprite = spell.GetComponent<Image>().sprite;
     }
+
+
+    public void NoToken()
+    {
+        SpellModifierPanel.SetActive(true);
+
+        Spellname.text = "???";
+        DamagePure.color = Color.black; DamagePure.text = "???"; 
+        DamagePercet.color = Color.black; DamagePercet.text = "???"; 
+        CooldownSeconds.color = Color.black; CooldownSeconds.text = "???"; 
+        CooldownPercent.color = Color.black; CooldownPercent.text = "???";
+        Effect.text = "???";
+        SpellImage.sprite = NoSpellImage.sprite;
+
+    }
+
 
     public void Slvl2S1(int slvl) // Can get rid of all these, just assign through button click the gameobject, works.
     {
@@ -169,6 +185,9 @@ public class ToolTipScript : MonoBehaviour
                 break;
             case 3:
                 GetSpellClassFrom(ghostcast);
+                break;
+            default:
+                NoToken();
                 break;
         }
     }
@@ -185,6 +204,9 @@ public class ToolTipScript : MonoBehaviour
             case 3:
                 GetSpellClassFrom(companion);
                 break;
+            default:
+                NoToken();
+                break;
         }
     }
     public void Slvl4S1(int slvl)
@@ -199,6 +221,9 @@ public class ToolTipScript : MonoBehaviour
                 break;
             case 3:
                 GetSpellClassFrom(empower);
+                break;
+            default:
+                NoToken();
                 break;
         }
     }
@@ -215,6 +240,9 @@ public class ToolTipScript : MonoBehaviour
             case 3:
                 GetSpellClassFrom(pool);
                 break;
+            default:
+                NoToken();
+                break;
         }
     }
     public void Slvl6S1(int slvl)
@@ -230,12 +258,15 @@ public class ToolTipScript : MonoBehaviour
             case 3:
                 GetSpellClassFrom(blessedaim);
                 break;
+            default:
+                NoToken();
+                break;
         }
     }
 
     public void SpellCombTip(int lvlAndnumber)
     {
-        CurSpellToolTipBox2.SetActive(true);
+            CurSpellToolTipBox2.SetActive(true);
 
         if (spellCombTip1 == true && lvlAndnumber <= 3)
         {
@@ -245,23 +276,23 @@ public class ToolTipScript : MonoBehaviour
         {
             Empty2();
         }
-        if (spellCombTip3 == true && (lvlAndnumber > 30 && lvlAndnumber < 40))
+        if (spellCombTip3 == true && (lvlAndnumber >= 30 && lvlAndnumber < 40))
         {
             Empty3();
         }
-        if (spellCombTip4 == true && (lvlAndnumber > 40 && lvlAndnumber < 50))
+        if (spellCombTip4 == true && (lvlAndnumber >= 40 && lvlAndnumber < 50))
         {
             Empty4();
         }
-        if (spellCombTip5 == true && (lvlAndnumber > 50 && lvlAndnumber < 60))
+        if (spellCombTip5 == true && (lvlAndnumber >= 50 && lvlAndnumber < 60))
         {
             Empty5();
         }
-        if (spellCombTip6 == true && (lvlAndnumber > 60 && lvlAndnumber < 70))
+        if (spellCombTip6 == true && (lvlAndnumber >= 60 && lvlAndnumber < 70))
         {
             Empty6();
         }
-
+        
         switch (lvlAndnumber)
         {
             case 1:
@@ -289,6 +320,8 @@ public class ToolTipScript : MonoBehaviour
                 spellCombTip1 = true;
                 Effect0.text = frost.effect;
                 SpellImage1.sprite = frost.GetComponent<Image>().sprite;
+
+
 
                 if (GameManager.FindObjectOfType<GameManager>().empowerToken_2)
                 {
@@ -458,6 +491,7 @@ public class ToolTipScript : MonoBehaviour
         curDamageModifierlvl4_2 = 0;
         SpellImage4.sprite = EmptyImage.sprite;
         spellCombTip4 = false;
+        Spellbook sp = GetComponent<Spellbook>();
     }
     public void Empty5()
     {
@@ -504,6 +538,7 @@ public class ToolTipScript : MonoBehaviour
             CurID = CurItemID;
         }
         GetWeaponClassFrom(AllWeapons_[CurID], preview);
+        
     }
     public void ArmorTip(bool preview)
     {
@@ -534,15 +569,19 @@ public class ToolTipScript : MonoBehaviour
     {
         SelectArmor.SetActive(false);
         showArmorSelect = false;
+        ForceCloseArmorPanels.SetActive(false);
         showWeaponSelect = showWeaponSelect ? false : true;
         SelectWeapon.SetActive(showWeaponSelect);
+        ForceCloseWeaponPanels.SetActive(showWeaponSelect);
     }
     public void OpenArmorSelect()
     {
         SelectWeapon.SetActive(false);
         showWeaponSelect = false;
+        ForceCloseWeaponPanels.SetActive(false);
         showArmorSelect = showArmorSelect ? false : true;
         SelectArmor.SetActive(showArmorSelect);
+        ForceCloseArmorPanels.SetActive(showArmorSelect);
     }
 
 

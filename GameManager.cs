@@ -5,7 +5,9 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
-
+    public bool SlotIsInUse1;
+    public bool SlotIsInUse2;
+    public bool SlotIsInUse3;
     public Texture2D DefCursor;
     public GameObject EscMenu;
     public static int minRoom_, maxRoom_, CurrentLevel_;
@@ -20,6 +22,8 @@ public class GameManager : MonoBehaviour
     public int FireWeaponToken;
     public GameObject IKWeapon;
     public int IKWeaponToken;
+    public GameObject BlobWeapon;
+    public int BlobWeaponToken;
 
     [Header("Inventory Armor")]
     public GameObject SpiderArmor;
@@ -30,7 +34,8 @@ public class GameManager : MonoBehaviour
     public int RoidArmorToken;
     public GameObject IKArmor;
     public int IKArmorToken;
-
+    public GameObject BlobArmor;
+    public int BlobArmorToken;
 
     [Header("Resources")]
     public int meteorToken;
@@ -291,6 +296,10 @@ public class GameManager : MonoBehaviour
         {
             IKWeapon.SetActive(true);
         }
+        if (BlobWeaponToken >= 1)
+        {
+            BlobWeapon.SetActive(true);
+        }
         //Armors
         if (SpiderArmorToken >= 1)
         {
@@ -307,6 +316,10 @@ public class GameManager : MonoBehaviour
         if (IKArmorToken >= 1)
         {
             IKArmor.SetActive(true);
+        }
+        if (BlobArmorToken >= 1)
+        {
+            BlobArmor.SetActive(true);
         }
     }
 
@@ -359,6 +372,242 @@ public class GameManager : MonoBehaviour
         poolText.text = poolToken.ToString();
 
     }
+
+    public void CheckIfTokenBought(int slot, int tokenlevel)
+    {
+        SlotIsInUse1 = false;
+        SlotIsInUse2 = false;
+        SlotIsInUse3 = false;
+        switch (slot)
+        {
+            case 1:
+                switch (tokenlevel)
+                {
+                    case 1:
+                        if (meteorToken_)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (coneToken_)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (ghostToken_)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                    case 2:
+                        if (doubleToken_)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (splitToken_)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (CompToken_)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                    case 3:
+                        if (boostToken_)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (hastenToken_)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (empowerToken_)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                    case 4:
+                        if (bhToken_)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (pushToken_)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (poolToken_)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                    case 5:
+                        if (ChaosToken_)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (channelingToken_)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (AimToken_)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                }
+                break;
+            case 2:
+                switch (tokenlevel)
+                {
+                    case 1:
+                        if (meteorToken_2)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (coneToken_2)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (ghostToken_2)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                    case 2:
+                        if (doubleToken_2)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (splitToken_2)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (CompToken_2)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                    case 3:
+                        if (boostToken_2)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (hastenToken_2)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (empowerToken_2)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                    case 4:
+                        if (bhToken_2)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (pushToken_2)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (poolToken_2)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                    case 5:
+                        if (ChaosToken_2)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (channelingToken_2)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (AimToken_2)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                }
+                break;
+            case 3:
+                switch (tokenlevel)
+                {
+                    case 1:
+                        if (meteorToken_3)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (coneToken_3)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (ghostToken_3)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                    case 2:
+                        if (doubleToken_3)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (splitToken_3)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (CompToken_3)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                    case 3:
+                        if (boostToken_3)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (hastenToken_3)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (empowerToken_3)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                    case 4:
+                        if (bhToken_3)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (pushToken_3)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (poolToken_3)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                    case 5:
+                        if (ChaosToken_3)
+                        {
+                            SlotIsInUse1 = true;
+                        }
+                        if (channelingToken_3)
+                        {
+                            SlotIsInUse2 = true;
+                        }
+                        if (AimToken_3)
+                        {
+                            SlotIsInUse3 = true;
+                        }
+                        break;
+                }
+                break;
+        }
+    }
+
 
     public void BuyToken(int SpellType)
     {
@@ -1455,6 +1704,8 @@ public class GameManager : MonoBehaviour
         IlluArmorToken = 1;
         RoidArmorToken = 1;
         IKArmorToken = 1;
+        BlobArmorToken = 1;
+        BlobArmorToken = 1;
 
         meteorToken = 3;
         coneToken = 3;

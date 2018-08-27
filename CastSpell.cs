@@ -517,6 +517,8 @@ public class CastSpell : MonoBehaviour
         spell2.ChaosOrbReseveObject = currentspellObjectChaosOrbReserve1;
         spell2.ChaosOrbCD = ChaosOrbCD1;
         spell2.ChaosOrbDuration = ChaosOrbDuration1;
+
+        spell2.CritVis = CritVisual;
     }
 
 
@@ -582,6 +584,7 @@ public class CastSpell : MonoBehaviour
         spell.ChaosOrbReseveObject = currentspellObjectChaosOrbReserve;
         spell.ChaosOrbCD = (spellSlotCD) * ChaosOrbAttackCD;
         spell.ChaosOrbDuration = ChaosOrbDuration;
+        spell.CritVis = CritVisual;
     }
 
     void Update()

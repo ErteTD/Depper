@@ -174,6 +174,9 @@ public class TokenScript : MonoBehaviour
                     case 4:
                         manager.IKWeaponToken++;
                         break;
+                    case 5:
+                        manager.BlobWeaponToken++;
+                        break;
                 }
                 break;
             case 4:
@@ -190,6 +193,9 @@ public class TokenScript : MonoBehaviour
                         break;
                     case 4:
                         manager.IKArmorToken++;
+                        break;
+                    case 5:
+                        manager.BlobArmorToken++;
                         break;
                 }
                 break;

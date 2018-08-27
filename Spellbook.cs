@@ -30,7 +30,10 @@ public class Spellbook : MonoBehaviour
     public GameObject BlessedAim;
     public GameObject Channeling;
 
+
     public GameObject GameMang;
+    public GameObject ForceClosePanels;
+
     private GameManager manager;
     [HideInInspector] public GameObject showSpellBook;
     [HideInInspector] public GameObject showSpellBookSpells;
@@ -56,8 +59,6 @@ public class Spellbook : MonoBehaviour
     public Image Slot2Blocked;
     public Image Slot3Blocked;
 
-    private bool toggleSpells = false;
-
     [Header("Frames")]
     public Image Frame1;
     public Image Frame2;
@@ -69,7 +70,7 @@ public class Spellbook : MonoBehaviour
     private int lvl1choice;
     private int lvl2choice;
     private int lvl3choice;
-    private int lvl4choice;
+    public int lvl4choice;
     private int lvl5choice;
     private int lvl6choice;
 
@@ -94,8 +95,16 @@ public class Spellbook : MonoBehaviour
     private int spellSlot3Choice5;
     private int spellSlot3Choice6;
 
+
+
     // UI stuff
     // SpellBook Spells
+
+    public GameObject SelectedSpell1;
+    public GameObject SelectedSpell2;
+    public GameObject SelectedSpell3;
+    public GameObject SelectedSpell4;
+    public GameObject SelectedSpell5;
 
     public Image fireRing2;
     public Image frostRing2;
@@ -121,10 +130,16 @@ public class Spellbook : MonoBehaviour
     public Image slot1;
     public Image slot2;
     public Image slot3;
-    private Color selCol;
+    public Color selCol;
+    public Color unselCol;
+    public Color FrameSelectedCol;
 
+    private int PreviouslySelectedSlot;
+    private bool toggleSpells = false;
     private bool finishSpell_;
+    private bool DontFinishSpell;
     private bool openBool;
+
     public bool unselect2;
     public bool unselect3;
     public bool unselect4;
@@ -157,7 +172,7 @@ public class Spellbook : MonoBehaviour
     {
 
         manager = GameMang.GetComponent<GameManager>();
-        ColorUtility.TryParseHtmlString("#83FF74FF", out selCol);
+      //  ColorUtility.TryParseHtmlString("#83FF74FF", out selCol);
 
         spellSlot1Choice1 = 1;
         spellSlot1Choice2 = 0;
@@ -202,24 +217,24 @@ public class Spellbook : MonoBehaviour
 
     public void OpenSlot(int slot)
     {
-        switch (slot)
-        {
-            case 1:
-                Slot1Blocked.enabled = false;
-                Slot2Blocked.enabled = true;
-                Slot3Blocked.enabled = true;
-                break;
-            case 2:
-                Slot1Blocked.enabled = true;
-                Slot2Blocked.enabled = false;
-                Slot3Blocked.enabled = true;
-                break;
-            case 3:
-                Slot1Blocked.enabled = true;
-                Slot2Blocked.enabled = true;
-                Slot3Blocked.enabled = false;
-                break;
-        }
+        //switch (slot) // CHANGE MADE HERE.
+        //{
+        //    //case 1:
+        //    //    Slot1Blocked.enabled = false;
+        //    //    Slot2Blocked.enabled = true;
+        //    //    Slot3Blocked.enabled = true;
+        //    //    break;
+        //    //case 2:
+        //    //    Slot1Blocked.enabled = true;
+        //    //    Slot2Blocked.enabled = false;
+        //    //    Slot3Blocked.enabled = true;
+        //    //    break;
+        //    //case 3:
+        //    //    Slot1Blocked.enabled = true;
+        //    //    Slot2Blocked.enabled = true;
+        //    //    Slot3Blocked.enabled = false;
+        //    //    break;
+        //}
 
         if (openBool)
         {
@@ -227,14 +242,31 @@ public class Spellbook : MonoBehaviour
             Slot2Blocked.enabled = false;
             Slot3Blocked.enabled = false;
         }
+        else 
+        {
+             DontFinishSpell = false;
+        }
 
-        this.gameObject.GetComponent<ToolTipScript>().CloseAllItemPanels();
+        //if (SlotSwitched)
+        //{
+        //    DontFinishSpell = false;
+        //}
+
+            this.gameObject.GetComponent<ToolTipScript>().CloseAllItemPanels();
 
         openBool = openBool ? false : true;
     }
 
     public void LeveloneSpellChoice(int spellNumb)
     {
+
+        //lvl1choice = 0; // CHANGE MADE HERE.
+        //lvl2choice = 0;
+        //lvl3choice = 0;
+        //lvl4choice = 0;
+        //lvl5choice = 0;
+        //lvl6choice = 0;
+
         lvl1choice = spellNumb;
 
     }
@@ -246,6 +278,7 @@ public class Spellbook : MonoBehaviour
         {
             lvl2choice = 0;
             unselect2 = true;
+            SelectedSpell1.SetActive(false);
         }
         else
         {
@@ -253,74 +286,46 @@ public class Spellbook : MonoBehaviour
             unselect2 = false;
             if (spellNumb != 0)
             {
-                Frame1.color = Color.green;
+                Frame1.color = FrameSelectedCol;
+                SelectedSpell1.SetActive(true);
             }
         }
+        if (!DontFinishSpell)
+        {
+            FinishSpell(); // CHANGE MADE HERE.
+        }
+
 
         switch (lvl2choice)
         {
             case 1:
                 fireRing2.color = selCol;
-                frostRing2.color = Color.white;
-                LightningRing2.color = Color.white;
-                MeteorBlocked.enabled = false;
-                ConeBlocked.enabled = true;
-                GhostCastBlocked.enabled = true;
-
-                if (manager.coneToken > 0)
-                {
-                    frostRing2.color = Color.cyan;
-                }
-                if (manager.ghostToken > 0)
-                {
-                    LightningRing2.color = Color.cyan;
-                }
+                frostRing2.color = unselCol;
+                LightningRing2.color = unselCol;
+                SelectedSpell1.transform.localPosition = new Vector3(0, 100, 0);
 
                 break;
             case 2:
-                fireRing2.color = Color.white;
+                fireRing2.color = unselCol;
                 frostRing2.color = selCol;
-                LightningRing2.color = Color.white;
-                MeteorBlocked.enabled = true;
-                ConeBlocked.enabled = false;
-                GhostCastBlocked.enabled = true;
-
-                if (manager.meteorToken > 0)
-                {
-                    fireRing2.color = Color.cyan;
-                }
-                if (manager.ghostToken > 0)
-                {
-                    LightningRing2.color = Color.cyan;
-                }
-
+                LightningRing2.color = unselCol;
+                SelectedSpell1.transform.localPosition = new Vector3(0, 0, 0);
                 break;
             case 3:
-                fireRing2.color = Color.white;
-                frostRing2.color = Color.white;
+                fireRing2.color = unselCol;
+                frostRing2.color = unselCol;
                 LightningRing2.color = selCol;
-                MeteorBlocked.enabled = true;
-                ConeBlocked.enabled = true;
-                GhostCastBlocked.enabled = false;
-
-                if (manager.meteorToken > 0)
-                {
-                    fireRing2.color = Color.cyan;
-                }
-                if (manager.coneToken > 0)
-                {
-                    frostRing2.color = Color.cyan;
-                }
+                SelectedSpell1.transform.localPosition = new Vector3(0, -100, 0);
                 break;
             default:
-                fireRing2.color = Color.white;
-                frostRing2.color = Color.white;
-                LightningRing2.color = Color.white;
+                fireRing2.color = unselCol;
+                frostRing2.color = unselCol;
+                LightningRing2.color = unselCol;
 
                 CheckCurrency(1);
                 break;
-
         }
+
     }
     public void LevelthreeSpellChoice(int spellNumb)
     {
@@ -329,6 +334,7 @@ public class Spellbook : MonoBehaviour
         {
             lvl3choice = 0;
             unselect3 = true;
+            SelectedSpell2.SetActive(false);
         }
         else
         {
@@ -336,71 +342,40 @@ public class Spellbook : MonoBehaviour
             unselect3 = false;
             if (spellNumb != 0)
             {
-                Frame2.color = Color.green;
+                Frame2.color = FrameSelectedCol;
+                SelectedSpell2.SetActive(true);
             }
         }
-
+        if (!DontFinishSpell)
+        {
+            FinishSpell(); // CHANGE MADE HERE.
+        }
         switch (lvl3choice)
         {
             case 1:
                 fireRing3.color = selCol;
-                frostRing3.color = Color.white;
-                LightningRing3.color = Color.white;
-                DoubleCastBlocked.enabled = false;
-                SplitCastBlocked.enabled = true;
-                CompOrbBlocked.enabled = true;
-
-                if (manager.splitToken > 0)
-                {
-                    frostRing3.color = Color.cyan;
-                }
-                if (manager.CompToken > 0)
-                {
-                    LightningRing3.color = Color.cyan;
-                }
+                frostRing3.color = unselCol;
+                LightningRing3.color = unselCol;
+                SelectedSpell2.transform.localPosition = new Vector3(0, 100, 0);
 
                 break;
             case 2:
-                fireRing3.color = Color.white;
+                fireRing3.color = unselCol;
                 frostRing3.color = selCol;
-                LightningRing3.color = Color.white;
-                DoubleCastBlocked.enabled = true;
-                SplitCastBlocked.enabled = false;
-                CompOrbBlocked.enabled = true;
-
-
-                if (manager.doubleToken > 0)
-                {
-                    fireRing3.color = Color.cyan;
-                }
-                if (manager.CompToken > 0)
-                {
-                    LightningRing3.color = Color.cyan;
-                }
-
+                LightningRing3.color = unselCol;
+                SelectedSpell2.transform.localPosition = new Vector3(0, 0, 0);
                 break;
             case 3:
-                fireRing3.color = Color.white;
-                frostRing3.color = Color.white;
+                fireRing3.color = unselCol;
+                frostRing3.color = unselCol;
                 LightningRing3.color = selCol;
-                DoubleCastBlocked.enabled = true;
-                SplitCastBlocked.enabled = true;
-                CompOrbBlocked.enabled = false;
-
-                if (manager.doubleToken > 0)
-                {
-                    fireRing3.color = Color.cyan;
-                }
-                if (manager.splitToken > 0)
-                {
-                    frostRing3.color = Color.cyan;
-                }
+                SelectedSpell2.transform.localPosition = new Vector3(0, -100, 0);
 
                 break;
             default:
-                fireRing3.color = Color.white;
-                frostRing3.color = Color.white;
-                LightningRing3.color = Color.white;
+                fireRing3.color = unselCol;
+                frostRing3.color = unselCol;
+                LightningRing3.color = unselCol;
                 CheckCurrency(2);
 
 
@@ -415,6 +390,7 @@ public class Spellbook : MonoBehaviour
         {
             lvl4choice = 0;
             unselect4 = true;
+            SelectedSpell3.SetActive(false);
         }
         else
         {
@@ -422,68 +398,39 @@ public class Spellbook : MonoBehaviour
             unselect4 = false;
             if (spellNumb != 0)
             {
-                Frame3.color = Color.green;
+                Frame3.color = FrameSelectedCol;
+                SelectedSpell3.SetActive(true);
             }
+        }
+        if (!DontFinishSpell)
+        {
+            FinishSpell(); // CHANGE MADE HERE.
         }
 
         switch (lvl4choice) //stuff
         {
             case 1:
                 Boost4.color = selCol;
-                Hasten4.color = Color.white;
-                Empower4.color = Color.white;
-                BoostBlocked.enabled = false;
-                HastenBlocked.enabled = true;
-                EmpowerBlocked.enabled = true;
-
-                if (manager.hastenToken > 0)
-                {
-                    Hasten4.color = Color.cyan;
-                }
-                if (manager.empowerToken > 0)
-                {
-                    Empower4.color = Color.cyan;
-                }
-
+                Hasten4.color = unselCol;
+                Empower4.color = unselCol;
+                SelectedSpell3.transform.localPosition = new Vector3(0, 100, 0);
                 break;
             case 2:
-                Boost4.color = Color.white;
+                Boost4.color = unselCol;
                 Hasten4.color = selCol;
-                Empower4.color = Color.white;
-                BoostBlocked.enabled = true;
-                HastenBlocked.enabled = false;
-                EmpowerBlocked.enabled = true;
-
-                if (manager.boostToken > 0)
-                {
-                    Boost4.color = Color.cyan;
-                }
-                if (manager.empowerToken > 0)
-                {
-                    Empower4.color = Color.cyan;
-                }
+                Empower4.color = unselCol;
+                SelectedSpell3.transform.localPosition = new Vector3(0, 0, 0);
                 break;
             case 3:
-                Boost4.color = Color.white;
-                Hasten4.color = Color.white;
+                Boost4.color = unselCol;
+                Hasten4.color = unselCol;
                 Empower4.color = selCol;
-                BoostBlocked.enabled = true;
-                HastenBlocked.enabled = true;
-                EmpowerBlocked.enabled = false;
-
-                if (manager.boostToken > 0)
-                {
-                    Boost4.color = Color.cyan;
-                }
-                if (manager.hastenToken > 0)
-                {
-                    Hasten4.color = Color.cyan;
-                }
+                SelectedSpell3.transform.localPosition = new Vector3(0, -100, 0);
                 break;
             default:
-                Boost4.color = Color.white;
-                Hasten4.color = Color.white;
-                Empower4.color = Color.white;
+                Boost4.color = unselCol;
+                Hasten4.color = unselCol;
+                Empower4.color = unselCol;
                 CheckCurrency(3);
 
 
@@ -498,6 +445,7 @@ public class Spellbook : MonoBehaviour
         {
             lvl5choice = 0;
             unselect5 = true;
+            SelectedSpell4.SetActive(false);
         }
         else
         {
@@ -505,68 +453,39 @@ public class Spellbook : MonoBehaviour
             unselect5 = false;
             if (spellNumb != 0)
             {
-                Frame4.color = Color.green;
+                Frame4.color = FrameSelectedCol;
+                SelectedSpell4.SetActive(true);
             }
         }
-
+        if (!DontFinishSpell)
+        {
+            FinishSpell(); // CHANGE MADE HERE.
+        }
         switch (lvl5choice) //stuff
         {
             case 1:
                 BH5.color = selCol;
-                Push5.color = Color.white;
-                Pool5.color = Color.white;
-                BHBlocked.enabled = false;
-                PushBlocked.enabled = true;
-                PoolBlocked.enabled = true;
-
-                if (manager.pushToken > 0)
-                {
-                    Push5.color = Color.cyan;
-                }
-                if (manager.poolToken > 0)
-                {
-                    Pool5.color = Color.cyan;
-                }
+                Push5.color = unselCol;
+                Pool5.color = unselCol;
+                SelectedSpell4.transform.localPosition = new Vector3(0, 100, 0);
 
                 break;
             case 2:
-                BH5.color = Color.white;
+                BH5.color = unselCol;
                 Push5.color = selCol;
-                Pool5.color = Color.white;
-                BHBlocked.enabled = true;
-                PushBlocked.enabled = false;
-                PoolBlocked.enabled = true;
-
-                if (manager.bhToken > 0)
-                {
-                    BH5.color = Color.cyan;
-                }
-                if (manager.poolToken > 0)
-                {
-                    Pool5.color = Color.cyan;
-                }
+                Pool5.color = unselCol;
+                SelectedSpell4.transform.localPosition = new Vector3(0, 0, 0);
                 break;
             case 3:
-                BH5.color = Color.white;
-                Push5.color = Color.white;
+                BH5.color = unselCol;
+                Push5.color = unselCol;
                 Pool5.color = selCol;
-                BHBlocked.enabled = true;
-                PushBlocked.enabled = true;
-                PoolBlocked.enabled = false;
-
-                if (manager.bhToken > 0)
-                {
-                    BH5.color = Color.cyan;
-                }
-                if (manager.pushToken > 0)
-                {
-                    Push5.color = Color.cyan;
-                }
+                SelectedSpell4.transform.localPosition = new Vector3(0, -100, 0);
                 break;
             default:
-                BH5.color = Color.white;
-                Push5.color = Color.white;
-                Pool5.color = Color.white;
+                BH5.color = unselCol;
+                Push5.color = unselCol;
+                Pool5.color = unselCol;
                 CheckCurrency(4);
                 break;
         }
@@ -579,6 +498,7 @@ public class Spellbook : MonoBehaviour
         {
             lvl6choice = 0;
             unselect6 = true;
+            SelectedSpell5.SetActive(false);
         }
         else
         {
@@ -586,70 +506,38 @@ public class Spellbook : MonoBehaviour
             unselect6 = false;
             if (spellNumb != 0)
             {
-                Frame5.color = Color.green;
+                Frame5.color = FrameSelectedCol;
+                SelectedSpell5.SetActive(true);
             }
         }
-
+        if (!DontFinishSpell)
+        {
+            FinishSpell(); // CHANGE MADE HERE.
+        }
         switch (lvl6choice) //stuff
         {
             case 1:
                 ChaosOrb6.color = selCol;
-                Channeling6.color = Color.white;
-                BlessedAim6.color = Color.white;
-                ChaosOrbBlocked.enabled = false;
-                ChannelingBlocked.enabled = true;
-                BlessedAimBlocked.enabled = true;
-
-                if (manager.channelingToken > 0)
-                {
-                    Channeling6.color = Color.cyan;
-                }
-                if (manager.AimToken > 0)
-                {
-                    BlessedAim6.color = Color.cyan;
-                }
-
+                Channeling6.color = unselCol;
+                BlessedAim6.color = unselCol;
+                SelectedSpell5.transform.localPosition = new Vector3(0, 100, 0);
                 break;
             case 2:
-                ChaosOrb6.color = Color.white;
+                ChaosOrb6.color = unselCol;
                 Channeling6.color = selCol;
-                BlessedAim6.color = Color.white;
-                ChaosOrbBlocked.enabled = true;
-                ChannelingBlocked.enabled = false;
-                BlessedAimBlocked.enabled = true;
-
-                if (manager.ChaosToken > 0)
-                {
-                    ChaosOrb6.color = Color.cyan;
-                }
-                if (manager.AimToken > 0)
-                {
-                    BlessedAim6.color = Color.cyan;
-                }
-
+                BlessedAim6.color = unselCol;
+                SelectedSpell5.transform.localPosition = new Vector3(0, 0, 0);
                 break;
             case 3:
-                ChaosOrb6.color = Color.white;
-                Channeling6.color = Color.white;
+                ChaosOrb6.color = unselCol;
+                Channeling6.color = unselCol;
                 BlessedAim6.color = selCol;
-                ChaosOrbBlocked.enabled = true;
-                ChannelingBlocked.enabled = true;
-                BlessedAimBlocked.enabled = false;
-
-                if (manager.ChaosToken > 0)
-                {
-                    ChaosOrb6.color = Color.cyan;
-                }
-                if (manager.channelingToken > 0)
-                {
-                    Channeling6.color = Color.cyan;
-                }
-
+                SelectedSpell5.transform.localPosition = new Vector3(0, -100, 0);
                 break;
             default:
-                ChaosOrb6.color = Color.white;
-                Channeling6.color = Color.white;
-                BlessedAim6.color = Color.white;
+                ChaosOrb6.color = unselCol;
+                Channeling6.color = unselCol;
+                BlessedAim6.color = unselCol;
                 CheckCurrency(5);
                 break;
         }
@@ -705,45 +593,33 @@ public class Spellbook : MonoBehaviour
             SlotThreeTip();
         }
 
-        //toggleSpells = toggleSpells ? false : true;
-        //showSpellBook.SetActive(toggleSpells);
-        //showSpellBookSpells.SetActive(false);
 
-        lvl1choice = 0;
-        lvl2choice = 0;
-        lvl3choice = 0;
-        lvl4choice = 0;
-        lvl5choice = 0;
-        lvl6choice = 0;
+        //lvl1choice = 0; // CHANGES MADE HERE (all below)
+        //lvl2choice = 0;
+        //lvl3choice = 0;
+        //lvl4choice = 0;
+        //lvl5choice = 0;
+        //lvl6choice = 0;
 
-        fireRing2.color = Color.white;
-        frostRing2.color = Color.white;
-        LightningRing2.color = Color.white;
-        fireRing3.color = Color.white;
-        frostRing3.color = Color.white;
-        LightningRing3.color = Color.white;
-        Boost4.color = Color.white;
-        Hasten4.color = Color.white;
-        Empower4.color = Color.white;
-        BH5.color = Color.white;
-        Push5.color = Color.white;
-        Pool5.color = Color.white;
-        ChaosOrb6.color = Color.white;
-        Channeling6.color = Color.white;
-        BlessedAim6.color = Color.white;
+        //fireRing2.color = Color.white;
+        //frostRing2.color = Color.white;
+        //LightningRing2.color = Color.white;
+        //fireRing3.color = Color.white;
+        //frostRing3.color = Color.white;
+        //LightningRing3.color = Color.white;
+        //Boost4.color = Color.white;
+        //Hasten4.color = Color.white;
+        //Empower4.color = Color.white;
+        //BH5.color = Color.white;
+        //Push5.color = Color.white;
+        //Pool5.color = Color.white;
+        //ChaosOrb6.color = Color.white;
+        //Channeling6.color = Color.white;
+        //BlessedAim6.color = Color.white;
 
-        slot1.color = Color.white;
-        slot2.color = Color.white;
-        slot3.color = Color.white;
-
-        //this.GetComponent<ToolTipScript>().Empty1();
-        //this.GetComponent<ToolTipScript>().Empty2();
-        //this.GetComponent<ToolTipScript>().Empty3();
-        //this.GetComponent<ToolTipScript>().Empty4();
-        //this.GetComponent<ToolTipScript>().Empty5();
-        //this.GetComponent<ToolTipScript>().Empty6();
-        //this.GetComponent<ToolTipScript>().SpellCombTip(0);
-     //   SpellPanel.SetActive(false);
+        //slot1.color = Color.white;
+        //slot2.color = Color.white;
+        //slot3.color = Color.white;
     }
 
     public void SlotOne()
@@ -830,37 +706,37 @@ public class Spellbook : MonoBehaviour
 
     public void ExitSlotTip()
     {
-
-        this.GetComponent<ToolTipScript>().Empty1();
-        this.GetComponent<ToolTipScript>().Empty2();
-        this.GetComponent<ToolTipScript>().Empty3();
-        this.GetComponent<ToolTipScript>().Empty4();
-        this.GetComponent<ToolTipScript>().Empty5();
-        this.GetComponent<ToolTipScript>().Empty6();
-        this.GetComponent<ToolTipScript>().SpellCombTip(0);
-     //   this.GetComponent<ToolTipScript>().CurSpellToolTipBox.SetActive(false);
-        this.GetComponent<ToolTipScript>().CurSpellToolTipBox2.SetActive(false);
+        if (!toggleSpells)
+        {
+            this.GetComponent<ToolTipScript>().Empty1();
+            this.GetComponent<ToolTipScript>().Empty2();
+            this.GetComponent<ToolTipScript>().Empty3();
+            this.GetComponent<ToolTipScript>().Empty4();
+            this.GetComponent<ToolTipScript>().Empty5();
+            this.GetComponent<ToolTipScript>().Empty6();
+            this.GetComponent<ToolTipScript>().SpellCombTip(0);
+            this.GetComponent<ToolTipScript>().CurSpellToolTipBox2.SetActive(false);
+        }
     }
 
     public void CheckCurrency(int level)
     {
 
-        //   GameManager manager = GameManager.FindObjectOfType<GameManager>();
-
+        manager.CheckIfTokenBought(curSlot, level);
         switch (level)
         {
             case 1:
-                if (manager.meteorToken == 0)
+                if (manager.meteorToken == 0 && !manager.SlotIsInUse1)
                 {
                     MeteorBlocked.enabled = true;
                 }
                 else MeteorBlocked.enabled = false;
-                if (manager.coneToken == 0)
+                if (manager.coneToken == 0 && !manager.SlotIsInUse2)
                 {
                     ConeBlocked.enabled = true;
                 }
                 else ConeBlocked.enabled = false;
-                if (manager.ghostToken == 0)
+                if (manager.ghostToken == 0 && !manager.SlotIsInUse3)
                 {
                     GhostCastBlocked.enabled = true;
                 }
@@ -868,34 +744,34 @@ public class Spellbook : MonoBehaviour
 
                 break;
             case 2:
-                if (manager.doubleToken == 0)
+                if (manager.doubleToken == 0 && !manager.SlotIsInUse1)
                 {
                     DoubleCastBlocked.enabled = true;
                 }
                 else DoubleCastBlocked.enabled = false;
-                if (manager.splitToken == 0)
+                if (manager.splitToken == 0 && !manager.SlotIsInUse2)
                 {
                     SplitCastBlocked.enabled = true;
                 }
                 else SplitCastBlocked.enabled = false;
-                if (manager.CompToken == 0)
+                if (manager.CompToken == 0 && !manager.SlotIsInUse3)
                 {
                     CompOrbBlocked.enabled = true;
                 }
                 else CompOrbBlocked.enabled = false;
                 break;
             case 3:
-                if (manager.boostToken == 0)
+                if (manager.boostToken == 0 && !manager.SlotIsInUse1)
                 {
                     BoostBlocked.enabled = true;
                 }
                 else BoostBlocked.enabled = false;
-                if (manager.hastenToken == 0)
+                if (manager.hastenToken == 0 && !manager.SlotIsInUse2)
                 {
                     HastenBlocked.enabled = true;
                 }
                 else HastenBlocked.enabled = false;
-                if (manager.empowerToken == 0)
+                if (manager.empowerToken == 0 && !manager.SlotIsInUse3)
                 {
                     EmpowerBlocked.enabled = true;
                 }
@@ -903,125 +779,68 @@ public class Spellbook : MonoBehaviour
                 break;
 
             case 4:
-                if (manager.bhToken == 0)
+                if (manager.bhToken == 0 && !manager.SlotIsInUse1)
                 {
                     BHBlocked.enabled = true;
                 }
                 else BHBlocked.enabled = false;
-                if (manager.pushToken == 0)
+                if (manager.pushToken == 0 && !manager.SlotIsInUse2)
                 {
                     PushBlocked.enabled = true;
                 }
                 else PushBlocked.enabled = false;
-                if (manager.poolToken == 0)
+                if (manager.poolToken == 0 && !manager.SlotIsInUse3)
                 {
                     PoolBlocked.enabled = true;
                 }
                 else PoolBlocked.enabled = false;
                 break;
             case 5:
-                if (manager.ChaosToken == 0)
+                if (manager.ChaosToken == 0 && !manager.SlotIsInUse1)
                 {
                     ChaosOrbBlocked.enabled = true;
                 }
                 else ChaosOrbBlocked.enabled = false;
-                if (manager.channelingToken == 0)
+                if (manager.channelingToken == 0 && !manager.SlotIsInUse2)
                 {
                     ChannelingBlocked.enabled = true;
                 }
                 else ChannelingBlocked.enabled = false;
-                if (manager.AimToken == 0)
+                if (manager.AimToken == 0 && !manager.SlotIsInUse3)
                 {
                     BlessedAimBlocked.enabled = true;
                 }
                 else BlessedAimBlocked.enabled = false;
-                break;
-
-            default:
-
-                if (manager.meteorToken == 0)
-                {
-                    MeteorBlocked.enabled = true;
-                }
-                else MeteorBlocked.enabled = false;
-                if (manager.coneToken == 0)
-                {
-                    ConeBlocked.enabled = true;
-                }
-                else ConeBlocked.enabled = false;
-                if (manager.ghostToken == 0)
-                {
-                    GhostCastBlocked.enabled = true;
-                }
-                else GhostCastBlocked.enabled = false;
-                if (manager.doubleToken == 0)
-                {
-                    DoubleCastBlocked.enabled = true;
-                }
-                else DoubleCastBlocked.enabled = false;
-                if (manager.splitToken == 0)
-                {
-                    SplitCastBlocked.enabled = true;
-                }
-                else SplitCastBlocked.enabled = false;
-                if (manager.CompToken == 0)
-                {
-                    CompOrbBlocked.enabled = true;
-                }
-                else CompOrbBlocked.enabled = false;
-
-                if (manager.boostToken == 0)
-                {
-                    BoostBlocked.enabled = true;
-                }
-                else BoostBlocked.enabled = false;
-                if (manager.hastenToken == 0)
-                {
-                    HastenBlocked.enabled = true;
-                }
-                else HastenBlocked.enabled = false;
-                if (manager.empowerToken == 0)
-                {
-                    EmpowerBlocked.enabled = true;
-                }
-                else EmpowerBlocked.enabled = false;
-                //
-                if (manager.bhToken == 0)
-                {
-                    BHBlocked.enabled = true;
-                }
-                else BHBlocked.enabled = false;
-                if (manager.pushToken == 0)
-                {
-                    PushBlocked.enabled = true;
-                }
-                else PushBlocked.enabled = false;
-                if (manager.poolToken == 0)
-                {
-                    PoolBlocked.enabled = true;
-                }
-                else PoolBlocked.enabled = false;
-                //
-                if (manager.ChaosToken == 0)
-                {
-                    ChaosOrbBlocked.enabled = true;
-                }
-                else ChaosOrbBlocked.enabled = false;
-                if (manager.channelingToken == 0)
-                {
-                    ChannelingBlocked.enabled = true;
-                }
-                else ChannelingBlocked.enabled = false;
-                if (manager.AimToken == 0)
-                {
-                    BlessedAimBlocked.enabled = true;
-                }
-                else BlessedAimBlocked.enabled = false;
-
-                break;
+                break;       
         }
-
     }
+
+
+
+    public void ForceCloseSpellBookPanel()
+    {
+        if (toggleSpells)
+        {
+            Spellslot(PreviouslySelectedSlot);
+            LeveloneSpellChoice(PreviouslySelectedSlot);
+            switch (PreviouslySelectedSlot)
+            {
+                case 1:
+                    SlotOne();
+                    break;
+                case 2:
+                    SlotTwo();
+                    break;
+                case 3:
+                    SlotThree();
+                    break;
+            }
+            OpenSlot(PreviouslySelectedSlot);
+            ExitSlotTip();
+        }
+    }
+
+
 
     public void Spellslot(int slotNumber)
     {
@@ -1031,28 +850,57 @@ public class Spellbook : MonoBehaviour
         Frame4.color = Color.white;
         Frame5.color = Color.white;
 
-
-        //    GameManager manager = GameManager.FindObjectOfType<GameManager>();
-        CheckCurrency(0);
+        lvl1choice = 0; // CHANGE MADE HERE.
+        lvl2choice = 0;
+        lvl3choice = 0;
+        lvl4choice = 0;
+        lvl5choice = 0;
+        lvl6choice = 0;
 
         toggleSpells = toggleSpells ? false : true;
+        finishSpell_ = finishSpell_ ? false : true;
+
+      //  if (gameObject.GetComponent<ToolTipScript>().ArmorTipPanel.activeSelf == true)
+     //   {
+           gameObject.GetComponent<ToolTipScript>().CloseAllItemPanels();
+            gameObject.GetComponent<ToolTipScript>().ForceCloseArmorPanels.SetActive(false);
+
+      //  }
+      //  if (gameObject.GetComponent<ToolTipScript>().WeaponTipPanel.activeSelf == true)
+     //   {
+       //    gameObject.GetComponent<ToolTipScript>().CloseAllItemPanels();
+            gameObject.GetComponent<ToolTipScript>().ForceCloseWeaponPanels.SetActive(false);
+        //}
+
+
+        if (toggleSpells)
+        {
+            PreviouslySelectedSlot = slotNumber;
+        }
+        else if (PreviouslySelectedSlot != slotNumber)
+        {
+            toggleSpells = true;
+            finishSpell_ = true;
+            PreviouslySelectedSlot = slotNumber;
+            openBool = !openBool;
+        }
+
         showSpellBook.SetActive(toggleSpells);
         showSpellBookSpells.SetActive(toggleSpells);
+        ForceClosePanels.SetActive(toggleSpells);
 
         curSlot = slotNumber;
 
-        if (finishSpell_)
-        {
-            FinishSpell();
-        }
+        CheckCurrency(1);
+        CheckCurrency(2);
+        CheckCurrency(3);
+        CheckCurrency(4);
+        CheckCurrency(5);
 
-        finishSpell_ = finishSpell_ ? false : true;
+
         switch (slotNumber)
         {
             case 1:
-
-        //        showSpellBook.transform.position = new Vector3(slot1.transform.position.x, showSpellBook.transform.position.y, showSpellBook.transform.position.z);
-
                 if (manager.meteorToken_ == true || manager.coneToken_ == true || manager.ghostToken_ == true)
                 {
                     unselect2 = true;
@@ -1097,7 +945,8 @@ public class Spellbook : MonoBehaviour
                     unselect6 = false;
                 }
 
-
+                lvl1choice = slotNumber; // CHANGE MADE HERE.
+                DontFinishSpell = true;
                 LeveltwoSpellChoice(slot1Mem1);
                 LevelthreeSpellChoice(slot1Mem2);
                 LevelfourSpellChoice(slot1Mem3);
@@ -1153,7 +1002,8 @@ public class Spellbook : MonoBehaviour
                 {
                     unselect6 = false;
                 }
-
+                lvl1choice = slotNumber; // change made here.
+                DontFinishSpell = true;
                 LeveltwoSpellChoice(slot2Mem1);
                 LevelthreeSpellChoice(slot2Mem2);
                 LevelfourSpellChoice(slot2Mem3);
@@ -1210,7 +1060,8 @@ public class Spellbook : MonoBehaviour
                 {
                     unselect6 = false;
                 }
-
+                lvl1choice = slotNumber; // change made here.
+                DontFinishSpell = true;
                 LeveltwoSpellChoice(slot3Mem1);
                 LevelthreeSpellChoice(slot3Mem2);
                 LevelfourSpellChoice(slot3Mem3);

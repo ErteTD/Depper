@@ -1705,7 +1705,7 @@ public class GameManager : MonoBehaviour
         RoidArmorToken = 1;
         IKArmorToken = 1;
         BlobArmorToken = 1;
-        BlobArmorToken = 1;
+        BlobWeaponToken = 1;
 
         meteorToken = 3;
         coneToken = 3;

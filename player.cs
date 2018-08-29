@@ -68,6 +68,8 @@ public class Player : MonoBehaviour, IDamageable {
 
     private float inputX;
     private float inputY;
+    private bool BlobArmorAttackOnceBool;
+
     void Start()
     {
         CS = CastSpell.GetComponent<CastSpell>();
@@ -93,6 +95,10 @@ public class Player : MonoBehaviour, IDamageable {
         {
             Vector3 moveDir = new Vector3(inputX, 0, inputY).normalized;
             targetPosition = transform.position + moveDir;
+            if (BlobArmorBool)
+            {
+                agent.destination = targetPosition;
+            }
             move = true;
             rightclick = false;
             agent.stoppingDistance = 0f;
@@ -117,7 +123,7 @@ public class Player : MonoBehaviour, IDamageable {
                 }
             }
         }
-        if ((Input.GetMouseButtonDown(0) || (inputX != 0 || inputY != 0)) && channelingNow == true && curSpellProjectile.Count > 0)
+        if ((Input.GetMouseButtonDown(0) || ((inputX != 0 || inputY != 0) && !BlobArmorBool)) && channelingNow == true && curSpellProjectile.Count > 0)
         {
             foreach (var item in curSpellProjectile)
             {
@@ -136,6 +142,7 @@ public class Player : MonoBehaviour, IDamageable {
         if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject() && channelingNow == false)
         {
             rightclick = false;
+            BlobArmorAttackOnceBool = false;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); // Raycast things, checks where mouse clicks
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
@@ -178,6 +185,7 @@ public class Player : MonoBehaviour, IDamageable {
         // right click spell cast input
         if (Input.GetMouseButton(1) && !EventSystem.current.IsPointerOverGameObject())
         {
+            BlobArmorAttackOnceBool = false;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
@@ -207,9 +215,9 @@ public class Player : MonoBehaviour, IDamageable {
                     Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));    // flattens the vector3             
                     transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 999f);
                      if (channelingNow == false)
-                    {
-                        SendSpellCast();
-                    }                                                 
+                        {
+                            SendSpellCast();
+                        }                                                 
                 }
                 else if (channelingNow == false)
                 {
@@ -373,16 +381,17 @@ public class Player : MonoBehaviour, IDamageable {
 
     public void SendSpellCast()
     {
-
-        //move = false;
-        if (InternalSpellCastCD_ < 0)
+        if (!BlobArmorAttackOnceBool)
         {
-            CS.CastCurrentSpell();
-            //if (BlobWeaponEquppied)
-            //{
-            //    CastExtraBlob();
-            //}
-            InternalSpellCastCD_ = 0.2f;
+            if (InternalSpellCastCD_ < 0)
+            {
+                CS.CastCurrentSpell();
+                InternalSpellCastCD_ = 0.2f;
+            }
+            if (BlobArmorBool)
+            {
+                BlobArmorAttackOnceBool = true;
+            }
         }
     }
 

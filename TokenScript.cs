@@ -22,7 +22,7 @@ public class TokenScript : MonoBehaviour
 
     [Header("Healing Potion")]
     public int healing;
-
+    private Quaternion rotation;
     public void Awake()
     {
         Player_ = GameObject.Find("Player");
@@ -56,12 +56,26 @@ public class TokenScript : MonoBehaviour
         }
 
         ObjectType.text = ItemTName;
-        Invoke("DisableAgent", 0.1f);
+        //  Invoke("DisableAgent", 0.1f);
+
+        Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().speed = 1;
+        Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().obstacleAvoidanceType = 0;
+        Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().stoppingDistance = 5;
+        transform.position = new Vector3(transform.position.x, 1.5f, transform.position.z);
+        rotation = Quaternion.Euler(0, 0, 0);
+        
+
     }
 
     public void DisableAgent()
     {
         Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
+        transform.position = new Vector3(transform.position.x, 1.5f, transform.position.z);
+    }
+
+    private void LateUpdate()
+    {
+        Parent.transform.rotation = rotation;
         transform.position = new Vector3(transform.position.x, 1.5f, transform.position.z);
     }
     void Update()
@@ -71,11 +85,13 @@ public class TokenScript : MonoBehaviour
         float dist = Vector3.Distance(Player_.transform.position, transform.position);
 
 
-        if (dist < 15 && dist >5)
+
+        if ((Vector3.Distance(Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().destination, transform.position) > 0.5f))
         {
-            Vector3 dir = new Vector3(Player_.transform.position.x, 1.5f, Player_.transform.position.z) - this.transform.position;
-            float distThisFrame = 0.5f * Time.deltaTime;
-            transform.parent.transform.Translate(dir.normalized * distThisFrame, Space.World);
+            Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().destination = Player_.transform.position;
+            //Vector3 dir = new Vector3(Player_.transform.position.x, 1.5f, Player_.transform.position.z) - this.transform.position;
+            //float distThisFrame = 0.5f * Time.deltaTime;
+            //transform.parent.transform.Translate(dir.normalized * distThisFrame, Space.World);
         }
 
 

@@ -491,7 +491,6 @@ public class ToolTipScript : MonoBehaviour
         curDamageModifierlvl4_2 = 0;
         SpellImage4.sprite = EmptyImage.sprite;
         spellCombTip4 = false;
-        Spellbook sp = GetComponent<Spellbook>();
     }
     public void Empty5()
     {
@@ -573,6 +572,10 @@ public class ToolTipScript : MonoBehaviour
         showWeaponSelect = showWeaponSelect ? false : true;
         SelectWeapon.SetActive(showWeaponSelect);
         ForceCloseWeaponPanels.SetActive(showWeaponSelect);
+        if (showWeaponSelect == false)
+        {
+            GetComponent<Spellbook>().SoundFiles[1].Play();
+        }
     }
     public void OpenArmorSelect()
     {
@@ -582,6 +585,10 @@ public class ToolTipScript : MonoBehaviour
         showArmorSelect = showArmorSelect ? false : true;
         SelectArmor.SetActive(showArmorSelect);
         ForceCloseArmorPanels.SetActive(showArmorSelect);
+        if (showArmorSelect == false)
+        {
+            GetComponent<Spellbook>().SoundFiles[1].Play();
+        }
     }
 
 

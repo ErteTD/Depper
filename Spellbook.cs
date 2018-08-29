@@ -5,6 +5,11 @@ using UnityEngine.UI;
 
 public class Spellbook : MonoBehaviour
 {
+    [Header("Sound files")]
+    public List<AudioSource> SoundFiles;
+ //   public AudioClip
+
+
     [Header("Level1")]
     public GameObject Fireball;
     public GameObject FrostBolt;
@@ -165,7 +170,7 @@ public class Spellbook : MonoBehaviour
     private int slot3Mem4;
     private int slot3Mem5;
 
-
+    private bool TokenSoundToggle;
 
 
     public void Start()
@@ -212,47 +217,17 @@ public class Spellbook : MonoBehaviour
         {
             SlotThree();
         }
-
     }
 
     public void OpenSlot(int slot)
     {
-        //switch (slot) // CHANGE MADE HERE.
-        //{
-        //    //case 1:
-        //    //    Slot1Blocked.enabled = false;
-        //    //    Slot2Blocked.enabled = true;
-        //    //    Slot3Blocked.enabled = true;
-        //    //    break;
-        //    //case 2:
-        //    //    Slot1Blocked.enabled = true;
-        //    //    Slot2Blocked.enabled = false;
-        //    //    Slot3Blocked.enabled = true;
-        //    //    break;
-        //    //case 3:
-        //    //    Slot1Blocked.enabled = true;
-        //    //    Slot2Blocked.enabled = true;
-        //    //    Slot3Blocked.enabled = false;
-        //    //    break;
-        //}
 
-        if (openBool)
-        {
-            Slot1Blocked.enabled = false;
-            Slot2Blocked.enabled = false;
-            Slot3Blocked.enabled = false;
-        }
-        else 
+    if (!openBool)
         {
              DontFinishSpell = false;
         }
 
-        //if (SlotSwitched)
-        //{
-        //    DontFinishSpell = false;
-        //}
-
-            this.gameObject.GetComponent<ToolTipScript>().CloseAllItemPanels();
+        this.gameObject.GetComponent<ToolTipScript>().CloseAllItemPanels();
 
         openBool = openBool ? false : true;
     }
@@ -260,15 +235,7 @@ public class Spellbook : MonoBehaviour
     public void LeveloneSpellChoice(int spellNumb)
     {
 
-        //lvl1choice = 0; // CHANGE MADE HERE.
-        //lvl2choice = 0;
-        //lvl3choice = 0;
-        //lvl4choice = 0;
-        //lvl5choice = 0;
-        //lvl6choice = 0;
-
         lvl1choice = spellNumb;
-
     }
     public void LeveltwoSpellChoice(int spellNumb)
     {
@@ -279,6 +246,10 @@ public class Spellbook : MonoBehaviour
             lvl2choice = 0;
             unselect2 = true;
             SelectedSpell1.SetActive(false);
+            if (!DontFinishSpell)
+            {
+                PlaySpellSound(3);
+            }
         }
         else
         {
@@ -288,6 +259,10 @@ public class Spellbook : MonoBehaviour
             {
                 Frame1.color = FrameSelectedCol;
                 SelectedSpell1.SetActive(true);
+                if (!DontFinishSpell)
+                {
+                    PlaySpellSound(2);
+                }
             }
         }
         if (!DontFinishSpell)
@@ -335,6 +310,10 @@ public class Spellbook : MonoBehaviour
             lvl3choice = 0;
             unselect3 = true;
             SelectedSpell2.SetActive(false);
+            if (!DontFinishSpell)
+            {
+                PlaySpellSound(3);
+            }
         }
         else
         {
@@ -344,6 +323,10 @@ public class Spellbook : MonoBehaviour
             {
                 Frame2.color = FrameSelectedCol;
                 SelectedSpell2.SetActive(true);
+                if (!DontFinishSpell)
+                {
+                    PlaySpellSound(2);
+                }
             }
         }
         if (!DontFinishSpell)
@@ -391,6 +374,10 @@ public class Spellbook : MonoBehaviour
             lvl4choice = 0;
             unselect4 = true;
             SelectedSpell3.SetActive(false);
+            if (!DontFinishSpell)
+            {
+                PlaySpellSound(3);
+            }
         }
         else
         {
@@ -400,6 +387,10 @@ public class Spellbook : MonoBehaviour
             {
                 Frame3.color = FrameSelectedCol;
                 SelectedSpell3.SetActive(true);
+                if (!DontFinishSpell)
+                {
+                    PlaySpellSound(2);
+                }
             }
         }
         if (!DontFinishSpell)
@@ -446,6 +437,10 @@ public class Spellbook : MonoBehaviour
             lvl5choice = 0;
             unselect5 = true;
             SelectedSpell4.SetActive(false);
+            if (!DontFinishSpell)
+            {
+                PlaySpellSound(3);
+            }
         }
         else
         {
@@ -455,6 +450,10 @@ public class Spellbook : MonoBehaviour
             {
                 Frame4.color = FrameSelectedCol;
                 SelectedSpell4.SetActive(true);
+                if (!DontFinishSpell)
+                {
+                    PlaySpellSound(2);
+                }
             }
         }
         if (!DontFinishSpell)
@@ -499,6 +498,10 @@ public class Spellbook : MonoBehaviour
             lvl6choice = 0;
             unselect6 = true;
             SelectedSpell5.SetActive(false);
+            if (!DontFinishSpell)
+            {
+                PlaySpellSound(3);
+            }
         }
         else
         {
@@ -508,6 +511,10 @@ public class Spellbook : MonoBehaviour
             {
                 Frame5.color = FrameSelectedCol;
                 SelectedSpell5.SetActive(true);
+                if (!DontFinishSpell)
+                {
+                    PlaySpellSound(2);
+                }
             }
         }
         if (!DontFinishSpell)
@@ -592,34 +599,6 @@ public class Spellbook : MonoBehaviour
             slot3Mem5 = lvl6choice;
             SlotThreeTip();
         }
-
-
-        //lvl1choice = 0; // CHANGES MADE HERE (all below)
-        //lvl2choice = 0;
-        //lvl3choice = 0;
-        //lvl4choice = 0;
-        //lvl5choice = 0;
-        //lvl6choice = 0;
-
-        //fireRing2.color = Color.white;
-        //frostRing2.color = Color.white;
-        //LightningRing2.color = Color.white;
-        //fireRing3.color = Color.white;
-        //frostRing3.color = Color.white;
-        //LightningRing3.color = Color.white;
-        //Boost4.color = Color.white;
-        //Hasten4.color = Color.white;
-        //Empower4.color = Color.white;
-        //BH5.color = Color.white;
-        //Push5.color = Color.white;
-        //Pool5.color = Color.white;
-        //ChaosOrb6.color = Color.white;
-        //Channeling6.color = Color.white;
-        //BlessedAim6.color = Color.white;
-
-        //slot1.color = Color.white;
-        //slot2.color = Color.white;
-        //slot3.color = Color.white;
     }
 
     public void SlotOne()
@@ -838,6 +817,10 @@ public class Spellbook : MonoBehaviour
             OpenSlot(PreviouslySelectedSlot);
             ExitSlotTip();
         }
+        else
+        {
+            PlaySpellSound(1);
+        }
     }
 
 
@@ -860,22 +843,15 @@ public class Spellbook : MonoBehaviour
         toggleSpells = toggleSpells ? false : true;
         finishSpell_ = finishSpell_ ? false : true;
 
-      //  if (gameObject.GetComponent<ToolTipScript>().ArmorTipPanel.activeSelf == true)
-     //   {
            gameObject.GetComponent<ToolTipScript>().CloseAllItemPanels();
             gameObject.GetComponent<ToolTipScript>().ForceCloseArmorPanels.SetActive(false);
 
-      //  }
-      //  if (gameObject.GetComponent<ToolTipScript>().WeaponTipPanel.activeSelf == true)
-     //   {
-       //    gameObject.GetComponent<ToolTipScript>().CloseAllItemPanels();
             gameObject.GetComponent<ToolTipScript>().ForceCloseWeaponPanels.SetActive(false);
-        //}
-
 
         if (toggleSpells)
         {
             PreviouslySelectedSlot = slotNumber;
+            PlaySpellSound(1);
         }
         else if (PreviouslySelectedSlot != slotNumber)
         {
@@ -883,6 +859,11 @@ public class Spellbook : MonoBehaviour
             finishSpell_ = true;
             PreviouslySelectedSlot = slotNumber;
             openBool = !openBool;
+            PlaySpellSound(0);
+        }
+        else
+        {
+            PlaySpellSound(1);
         }
 
         showSpellBook.SetActive(toggleSpells);
@@ -1395,6 +1376,12 @@ public class Spellbook : MonoBehaviour
             cast.channel = false;
             cast.ChaosOrb_ = false;
         }
+    }
+
+
+    public void PlaySpellSound(int sound)
+    {
+        SoundFiles[sound].Play();
     }
 
 }

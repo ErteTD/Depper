@@ -31,7 +31,7 @@ public class BigBoyFire : MonoBehaviour
         {
             Vector3 Pos = new Vector3(transform.position.x, 1.5f, transform.position.z);
             GameObject PoolObj = Instantiate(this.gameObject, Pos + (transform.forward * 4), transform.rotation, transform);
-
+            GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().SpellsCastInThisRoom.Add(PoolObj);
             PoolObj.transform.parent = null;
             PoolObj.GetComponent<BigBoyFire>().PoolNumb = PoolNumb - 1;
 

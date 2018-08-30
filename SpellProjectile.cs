@@ -119,14 +119,14 @@ public class SpellProjectile : MonoBehaviour
     private GameObject NearestEnemy_;
     private float Distance_;
     private float NewTargetTimer;
-    private Transform CurrentRoomASParent;
+    private Player ActualPlayer;
 
     private void Start()
     {
-
+        ActualPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        ActualPlayer.SpellsCastInThisRoom.Add(gameObject);
         if (!CompOrbPlayer)
-        {
-         //   CurrentRoomASParent = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().CurrentRoom.transform;
+        {     
          // Problem with setting all spells to current room. Mostly with comp/channeling/blessed aim.
             ThePlayer = GameObject.FindGameObjectWithTag("Player");
 
@@ -359,33 +359,9 @@ public class SpellProjectile : MonoBehaviour
         }
         if (enemyCastingspell)//only for bigboy atm
         {
-            Instantiate(BigBoyFrost, transform.position, transform.rotation);
+          GameObject BigBoyFrostEffect = Instantiate(BigBoyFrost, transform.position, transform.rotation);
+            ActualPlayer.SpellsCastInThisRoom.Add(BigBoyFrostEffect);
         }
-
-            //if (spellName != "Lightningbolt")
-            //{
-            //if (transform.childCount == 5)
-            //{
-            //    GameObject Boom = transform.GetChild(4).gameObject;
-            //    Boom.SetActive(true);
-            //    Boom.transform.parent = null;
-            //    Destroy(Boom, 2);
-            //}
-            //if (HitVisualEffect != null)
-            //{
-            //    GameObject effectOne = Instantiate(HitVisualEffect, this.transform);
-            //    effectOne.SetActive(true);
-            //    effectOne.transform.parent = null;
-            //    Destroy(effectOne, 2);
-            //}
-            //}
-            //else
-            //{
-            //    GameObject Boom = transform.GetChild(2).gameObject;
-            //    Boom.SetActive(true);
-            //    Boom.transform.parent = null;
-            //    Destroy(Boom, 2);
-            //}
         Stop();
     }
 
@@ -415,6 +391,7 @@ public class SpellProjectile : MonoBehaviour
         if (BHBool)
         {
             GameObject blackH = Instantiate(BlackHole, transform.position, transform.rotation, transform);
+            ActualPlayer.SpellsCastInThisRoom.Add(blackH);
             blackH.transform.parent = null;
             blackH.transform.localScale = BHSize;
             blackH.GetComponent<GravityBody>().pullRadius = BHRadius;
@@ -425,6 +402,7 @@ public class SpellProjectile : MonoBehaviour
         if (pool) //poolscript
         {
             GameObject PoolObj = Instantiate(PoolInst, new Vector3(transform.position.x, 1, transform.position.z), PoolInst.transform.rotation, transform);
+            ActualPlayer.SpellsCastInThisRoom.Add(PoolInst);
             PoolObj.transform.parent = null;
             PoolObj.transform.localScale = new Vector3(1, 2, 2);
             Poolscript curPool = PoolObj.GetComponent<Poolscript>();
@@ -468,6 +446,7 @@ public class SpellProjectile : MonoBehaviour
         if (BHBool)
         {
             GameObject blackH = Instantiate(BlackHole, enemy.transform.position, transform.rotation, transform);
+            ActualPlayer.SpellsCastInThisRoom.Add(blackH);
             blackH.transform.parent = null;
             blackH.transform.localScale = BHSize;
             blackH.GetComponent<GravityBody>().pullRadius = BHRadius;
@@ -478,6 +457,7 @@ public class SpellProjectile : MonoBehaviour
         if (pool)
         {
             GameObject PoolObj = Instantiate(PoolInst, new Vector3(enemy.transform.position.x, 1, enemy.transform.position.z), PoolInst.transform.rotation, transform);
+            ActualPlayer.SpellsCastInThisRoom.Add(PoolObj);
             PoolObj.transform.parent = null;
             PoolObj.transform.localScale = new Vector3(1, 2, 2);
             Poolscript curPool = PoolObj.GetComponent<Poolscript>();
@@ -1167,21 +1147,12 @@ public class SpellProjectile : MonoBehaviour
 
     public void Stop()
     {
-        //if (ChaosOrb_ && !CompOrb)
-        //{
-        //    if (transform.childCount == 3)
-        //    {
-        //        GameObject Implode = transform.GetChild(2).gameObject;
-        //        Implode.SetActive(true);
-        //        Implode.transform.parent = null;
-        //        Destroy(Implode, 0.99f);
-        //    }
-        //}
+        ActualPlayer.SpellsCastInThisRoom.Remove(gameObject);
 
-        //if (!cone && !channeling && !CompOrb && !ChaosOrb_)
         if (HitVisualEffect != null)
         {
             GameObject effectOne = Instantiate(HitVisualEffect, this.transform);
+           // ActualPlayer.SpellsCastInThisRoom.Add(effectOne);
             effectOne.SetActive(true);
             effectOne.transform.parent = null;
             Destroy(effectOne, VisualEffectDuration);
@@ -1190,6 +1161,7 @@ public class SpellProjectile : MonoBehaviour
         {
             SecondaryVisualEffect.transform.parent =null;
             Destroy(SecondaryVisualEffect, SecondaryVisualEffectDuration);
+
         }
 
         if (channeling && !CompOrb && !CompOrbPlayer && !ChaosOrb_)

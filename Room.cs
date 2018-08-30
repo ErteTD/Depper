@@ -7,6 +7,11 @@ public class Room : MonoBehaviour
 {
     public GameObject Floor;
     public NavMeshSurface NavGen;
+    [Header("DoorPositions")]
+    public List<Vector3> DoorLocations;
+    public List<Vector3> DoorRotation;
+
+
     [Header("Boss Stuff")]
     public bool BossRoom;
     public bool RoomBeforeBoss;
@@ -43,6 +48,10 @@ public class Room : MonoBehaviour
             InnerRing.transform.parent = null;
         }
     }
+
+
+
+
 
     public void BuildRoomNavMesh()
     {
@@ -86,10 +95,6 @@ public class Room : MonoBehaviour
                 Spider.transform.localPosition = new Vector3(0, 1, 13.75f);
                 SBHC = false;
             }
-            //if (TIMEK)
-            //{
-                
-            //}
         }
     }
     void ColorMiniMapRed()

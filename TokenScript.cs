@@ -59,9 +59,9 @@ public class TokenScript : MonoBehaviour
         //  Invoke("DisableAgent", 0.1f);
 
         Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().speed = 1;
-        Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().obstacleAvoidanceType = 0;
+    //    Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().obstacleAvoidanceType = ;
         Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().stoppingDistance = 5;
-        transform.position = new Vector3(transform.position.x, 1.5f, transform.position.z);
+        transform.localPosition = new Vector3(0, 2.5f, 0);
         rotation = Quaternion.Euler(0, 0, 0);
         
 
@@ -76,7 +76,6 @@ public class TokenScript : MonoBehaviour
     private void LateUpdate()
     {
         Parent.transform.rotation = rotation;
-        transform.position = new Vector3(transform.position.x, 1.5f, transform.position.z);
     }
     void Update()
     {

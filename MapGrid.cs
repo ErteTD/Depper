@@ -12,7 +12,8 @@ public class MapGrid : MonoBehaviour
     public GameObject BasicRoom;
     public GameObject Door;
 
-
+    public int RoomMapLocationX;
+    public int RoomMapLocationY;
 
     [HideInInspector] public int XGrid;
     [HideInInspector] public int YGrid;
@@ -201,8 +202,8 @@ public class MapGrid : MonoBehaviour
                 TotalRooms--;
                 GameObject Base = Instantiate(BasicRoom, transform.position, transform.rotation, transform);
                 Base.SetActive(false);
-                Base.transform.localPosition = new Vector3(XGrid * 80, 0, YGrid * 40);
-
+                //    Base.transform.localPosition = new Vector3(XGrid * 80, 0, YGrid * 40);
+                Base.transform.localPosition = new Vector3(XGrid * RoomMapLocationX, 0, YGrid * RoomMapLocationY);
                 for (int i = -6; i < 7; i += 2)
                 {
                     for (int i2 = -11; i2 < 12; i2 += 2)
@@ -228,11 +229,12 @@ public class MapGrid : MonoBehaviour
                         var RandomRot = Random.Range(0, 366);
 
                         GameObject Monst = Instantiate(MonsterType_[RandomMonster], transform.position, Quaternion.Euler(0f, RandomRot, 0f), Base.transform);
+
                         Monst.transform.localPosition = MonRanDPosList[RandomPos];
                         MonRanDPosList.RemoveAt(RandomPos);
 
                         MonstersThatCanDropLoot.Add(Monst.GetComponent<Monster>());
-
+                        Monst.GetComponent<Monster>().RoomIAmIn = Base;
                         room.AddMonster(Monst);
                         if (Monst.GetComponent<Monster>().MonsterType == 5)
                         {
@@ -479,28 +481,34 @@ public class MapGrid : MonoBehaviour
         }
 
         GameObject Doors = Instantiate(Door, CurrentRoom.transform);
-        Doors.transform.localPosition = DoorLoc;
-        Doors.transform.localRotation = DoorRot;
-
         GameObject Doors2 = Instantiate(Door, Base.transform);
-        Doors2.transform.localPosition = DoorLoc2;
-        Doors2.transform.localRotation = DoorRot2;
+
+        Room RoomCurrent = CurrentRoom.GetComponent<Room>();
+        Room RoomConnecting = Base.GetComponent<Room>();
+        //Doors.transform.localPosition = DoorLoc;
+        //Doors.transform.localRotation = DoorRot;
+        //Doors2.transform.localPosition = DoorLoc2;
+        //Doors2.transform.localRotation = DoorRot2;
+
+        Doors.transform.localPosition = RoomCurrent.DoorLocations[RPos - 1];
+        Doors.transform.localRotation = Quaternion.Euler(RoomCurrent.DoorRotation[RPos - 1]);
+        Doors2.transform.localPosition = RoomConnecting.DoorLocations[MiniMapCur -1];
+        Doors2.transform.localRotation = Quaternion.Euler(RoomConnecting.DoorRotation[MiniMapCur - 1]);
 
         DoorPortal1 += Doors2.transform.position;
         DoorPortal2 += Doors.transform.position;
-
         Doors.transform.GetChild(0).GetComponent<OneWayDoor>().DoorPortal = DoorPortal1;
         Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().DoorPortal = DoorPortal2;
 
-        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight += (YPos * 40);
-        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight2 += (YPos * 40);
-        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().leftEdge += (XPos * 80);
-        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().rightEdge += (XPos * 80);
+        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight += (YPos * RoomMapLocationY);
+        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight2 += (YPos * RoomMapLocationY);
+        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().leftEdge += (XPos * RoomMapLocationX);
+        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().rightEdge += (XPos * RoomMapLocationX);
 
-        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight += (YGrid * 40);
-        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight2 += (YGrid * 40);
-        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().leftEdge += (XGrid * 80);
-        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().rightEdge += (XGrid * 80);
+        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight += (YGrid * RoomMapLocationY);
+        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight2 += (YGrid * RoomMapLocationY);
+        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().leftEdge += (XGrid * RoomMapLocationX);
+        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().rightEdge += (XGrid * RoomMapLocationX);
 
         Doors.transform.GetChild(0).GetComponent<OneWayDoor>().ConRoom = Base;
         Doors.transform.GetChild(0).GetComponent<OneWayDoor>().CurRoom = CurrentRoom;
@@ -513,7 +521,6 @@ public class MapGrid : MonoBehaviour
 
         CurrentRoom.GetComponent<Room>().DoorList.Add(Doors);
         Base.GetComponent<Room>().DoorList.Add(Doors2);
-
 
         Doors.transform.GetChild(0).gameObject.SetActive(false);
         Doors2.transform.GetChild(0).gameObject.SetActive(false);

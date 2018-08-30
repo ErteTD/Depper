@@ -69,6 +69,7 @@ public class Player : MonoBehaviour, IDamageable {
     private float inputX;
     private float inputY;
     private bool BlobArmorAttackOnceBool;
+    public List<GameObject> SpellsCastInThisRoom = new List<GameObject>();
 
     void Start()
     {
@@ -82,6 +83,17 @@ public class Player : MonoBehaviour, IDamageable {
         MovementSpeed_ = MovementSpeed;
         InvokeRepeating("IlluArmor", 1, 0.5f);
     }
+
+    public void RoomChangeDestroyPreviousRoomSpells()
+    {
+        for (int i = SpellsCastInThisRoom.Count - 1; i >= 0; i--)
+        {
+            Destroy(SpellsCastInThisRoom[i].gameObject);
+        }
+        SpellsCastInThisRoom.Clear();
+    }
+
+
     void Update()
     {
         AmIBurning();
@@ -400,6 +412,7 @@ public class Player : MonoBehaviour, IDamageable {
     public void CastExtraBlob(Quaternion rotation)
     {
         GameObject Blob = Instantiate(BlobWeaponObject, new Vector3(transform.position.x, 3, transform.position.z), rotation, transform);
+        SpellsCastInThisRoom.Add(Blob);
         Blob.tag = "Untagged";
         Blob.transform.position += transform.forward * 1.5f;
         Blob.transform.parent = null;

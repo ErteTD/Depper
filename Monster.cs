@@ -32,7 +32,7 @@ public class Monster : MonoBehaviour, IDamageable {
     [HideInInspector] public Vector3 startPosition;
     private bool canAttack;
     private float attackCountdown;
-
+    public GameObject RoomIAmIn;
     private float callForHelpCD;
 
     private float hardCodeDansGame = 0.833f;
@@ -48,7 +48,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public int MonsterType;
     public int MonsterTypeSubLayer;
     public float PushResistance;
-
+    public bool CurrentlyInBlackHole;
     private float BurnDamage;
     private float BurnDur;
     private float TotalBurnDamage;
@@ -78,6 +78,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public int SpawnMultiNumber;
     public int IntendedLevel;
     
+
     [Header("Boss Weapon")]
     public GameObject BossWeapon;
     [Header("Boss Armor")]
@@ -712,7 +713,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
                 if (MonsterType != 5)
                 {
-                    if (agent.isOnNavMesh && Vector3.Distance(destination, PC.transform.position) > 1)
+                    if (agent.isOnNavMesh && ((Vector3.Distance(destination, PC.transform.position) > 1) || CurrentlyInBlackHole))
                     {
                         destination = PC.transform.position;
                         agent.destination = destination;
@@ -875,6 +876,16 @@ public class Monster : MonoBehaviour, IDamageable {
         }
 
 
+    }
+
+    public void NoLongerInBlackHole(float duration)
+    {
+        Invoke("BlackHoleBooltoFalse", duration);
+    }
+
+    void BlackHoleBooltoFalse()
+    {
+        CurrentlyInBlackHole = false;
     }
 
     void ResetMonsterPosition()
@@ -1857,18 +1868,19 @@ public class Monster : MonoBehaviour, IDamageable {
                 case 0:
                     GameObject BossLoot = Instantiate(BossWeapon, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), GameObject.FindGameObjectWithTag("SpiderBossRoom").transform);
                     BossLoot.transform.localPosition = LootLoc;
-                    BossLoot.transform.parent = null;
+                    BossLoot.transform.parent = BossRoom.transform;
                     break;
                 case 1:
                     GameObject BossLoot2 = Instantiate(BossArmor, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), GameObject.FindGameObjectWithTag("SpiderBossRoom").transform);
                     BossLoot2.transform.localPosition = LootLoc;
-                    BossLoot2.transform.parent = null;
+                    BossLoot2.transform.parent = BossRoom.transform;
                     break;
             }
         }
         else if (MonsterHasLoot)
         {
-            Instantiate(MonsterLoot, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z));
+           GameObject CurLoot = Instantiate(MonsterLoot, new Vector3(transform.position.x, 1, transform.position.z), Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z));
+            CurLoot.transform.parent = RoomIAmIn.transform; 
         }
     }
 

@@ -174,6 +174,7 @@ public class CastWeapon : MonoBehaviour
                     for (int i = 0; i < 5; i++)
                     {
                         GameObject P1 = Instantiate(spell4.ItemObject, transform);
+                        Player1.GetComponent<Player>().SpellsCastInThisRoom.Add(P1);
                         P1.transform.Rotate(0, OrbFacing, 0);
                         P1.transform.position = new Vector3(transform.position.x, 3, transform.position.z) + P1.transform.forward * 1.5f;
                         P1.GetComponent<OldKingAttack3>().FloatUpTimer += attackTimer;

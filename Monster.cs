@@ -34,7 +34,7 @@ public class Monster : MonoBehaviour, IDamageable {
     private float attackCountdown;
     public GameObject RoomIAmIn;
     private float callForHelpCD;
-
+    private float RefreshNavMeshTargetPosition;
     private float hardCodeDansGame = 0.833f;
     public float attackAnimCD; // how prevents other animations from overriding attack animation.
 
@@ -59,7 +59,9 @@ public class Monster : MonoBehaviour, IDamageable {
     private bool CheckIfFrostBoosted;
     private bool OnlyOnce = false;
     private bool CurrentlyFrozen;
-    [HideInInspector] public bool MonsterHasLoot;
+    [Header("Loot")]
+    public bool MonsterHasLoot;
+
     [HideInInspector] public GameObject MonsterLoot;
     private float BoostBurnDamage;
     private float BoostBurnDur;
@@ -94,6 +96,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public GameObject currentSpell3;
     public GameObject currentSpell4;
     public GameObject castPoint;
+    public bool SineWaveAttack;
 
     [Header("Special abilities")]
     public bool Resurrect;
@@ -174,6 +177,7 @@ public class Monster : MonoBehaviour, IDamageable {
     private float t = 0;
     private bool flag;
     private bool BBStill;
+    private float BigBoyStepSoundDelay;
 
     [Header("Old King")]
     public GameObject Skill1Projectile;
@@ -211,7 +215,7 @@ public class Monster : MonoBehaviour, IDamageable {
     private float timeLeft;
     private Color targetColor;
     private int HealTimeCounter;
-    [HideInInspector] public bool BlobAttack2Bool;
+    public bool BlobAttack2Bool;
     [HideInInspector] public float Blob4RotSpeed;
     [HideInInspector] public bool Healboss;
     public List<GameObject> BlobCornerList;
@@ -219,6 +223,17 @@ public class Monster : MonoBehaviour, IDamageable {
     [HideInInspector] public bool BlobDie;
     [HideInInspector] public float BlobDieTimer;
     public bool BlobWeapon;
+
+
+
+    [Header("Sounds")]
+    public AudioSource MeleeAttackStart;
+    public float AttacStartDelay;
+    public AudioSource MeleeAttackLand;
+
+    public AudioSource BossSound1;
+    public AudioSource BossSound2;
+    public AudioSource BossSound3;
 
     void Start()
     {
@@ -309,7 +324,7 @@ public class Monster : MonoBehaviour, IDamageable {
         if (BigBoy) // Starting anim for BigBoyBoss.
         {
             anim.Spawn();
-
+            BossSound2.PlayDelayed(0.5f);
             AggroRange = 40f;
             Invoke("BigBoyAggro", 3.6f);
             BigBoySpecial1_ = BigBoySpecial1;
@@ -330,7 +345,10 @@ public class Monster : MonoBehaviour, IDamageable {
 
   public  void AddToRoomMonsterList(GameObject Monster_)
     {
-        BossRoom.AddMonster(Monster_);
+        if (BossRoom != null)
+        {
+            BossRoom.AddMonster(Monster_);
+        }
     }
 
 
@@ -713,10 +731,11 @@ public class Monster : MonoBehaviour, IDamageable {
 
                 if (MonsterType != 5)
                 {
-                    if (agent.isOnNavMesh && ((Vector3.Distance(destination, PC.transform.position) > 1) || CurrentlyInBlackHole))
+                    if (agent.isOnNavMesh && ((Vector3.Distance(destination, PC.transform.position) > 1) || CurrentlyInBlackHole || RefreshNavMeshTargetPosition <0))
                     {
                         destination = PC.transform.position;
                         agent.destination = destination;
+                        RefreshNavMeshTargetPosition = 0.25f;
                     }
                 }
 
@@ -741,11 +760,12 @@ public class Monster : MonoBehaviour, IDamageable {
                 {
                     if (hardCodeDansGame <= 0 && agent.velocity.magnitude > 0.5f) // makes so the attack animation does not get canceled by run animation. && makes sure if they are not currently in attack animation and they are moving the running animation is active.
                     {
-                        if (MonsterType == 1) { anim.RunAnim(); }
+                        if (MonsterType == 1) { anim.RunAnim(); if (BigBoy && BigBoyStepSoundDelay < 0) { BossSound3.Play(); BigBoyStepSoundDelay = 3.1f / MovementSpeed; } }
                         if (MonsterType == 2) { anim.RunAnimation(); }
                         if (MonsterType == 3) { anim.RunAnimation2(); }
                         if (MonsterType == 4) { anim.PlayerIdle(); } // Timekeeper
                         if (MonsterType == 6) { anim.RunAnimation3(MonsterTypeSubLayer); }
+                        BigBoyStepSoundDelay -= Time.deltaTime;
                     }
                 }
                 if (callForHelpCD <= 0f)
@@ -820,7 +840,14 @@ public class Monster : MonoBehaviour, IDamageable {
                     if (MonsterType == 3 && !SpiderBoss) { anim.AttackAnimation2(); }
                     if (MonsterType == 4) { anim.TimeKeeperAttack(); }
                     if (MonsterType == 6) { anim.AttackAnimation3(); }
+
+
                     Invoke("Attack", AttackDelay);
+
+                    if ((MonsterType == 1 || MonsterType == 3 || MonsterType == 6) && !SpiderBoss)
+                    {
+                        MeleeAttackStart.PlayDelayed(AttacStartDelay);
+                    }
 
                     if (MonsterType == 1 || MonsterType == 3 || MonsterType == 5 || MonsterType == 6 || SpiderBoss) // non casters
                     {
@@ -847,7 +874,7 @@ public class Monster : MonoBehaviour, IDamageable {
             Ratatatata_ -= Time.deltaTime;
             BigBoySpecial1_ -= Time.deltaTime;
             SwarmCD_ -= Time.deltaTime;
-
+            RefreshNavMeshTargetPosition -= Time.deltaTime;
 
             if (IlluHit)
             {
@@ -986,18 +1013,22 @@ public class Monster : MonoBehaviour, IDamageable {
             if (GameObject.FindWithTag("Illusion") != null && !StartScene)
             {
                 PC.GetComponent<IlluScript>().TakeDamage(damage);
+                MeleeAttackLand.Play();
             }
             else if (!StartScene && dist < meleeRange + 6 && tag != "Ressing" && !AttackFriend)
             {
                 PC.GetComponent<Player>().TakeDamage(damage);
+                MeleeAttackLand.Play();
             }
             else if (StartScene)
             {
                 PC.GetComponent<Monster>().FakeFight(damage);
+                MeleeAttackLand.Play();
             }
             else if (AttackFriend)
             {
                 PC.GetComponent<Monster>().TakeDamage(damage);
+                MeleeAttackLand.Play();
             }
         }
 
@@ -1014,6 +1045,11 @@ public class Monster : MonoBehaviour, IDamageable {
             else if (AttackFriend)
             {
                 PC.GetComponent<Monster>().TakeDamage(damage);
+            }
+
+            if (BlobAttack2Bool)
+            {
+                BlobExplodeOnDeath();
             }
 
             transform.GetChild(0).gameObject.SetActive(true);
@@ -1033,9 +1069,10 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             if (MonsterType == 4)
             {
-                var RandomSpell = Random.Range(0, 5);
+                Invoke("TimeKeeperAttacks", 0.1f);
+                var RandomSpell = Random.Range(0, 7);
                 switch (RandomSpell)
-                {
+                {                   
                     case 0:
                         currentspellObject = currentspellObject3;
                         currentSpell = currentSpell3;
@@ -1051,7 +1088,7 @@ public class Monster : MonoBehaviour, IDamageable {
                         currentSpell = currentSpell4;
                         MonsterTypeSubLayer = 3;
                         break;
-                    case 3:// extra 2 to make lightningbolt rarer
+                    case 3:
                         currentspellObject = currentspellObject3;
                         currentSpell = currentSpell3;
                         MonsterTypeSubLayer = 2;
@@ -1061,11 +1098,18 @@ public class Monster : MonoBehaviour, IDamageable {
                         currentSpell = currentSpell2;
                         MonsterTypeSubLayer = 1;
                         break;
-
+                    case 5:
+                        currentspellObject = currentspellObject3;
+                        currentSpell = currentSpell3;
+                        MonsterTypeSubLayer = 2;
+                        break;
+                    case 6:
+                        currentspellObject = currentspellObject2;
+                        currentSpell = currentSpell2;
+                        MonsterTypeSubLayer = 1;
+                        break;
                 }
             }
-
-
 
             if (attackCountdown >= 0.2f || !IamIllu) // so illus wont attack on spawn.
             {
@@ -1081,6 +1125,7 @@ public class Monster : MonoBehaviour, IDamageable {
                         spell.FrostBoltSlow = currentSpell.GetComponent<FrostBolt>().FrostBoltSlow;
                         spell.SlowDuration = currentSpell.GetComponent<FrostBolt>().SlowDuration;
                         spell.SlowPercent = currentSpell.GetComponent<FrostBolt>().SlowPercent + 0.1f;
+                        spell.SineWaveAttack = SineWaveAttack;
 
                         break;
                     case 2:
@@ -1089,6 +1134,7 @@ public class Monster : MonoBehaviour, IDamageable {
                         spell.FireBallBurn = currentSpell.GetComponent<Fireball>().FireBallBurn;
                         spell.BurnDuration = currentSpell.GetComponent<Fireball>().BurnDuration;
                         spell.BurnPercent = currentSpell.GetComponent<Fireball>().BurnPercent;
+                        spell.SineWaveAttack = SineWaveAttack;
                         break;
                     case 3:
                         spell.projectilespeed = currentSpell.GetComponent<LightningBolt>().projectilespeed;
@@ -1114,10 +1160,7 @@ public class Monster : MonoBehaviour, IDamageable {
                 {
                     spell.enemyCastingspell = true;
                 }
-            }
-
-
-            Invoke("TimeKeeperAttacks", 0.1f);
+            }           
         }
         if (SpiderBoss)
         {
@@ -1206,6 +1249,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
     public void TimeKeeperAttacks()
     {
+        SineWaveAttack = false;
         if (MonsterType == 4 && IamIllu == false) // TimeKeeper
         {
             GameManager manag = GameObject.FindObjectOfType<GameManager>();
@@ -1219,6 +1263,7 @@ public class Monster : MonoBehaviour, IDamageable {
                 Invoke("StopSpinHC", 7.4f);
                 Invoke("StopSpin", 8f);
                 Ratatatata_ = Ratatatata;
+
             }
 
 
@@ -1226,6 +1271,12 @@ public class Monster : MonoBehaviour, IDamageable {
             {
                 TeleLoc = Random.Range(0, TimeKeeperPoints.Count);
                 agent.Warp(TimeKeeperPoints[TeleLoc].transform.position);
+
+                var RandSind = Random.Range(0, 2);
+                if (RandSind == 0)
+                {
+                    SineWaveAttack = true;
+                }
             }
 
 
@@ -1411,39 +1462,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
             if (BlobAttack2Bool)
             {
-
-
-                Vector3 RotateDir = transform.rotation.eulerAngles;
-                float yAxis = RotateDir.y;
-
-                for (int i = 0; i < 10; i++)
-                {
-                    RotateDir = new Vector3(0, yAxis, 0);
-
-
-                    GameObject CurBlob = Instantiate(BlobAttack1Object, transform.position, transform.rotation, transform);
-
-                    AddToRoomMonsterList(CurBlob);
-                    Monster CurBlob_ = CurBlob.GetComponent<Monster>();
-                    CurBlob.transform.rotation = Quaternion.Euler(RotateDir);
-                    ParticleSystem ps = BlobPS;
-                    var main = ps.main;
-                    yAxis += 36;
-                    ParticleSystem ps3 = CurBlob_.BlobPS;
-                    var main3 = ps3.main;
-                    ParticleSystem ps4 = CurBlob_.BlobPS2;
-                    var main4 = ps4.main;
-                    main3.startColor = main.startColor;
-                    main4.startColor = main.startColor;
-                    CurBlob_.health = 2;
-                    CurBlob_.health2 = 2;
-                    CurBlob_.Healboss = false;
-                    CurBlob_.MovementSpeed = 8;
-                    CurBlob_.MovementSpeed_ = 8;
-                    CurBlob_.BlobAttackNoTarget = true;
-                    CurBlob_.BlobDie = false;
-                    CurBlob.transform.parent = null;
-                }
+                BlobExplodeOnDeath();               
             }
         }
         if (MonsterType == 6 && Resurrect && !Immortal) { anim.DieAnimation3(); }
@@ -1504,7 +1523,7 @@ public class Monster : MonoBehaviour, IDamageable {
             SkeletonStartDead();
         }
 
-        Collider[] cols = Physics.OverlapSphere(transform.position, 20f); //aggro range when enemy hit.
+        Collider[] cols = Physics.OverlapSphere(transform.position, 17f); 
         foreach (Collider c in cols)
         {
             Monster e = c.GetComponent<Monster>();
@@ -1514,6 +1533,39 @@ public class Monster : MonoBehaviour, IDamageable {
             }
         }
     }
+
+    void BlobExplodeOnDeath()
+    {
+        Vector3 RotateDir = transform.rotation.eulerAngles;
+        float yAxis = RotateDir.y;
+        for (int i = 0; i < 10; i++)
+        {
+            RotateDir = new Vector3(0, yAxis, 0);
+            GameObject CurBlob = Instantiate(BlobAttack1Object, transform.position, transform.rotation, transform);
+            AddToRoomMonsterList(CurBlob);
+            Monster CurBlob_ = CurBlob.GetComponent<Monster>();
+            CurBlob.transform.rotation = Quaternion.Euler(RotateDir);
+            ParticleSystem ps = BlobPS;
+            var main = ps.main;
+            yAxis += 36;
+            ParticleSystem ps3 = CurBlob_.BlobPS;
+            var main3 = ps3.main;
+            ParticleSystem ps4 = CurBlob_.BlobPS2;
+            var main4 = ps4.main;
+            main3.startColor = main.startColor;
+            main4.startColor = main.startColor;
+            CurBlob_.health = 2;
+            CurBlob_.health2 = 2;
+            CurBlob_.Healboss = false;
+            CurBlob_.MovementSpeed = 8;
+            CurBlob_.MovementSpeed_ = 8;
+            CurBlob_.BlobAttackNoTarget = true;
+            CurBlob_.BlobDie = false;
+            CurBlob.transform.parent = null;
+        }
+    }
+
+
     public void RessurectMonster()
     {
         slowedDur = 0;
@@ -1865,15 +1917,31 @@ public class Monster : MonoBehaviour, IDamageable {
             var RandomLoot = Random.Range(0, 2);
             switch (RandomLoot)
             {
+
                 case 0:
-                    GameObject BossLoot = Instantiate(BossWeapon, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), GameObject.FindGameObjectWithTag("SpiderBossRoom").transform);
-                    BossLoot.transform.localPosition = LootLoc;
-                    BossLoot.transform.parent = BossRoom.transform;
+                    if (!TheBlob)
+                    {
+                        GameObject BossLoot = Instantiate(BossWeapon, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), BossRoom.transform);
+                        BossLoot.transform.localPosition = LootLoc;
+                    }
+                    else
+                    {
+                        GameObject BossLoot = Instantiate(BossWeapon, PC.transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), BossRoom.transform);
+                        BossLoot.transform.localPosition = LootLoc;
+                    }
                     break;
+
                 case 1:
-                    GameObject BossLoot2 = Instantiate(BossArmor, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), GameObject.FindGameObjectWithTag("SpiderBossRoom").transform);
-                    BossLoot2.transform.localPosition = LootLoc;
-                    BossLoot2.transform.parent = BossRoom.transform;
+                    if (!TheBlob)
+                    {
+                        GameObject BossLoot2 = Instantiate(BossArmor, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), BossRoom.transform);
+                        BossLoot2.transform.localPosition = LootLoc;
+                    }
+                    else
+                    {
+                        GameObject BossLoot = Instantiate(BossArmor, PC.transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), BossRoom.transform);
+                        BossLoot.transform.localPosition = LootLoc;
+                    }
                     break;
             }
         }
@@ -2271,6 +2339,7 @@ public class Monster : MonoBehaviour, IDamageable {
         slowedDur = 0; //removes any slow.
         Invoke("SlowDown", 6f);
         Invoke("SlowDown2", 9f);
+        hardCodeDansGame = 0f;
     }
     void SlowDown()
     {
@@ -2320,10 +2389,12 @@ public class Monster : MonoBehaviour, IDamageable {
     void BBRoar()
     {
         anim.RoarAnim();
+        BossSound1.Play();
     }
     void BBRoar2()
     {
         anim.RoarAnim2();
+        BossSound1.Play();
     }
     public void BigBoyAttack()
     {
@@ -2409,7 +2480,9 @@ public class Monster : MonoBehaviour, IDamageable {
                     Invoke("BigBoySmash5Anim", AttackDelay);
                     break;
             }
+            MeleeAttackLand.PlayDelayed(AttackDelay-0.2f);
             attackCountdown = AttackSpeed;
+            BigBoyStepSoundDelay = 0;
             hardCodeDansGame = attackAnimCD;
         }
     }

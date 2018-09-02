@@ -120,6 +120,10 @@ public class SpellProjectile : MonoBehaviour
     private float Distance_;
     private float NewTargetTimer;
     private Player ActualPlayer;
+    private float GameTime;
+    public bool SineWaveAttack;
+    private float randomFreq;
+    private float randomMag;
 
     private void Start()
     {
@@ -135,6 +139,10 @@ public class SpellProjectile : MonoBehaviour
                 ThePlayer.GetComponent<Player>().curSpellProjectile.Add(gameObject);
             }
         }
+
+        randomFreq = Random.Range(13, 17);
+        randomMag = Random.Range(1.5f, 2.5f);
+
 
         if (CompOrb)
         {
@@ -689,7 +697,21 @@ public class SpellProjectile : MonoBehaviour
     void NormalProjectileAttack()
     {
         pos_ += transform.forward * Time.deltaTime * projectilespeed;
-        transform.position = pos_;
+
+        if (SineWaveAttack)
+        {
+            GameTime += Time.deltaTime;
+            Vector3 pos_2 = transform.up * Time.deltaTime * projectilespeed;
+            transform.position = pos_ + pos_2 + transform.right * Mathf.Sin(GameTime * randomFreq) * randomMag;
+        }
+        else
+        {
+            transform.position = pos_;
+        }
+
+
+
+
         if (!enemyCastingspell && BlessedAim)
         {
             ChainTarget();

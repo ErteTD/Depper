@@ -9,7 +9,8 @@ public class MapGrid : MonoBehaviour
     public List<Material> FloorType;
     public GameObject GiveStuff;
     private int TotalRooms;
-    public GameObject BasicRoom;
+    public List<GameObject> RoomTypes;
+   // public GameObject BasicRoom;
     public GameObject Door;
 
     public int RoomMapLocationX;
@@ -20,10 +21,10 @@ public class MapGrid : MonoBehaviour
 
     private int MiniMapCur;
 
-    private Vector3 DoorLoc;
-    private Quaternion DoorRot;
+ //   private Vector3 DoorLoc;
+ //   private Quaternion DoorRot;
     private int Counter;
-    private Vector3 DoorLoc2;
+   // private Vector3 DoorLoc2;
     private Vector3 DoorPortal1;
     private Vector3 DoorPortal2;
 
@@ -45,24 +46,26 @@ public class MapGrid : MonoBehaviour
     public int CurrentLevel;
     public int minRoom;
     public int maxRoom;
-
     public List<int> LevelCR;
+    private int NumberOfMiniBosses;
+    private int NumberOfEvents;
     [Header("Loot")]
     public List<GameObject> Tokens;
     public List<GameObject> Healing;
     private int AmountOfLoot;
     private int AmountOfPotions;
 
-    private Quaternion DoorRot2;
+    //private Quaternion DoorRot2;
     [Header("MonsterStuff")]
-    public List<GameObject> MonsterType; // Should be its own class? to specify things like CR. Or if lazy put into monster script.
+    public List<GameObject> MonsterType;
+    public List<GameObject> MiniBosses;
+
     [Header("RoomStuff")]
     public List<GameObject> Obstacle;
     public List<GameObject> Boss;
     List<Vector2Int> GridList = new List<Vector2Int>();
     List<Vector2Int> MiniMapList = new List<Vector2Int>();
     List<GameObject> RoomList = new List<GameObject>();
-    List<Vector3> MonRanDPosList = new List<Vector3>();
     List<Monster> MonstersThatCanDropLoot = new List<Monster>();
     List<GameObject> MonsterType_;
 
@@ -93,9 +96,11 @@ public class MapGrid : MonoBehaviour
     public void GenerateFirstRoom()
     {
         TotalRooms = Random.Range(minRoom, maxRoom + 1);
-        AmountOfLoot = (int)Mathf.Floor(TotalRooms / 3);
-        AmountOfPotions = (int)Mathf.Floor(TotalRooms / 4);
-        GameObject Base = Instantiate(BasicRoom, transform.position, transform.rotation, transform);
+        AmountOfLoot = (int)Mathf.Floor(TotalRooms / 6);
+        AmountOfPotions = (int)Mathf.Floor(TotalRooms / 6);
+        NumberOfMiniBosses = (int)Mathf.Floor(TotalRooms / 6);
+        NumberOfEvents = (int)Mathf.Floor(TotalRooms / 6);
+        GameObject Base = Instantiate(RoomTypes[0], transform.position, transform.rotation, transform);
         // this is a really disgusting hack that prevents this room from getting loot later on.. sorry
         Base.GetComponent<Room>().HasLoot = true;
 
@@ -196,58 +201,76 @@ public class MapGrid : MonoBehaviour
             if (!GridList.Contains(new Vector2Int(XGrid, YGrid)))
             {
                 GridList.Add(new Vector2Int(XGrid, YGrid));
-
                 MiniMapList.Add(new Vector2Int(MiniMapList[ListKey].x + MiniMapX, MiniMapList[ListKey].y + MiniMapZ));
-
                 TotalRooms--;
-                GameObject Base = Instantiate(BasicRoom, transform.position, transform.rotation, transform);
+                int RRoom = Random.Range(0, RoomTypes.Count);
+
+                //hardcode so miniboss & eventroom always spawn.
+                if (TotalRooms == 2 && NumberOfMiniBosses > 0)
+                {
+                    RRoom = 1;
+                }
+                if (TotalRooms == 1 && NumberOfEvents > 0)
+                {
+                    RRoom = 2;
+                }
+           
+                GameObject Base = Instantiate(RoomTypes[RRoom], transform.position, transform.rotation, transform);
+                Room Base_ = Base.GetComponent<Room>();
                 Base.SetActive(false);
-                //    Base.transform.localPosition = new Vector3(XGrid * 80, 0, YGrid * 40);
                 Base.transform.localPosition = new Vector3(XGrid * RoomMapLocationX, 0, YGrid * RoomMapLocationY);
-                for (int i = -6; i < 7; i += 2)
+
+                if (!Base_.MonsterEvent || NumberOfEvents == 0)
                 {
-                    for (int i2 = -11; i2 < 12; i2 += 2)
+                    while (MIN < LevelCR[CurrentLevel])
                     {
-                        MonRanDPosList.Add(new Vector3(i, 0, i2));
-                    }
-                }
-
-                while (MIN < LevelCR[CurrentLevel])
-                {
-                    var RandomMonster = Random.Range(0, MonsterType_.Count);
-                    int SpawnMulti = 1;
-                    if (MonsterType_[RandomMonster].GetComponent<Monster>().SpawnMultiBool)
-                    {
-                        SpawnMulti = MonsterType_[RandomMonster].GetComponent<Monster>().SpawnMultiNumber;
-                    }
-
-                    var room = Base.GetComponent<Room>();
-
-                    for (int i = 0; i < SpawnMulti; i++)
-                    {
-                        var RandomPos = Random.Range(0, MonRanDPosList.Count);
-                        var RandomRot = Random.Range(0, 366);
-
-                        GameObject Monst = Instantiate(MonsterType_[RandomMonster], transform.position, Quaternion.Euler(0f, RandomRot, 0f), Base.transform);
-
-                        Monst.transform.localPosition = MonRanDPosList[RandomPos];
-                        MonRanDPosList.RemoveAt(RandomPos);
-
-                        MonstersThatCanDropLoot.Add(Monst.GetComponent<Monster>());
-                        Monst.GetComponent<Monster>().RoomIAmIn = Base;
-                        room.AddMonster(Monst);
-                        if (Monst.GetComponent<Monster>().MonsterType == 5)
+                        var RandomMonster = Random.Range(0, MonsterType_.Count);
+                        int SpawnMulti = 1;
+                        if (MonsterType_[RandomMonster].GetComponent<Monster>().SpawnMultiBool)
                         {
-                            Monst.transform.position = new Vector3(Monst.transform.position.x, 3f, Monst.transform.position.z);
+                            SpawnMulti = MonsterType_[RandomMonster].GetComponent<Monster>().SpawnMultiNumber;
                         }
+
+                        for (int i = 0; i < SpawnMulti; i++)
+                        {
+                            var RandomPos = Random.Range(0, Base_.MonsterPos.Count);
+                            var RandomRot = Random.Range(0, 366);
+                            GameObject Monst = Instantiate(MonsterType_[RandomMonster], transform.position, Quaternion.Euler(0f, RandomRot, 0f), Base.transform);
+                            Monst.transform.localPosition = Base_.MonsterPos[RandomPos];
+                            Base_.MonsterPos.RemoveAt(RandomPos);
+                            MonstersThatCanDropLoot.Add(Monst.GetComponent<Monster>());
+                            Monst.GetComponent<Monster>().RoomIAmIn = Base;
+                            Base_.AddMonster(Monst);
+                            if (Monst.GetComponent<Monster>().MonsterType == 5)
+                            {
+                                Monst.transform.position = new Vector3(Monst.transform.position.x, 3f, Monst.transform.position.z);
+                            }
+                        }
+                        MIN += MonsterType_[RandomMonster].GetComponent<Monster>().MonsterCR;
                     }
-                    MIN += MonsterType_[RandomMonster].GetComponent<Monster>().MonsterCR;
+                }
+                else { 
+                    Base_.EventInThisRoom();
+                    NumberOfEvents--;
                 }
 
-                MonRanDPosList.Clear();
+                if (Base_.MiniBoss && NumberOfMiniBosses > 0)
+                {
+                    var RandomMonster = Random.Range(0, MiniBosses.Count);
+                    var RandomRot = Random.Range(0, 366);
+                    GameObject Monst = Instantiate(MiniBosses[RandomMonster], transform.position, Quaternion.Euler(0f, RandomRot, 0f), Base.transform);
+                    Monst.transform.localPosition = Base_.MiniBossLocation;           
+                    if (MiniBosses[1]) { Monst.transform.localPosition = new Vector3(Base_.MiniBossLocation.x, 3, Base_.MiniBossLocation.z); } // Move Blob up from beneth the ground
+                    Monst.GetComponent<Monster>().RoomIAmIn = Base;
+                    Base_.AddMonster(Monst);
 
-                var RandomObstacle = Random.Range(0, Obstacle.Count);
-                Instantiate(Obstacle[RandomObstacle], Base.transform);
+                    MiniBossLoot(Monst.GetComponent<Monster>());
+
+                    NumberOfMiniBosses--;
+                }
+
+                var RandomObstacle = Random.Range(0, Base_.RoomObstacles.Count);
+                Instantiate(Base_.RoomObstacles[RandomObstacle], Base.transform);
 
             //    Base.GetComponent<Room>().BuildRoomNavMesh();
 
@@ -310,21 +333,21 @@ public class MapGrid : MonoBehaviour
                 FinalFinalX = LR;
             }
 
-            DoorLoc = new Vector3(0, 2, 15);
-            DoorRot = Quaternion.Euler(new Vector3(0, 0, 0));
+            //DoorLoc = new Vector3(0, 2, 15);
+            //DoorRot = Quaternion.Euler(new Vector3(0, 0, 0));
 
             int Indeex = GridList.IndexOf(FinalFinalX);
             GameObject Doors = Instantiate(Door, RoomList[Indeex].transform);
 
-            Doors.transform.localPosition = DoorLoc;
-            Doors.transform.localRotation = DoorRot;
+            Doors.transform.localPosition = RoomList[Indeex].GetComponent<Room>().DoorLocations[4];
+            Doors.transform.localRotation = Quaternion.Euler(RoomList[Indeex].GetComponent<Room>().DoorRotation[4]);
             Doors.transform.Find("LightAndTrigger").GetComponent<OneWayDoor>().BossRoom();
 
             //   var RandomBoss = Random.Range(0, Boss.Count); // Boss room currently does not have a challenge raiting.
             GameObject BossRoom = Instantiate(Boss[CurrentLevel], transform); // 
 
             Room BRoom = BossRoom.GetComponent<Room>();
-            BossRoom.transform.position = new Vector3(0f, 0f, (FinalY + 2) * 40);
+            BossRoom.transform.position = new Vector3(0f, 0f, (FinalY + 2) * RoomMapLocationY);
 
             Doors.transform.GetChild(0).GetComponent<OneWayDoor>().ConRoom = BossRoom;
 
@@ -336,8 +359,8 @@ public class MapGrid : MonoBehaviour
 
             Doors.transform.Find("LightAndTrigger").GetComponent<OneWayDoor>().DoorPortal = new Vector3(BossRoom.transform.position.x + BRoom.StartLocation.x, BossRoom.transform.position.y + +BRoom.StartLocation.y, BossRoom.transform.position.z + +BRoom.StartLocation.z);
 
-            Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight += ((FinalY + 2) * 40) + BRoom.CamTop;
-            Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight2 += ((FinalY + 2) * 40) + BRoom.CamBot;
+            Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight += ((FinalY + 2) * RoomMapLocationY) + BRoom.CamTop;
+            Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight2 += ((FinalY + 2) * RoomMapLocationY) + BRoom.CamBot;
             Doors.transform.GetChild(0).GetComponent<OneWayDoor>().leftEdge = BRoom.CamLeft;
             Doors.transform.GetChild(0).GetComponent<OneWayDoor>().rightEdge = BRoom.CamRight;
             Doors.transform.GetChild(0).GetComponent<OneWayDoor>().CamCenter = BRoom.CamCenter;
@@ -352,8 +375,8 @@ public class MapGrid : MonoBehaviour
 
             if (BRoom.SBHC) // || for all bossrooms that have random obstacles. Alt. Boss[0] etc.
             {
-                var RandomObstacle = Random.Range(0, Obstacle.Count);
-                GameObject Rubble = Instantiate(Obstacle[RandomObstacle], BossRoom.transform);
+                var RandomObstacle = Random.Range(0, BRoom.RoomObstacles.Count);
+                GameObject Rubble = Instantiate(BRoom.RoomObstacles[RandomObstacle], BossRoom.transform);
                 Rubble.transform.position = new Vector3(BossRoom.transform.position.x, BossRoom.transform.position.y, BossRoom.transform.position.z - 2f);
             }
 
@@ -441,40 +464,23 @@ public class MapGrid : MonoBehaviour
     {
         switch (RPos)
         {
-
             case 1: //Up
-                DoorLoc = new Vector3(-25, 2, 13);
-                DoorRot = Quaternion.Euler(new Vector3(0, -45, 0));
                 DoorPortal1 = new Vector3(-5, 0, 5);
-                DoorLoc2 = new Vector3(25, 2, -11);
-                DoorRot2 = Quaternion.Euler(new Vector3(0, 135, 0));
                 DoorPortal2 = new Vector3(5, 0, -5);
                 MiniMapCur = 2;
                 break;
             case 2: //Down
-                DoorLoc = new Vector3(25, 2, -11);
-                DoorRot = Quaternion.Euler(new Vector3(0, 135, 0));
                 DoorPortal1 = new Vector3(5, 0, -5);
-                DoorLoc2 = new Vector3(-25, 2, 13);
-                DoorRot2 = Quaternion.Euler(new Vector3(0, -45, 0));
                 DoorPortal2 = new Vector3(-5, 0, 5);
                 MiniMapCur = 1;
                 break;
             case 3: //Left
-                DoorLoc = new Vector3(-25, 2, -11);
-                DoorRot = Quaternion.Euler(new Vector3(0, -135, 0));
                 DoorPortal1 = new Vector3(-5, 0, -5);
-                DoorLoc2 = new Vector3(25, 2, 13);
-                DoorRot2 = Quaternion.Euler(new Vector3(0, 45, 0));
                 DoorPortal2 = new Vector3(5, 0, 5);
                 MiniMapCur = 4;
                 break;
             case 4: // Right
-                DoorLoc = new Vector3(25, 2, 13);
-                DoorRot = Quaternion.Euler(new Vector3(0, 45, 0));
                 DoorPortal1 = new Vector3(5, 0, 5);
-                DoorLoc2 = new Vector3(-25, 2, -11);
-                DoorRot2 = Quaternion.Euler(new Vector3(0, -135, 0));
                 DoorPortal2 = new Vector3(-5, 0, -5);
                 MiniMapCur = 3;
                 break;
@@ -482,17 +488,12 @@ public class MapGrid : MonoBehaviour
 
         GameObject Doors = Instantiate(Door, CurrentRoom.transform);
         GameObject Doors2 = Instantiate(Door, Base.transform);
-
         Room RoomCurrent = CurrentRoom.GetComponent<Room>();
         Room RoomConnecting = Base.GetComponent<Room>();
-        //Doors.transform.localPosition = DoorLoc;
-        //Doors.transform.localRotation = DoorRot;
-        //Doors2.transform.localPosition = DoorLoc2;
-        //Doors2.transform.localRotation = DoorRot2;
 
         Doors.transform.localPosition = RoomCurrent.DoorLocations[RPos - 1];
+        Doors2.transform.localPosition = RoomConnecting.DoorLocations[MiniMapCur - 1];
         Doors.transform.localRotation = Quaternion.Euler(RoomCurrent.DoorRotation[RPos - 1]);
-        Doors2.transform.localPosition = RoomConnecting.DoorLocations[MiniMapCur -1];
         Doors2.transform.localRotation = Quaternion.Euler(RoomConnecting.DoorRotation[MiniMapCur - 1]);
 
         DoorPortal1 += Doors2.transform.position;
@@ -500,15 +501,17 @@ public class MapGrid : MonoBehaviour
         Doors.transform.GetChild(0).GetComponent<OneWayDoor>().DoorPortal = DoorPortal1;
         Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().DoorPortal = DoorPortal2;
 
-        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight += (YPos * RoomMapLocationY);
-        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight2 += (YPos * RoomMapLocationY);
-        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().leftEdge += (XPos * RoomMapLocationX);
-        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().rightEdge += (XPos * RoomMapLocationX);
+        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight += (YPos * RoomMapLocationY) + RoomCurrent.CamTop;
+        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight2 += (YPos * RoomMapLocationY) + RoomCurrent.CamBot;
+        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().leftEdge += (XPos * RoomMapLocationX) + RoomCurrent.CamLeft;
+        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().rightEdge += (XPos * RoomMapLocationX) + RoomCurrent.CamRight;
+        Doors2.transform.GetChild(0).GetComponent<OneWayDoor>().CamCenter = RoomCurrent.CamCenter;
 
-        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight += (YGrid * RoomMapLocationY);
-        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight2 += (YGrid * RoomMapLocationY);
-        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().leftEdge += (XGrid * RoomMapLocationX);
-        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().rightEdge += (XGrid * RoomMapLocationX);
+        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight += (YGrid * RoomMapLocationY) + RoomConnecting.CamTop;
+        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().doorHeight2 += (YGrid * RoomMapLocationY) + RoomConnecting.CamBot;
+        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().leftEdge += (XGrid * RoomMapLocationX) + RoomConnecting.CamLeft;
+        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().rightEdge += (XGrid * RoomMapLocationX) + RoomConnecting.CamRight;
+        Doors.transform.GetChild(0).GetComponent<OneWayDoor>().CamCenter =  RoomConnecting.CamCenter;
 
         Doors.transform.GetChild(0).GetComponent<OneWayDoor>().ConRoom = Base;
         Doors.transform.GetChild(0).GetComponent<OneWayDoor>().CurRoom = CurrentRoom;
@@ -532,8 +535,6 @@ public class MapGrid : MonoBehaviour
         Doors.transform.GetChild(0).GetComponent<OneWayDoor>().MoveMMCam = RPos;
     }
 
-
-
     public void NextLevel()
     {
         foreach (Transform child in transform)
@@ -550,12 +551,11 @@ public class MapGrid : MonoBehaviour
         GridList.Clear();
         MiniMapList.Clear();
         RoomList.Clear();
-        MonRanDPosList.Clear();
         MonsterType_.Clear();
         Counter = 0;
         MiniMapX = 0;
         MiniMapZ = 0;
-        DoorLoc2 = new Vector3(0, 0, 0);
+  //      DoorLoc2 = new Vector3(0, 0, 0);
         DoorPortal1 = new Vector3(0, 0, 0);
         DoorPortal2 = new Vector3(0, 0, 0);
         MIN = 0;
@@ -602,59 +602,66 @@ public class MapGrid : MonoBehaviour
         }
     }
 
-    public void SpawnLoot() // Not used currently!! Changed that loot spawns from monsters instead of directly into room.
+    private void MiniBossLoot(Monster Mboss)
     {
-        var RandLoot = Random.Range(0, RoomList.Count);
-        var RandPot = Random.Range(0, RoomList.Count);
-
-        if (RoomList[RandLoot].GetComponent<Room>().HasLoot == false && AmountOfLoot > 0)
-        {
-            var LootBag = Random.Range(0, 15);
-            GameObject Loot = Instantiate(Tokens[LootBag], RoomList[RandLoot].transform);
-            var CurPos = Loot.transform.position;
-            Loot.transform.parent = null;
-            RoomList[RandLoot].GetComponent<Room>().HasLoot = true;
-            AmountOfLoot--;
-        }
-        if (RoomList[RandPot].GetComponent<Room>().HasLoot == false && AmountOfPotions > 0)
-        {
-            GameObject Loot = Instantiate(Healing[0], RoomList[RandPot].transform);
-            var CurPos = Loot.transform.position;
-            Loot.transform.parent = null;
-            RoomList[RandPot].GetComponent<Room>().HasLoot = true;
-            AmountOfPotions--;
-        }
-
-        if (AmountOfLoot > 0 || AmountOfPotions > 0)
-        {
-            SpawnLoot();
-        }
+        var LootBag = Random.Range(0, Tokens.Count);
+        Mboss.MonsterHasLoot = true;
+        Mboss.MonsterLoot = Tokens[LootBag];
     }
 
+    //public void SpawnLoot() // Not used currently!! Changed that loot spawns from monsters instead of directly into room.
+    //{
+    //    var RandLoot = Random.Range(0, RoomList.Count);
+    //    var RandPot = Random.Range(0, RoomList.Count);
 
-    public void MoreRooms(int ListKey) // not used, has the opposite effect as inteded, creates more rooms with 1 door. Tho i know why. :(
-    {
-        iterations++;
+    //    if (RoomList[RandLoot].GetComponent<Room>().HasLoot == false && AmountOfLoot > 0)
+    //    {
+    //        var LootBag = Random.Range(0, 15);
+    //        GameObject Loot = Instantiate(Tokens[LootBag], RoomList[RandLoot].transform);
+    //        var CurPos = Loot.transform.position;
+    //        Loot.transform.parent = null;
+    //        RoomList[RandLoot].GetComponent<Room>().HasLoot = true;
+    //        AmountOfLoot--;
+    //    }
+    //    if (RoomList[RandPot].GetComponent<Room>().HasLoot == false && AmountOfPotions > 0)
+    //    {
+    //        GameObject Loot = Instantiate(Healing[0], RoomList[RandPot].transform);
+    //        var CurPos = Loot.transform.position;
+    //        Loot.transform.parent = null;
+    //        RoomList[RandPot].GetComponent<Room>().HasLoot = true;
+    //        AmountOfPotions--;
+    //    }
 
-        var RandomRoom = Random.Range(0, GridList.Count);
+    //    if (AmountOfLoot > 0 || AmountOfPotions > 0)
+    //    {
+    //        SpawnLoot();
+    //    }
+    //}
 
-        if (RoomList[ListKey].GetComponent<Room>().DoorList.Count <= 3) // did this not work because doorlist wasn't being generated???
-        {
-            var RandomRoom2 = Random.Range(0, 50);
-            if (RandomRoom2 < 48)
-            {
-                SpawnMoreRooms(ListKey);
-            }
-            else
-            {
-                SpawnMoreRooms(RandomRoom);
-            }
 
-        }
-        else
-        {
-            SpawnMoreRooms(RandomRoom);
-        }
-    }
+    //public void MoreRooms(int ListKey) // not used, has the opposite effect as inteded, creates more rooms with 1 door. Tho i know why. :(
+    //{
+    //    iterations++;
+
+    //    var RandomRoom = Random.Range(0, GridList.Count);
+
+    //    if (RoomList[ListKey].GetComponent<Room>().DoorList.Count <= 3) // did this not work because doorlist wasn't being generated???
+    //    {
+    //        var RandomRoom2 = Random.Range(0, 50);
+    //        if (RandomRoom2 < 48)
+    //        {
+    //            SpawnMoreRooms(ListKey);
+    //        }
+    //        else
+    //        {
+    //            SpawnMoreRooms(RandomRoom);
+    //        }
+
+    //    }
+    //    else
+    //    {
+    //        SpawnMoreRooms(RandomRoom);
+    //    }
+    //}
 
 }

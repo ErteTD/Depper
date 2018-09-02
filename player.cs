@@ -38,6 +38,7 @@ public class Player : MonoBehaviour, IDamageable {
     [HideInInspector] public bool CantBeSlowed;
     [HideInInspector] public bool BlobWeaponEquppied;
     private GameObject activeDoor;
+    private GameObject activeEvent;
     private GameObject activeToken;
     private bool DieOnce;
     public GameObject CurrentRoom;
@@ -192,6 +193,16 @@ public class Player : MonoBehaviour, IDamageable {
                     activeDoor.GetComponent<OneWayDoor>().ClickedElsewhere();
                     activeDoor = null;
                 }
+                if (hit.collider.gameObject.tag == "EventTag") // if mouse clicks on a object with the tag Monster, PC will start tracking it and following it.
+                {
+                    activeEvent = hit.collider.gameObject;
+                }
+                else if (activeEvent != null)
+                {
+                    activeEvent.GetComponent<EventStart>().ClickedElsewhere();
+                    activeEvent = null;
+                }
+
             }
         }
         // right click spell cast input

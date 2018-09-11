@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
+
+
     public bool SlotIsInUse1;
     public bool SlotIsInUse2;
     public bool SlotIsInUse3;
@@ -12,6 +14,10 @@ public class GameManager : MonoBehaviour
     public GameObject EscMenu;
     public static int minRoom_, maxRoom_, CurrentLevel_;
     public static bool StartLevel_, GiveLoot_;
+
+    [Header("Currency")]
+    public int Money;
+    public Text CurrentGoldText;
 
     [Header("Inventory Weapon")]
     public GameObject SpiderWeapon;
@@ -53,8 +59,6 @@ public class GameManager : MonoBehaviour
     public int ChaosToken;
     public int CompToken;
     public int AimToken;
-
-
 
     [Header("Resource Images")]
     public Text meteorText;
@@ -153,6 +157,12 @@ public class GameManager : MonoBehaviour
     public GameObject GetCurrentRoom() // not used currently
     {
         return CurrentRoom;
+    }
+
+    public void GainGold(int amount)
+    {
+        Money += amount;
+        CurrentGoldText.text = "Gold: "+ Money.ToString();
     }
 
     public void ButtonRooms(int Type)

@@ -39,7 +39,10 @@ public class BigBoyFire : MonoBehaviour
     }
     void ActivatePool()
     {
-        ActPool.SetActive(true);
+        if (ActPool != null)
+        {
+            ActPool.SetActive(true);
+        }
     }
     public void OnTriggerStay(Collider other)
     {

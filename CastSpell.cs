@@ -35,9 +35,6 @@ public class CastSpell : MonoBehaviour
     public Text coolDownTextDisplay1;
     public Text coolDownTextDisplay2;
     public Text coolDownTextDisplay3;
-    public Text coolDownTextDisplay1_;
-    public Text coolDownTextDisplay2_;
-    public Text coolDownTextDisplay3_;
     public GameObject HastenVisual;
     public GameObject CritVisual;
     public GameObject CompOrbObject;
@@ -595,24 +592,20 @@ public class CastSpell : MonoBehaviour
         {
             spellSlot1rdy = true;
             coolDownTextDisplay1.enabled = false;
-            coolDownTextDisplay1_.enabled = false;
         }
         else
         {
             if (CD1 > 0.1f)
             {
                 coolDownTextDisplay1.enabled = true;
-                coolDownTextDisplay1_.enabled = true;
             }
             else
             {
                 coolDownTextDisplay1.enabled = false;
-                coolDownTextDisplay1_.enabled = false;
             }
             CD1 -= Time.deltaTime;
             slot1.fillAmount = (CD1 / CD1_);
-            coolDownTextDisplay1.text = (Mathf.Ceil(CD1).ToString)("0");
-            coolDownTextDisplay1_.text = (Mathf.Ceil(CD1).ToString)("0");
+            coolDownTextDisplay1.text = (Mathf.Ceil(CD1).ToString("F0"));
             spellSlot1rdy = false;
         }
 
@@ -620,24 +613,20 @@ public class CastSpell : MonoBehaviour
         {
             spellSlot2rdy = true;
             coolDownTextDisplay2.enabled = false;
-            coolDownTextDisplay2_.enabled = false;
         }
         else
         {
             if (CD2 > 0.1f)
             {
                 coolDownTextDisplay2.enabled = true;
-                coolDownTextDisplay2_.enabled = true;
             }
             else
             {
                 coolDownTextDisplay2.enabled = false;
-                coolDownTextDisplay2_.enabled = false;
             }
             CD2 -= Time.deltaTime;
             slot2.fillAmount = (CD2 / CD2_);
             coolDownTextDisplay2.text = (Mathf.Ceil(CD2).ToString)("0");
-            coolDownTextDisplay2_.text = (Mathf.Ceil(CD2).ToString)("0");
             spellSlot2rdy = false;
         }
 
@@ -645,26 +634,22 @@ public class CastSpell : MonoBehaviour
         {
             spellSlot3rdy = true;
             coolDownTextDisplay3.enabled = false;
-            coolDownTextDisplay3_.enabled = false;
         }
         else
         {
             if (CD3 > 0.1f)
             {
                 coolDownTextDisplay3.enabled = true;
-                coolDownTextDisplay3_.enabled = true;
             }
             else
             {
                 coolDownTextDisplay3.enabled = false;
-                coolDownTextDisplay3_.enabled = false;
             }
 
 
             CD3 -= Time.deltaTime;
             slot3.fillAmount = (CD3 / CD3_);
             coolDownTextDisplay3.text = (Mathf.Ceil(CD3).ToString)("0");
-            coolDownTextDisplay3_.text = (Mathf.Ceil(CD3).ToString)("0");
             spellSlot3rdy = false;
         }
 

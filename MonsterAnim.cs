@@ -36,6 +36,18 @@ public class MonsterAnim : MonoBehaviour
         anim.Play("creature1Spawn", -1);
         anim.speed = 0.5f;
     }
+    public void WalkAnim()
+    {
+        anim.Play("Walk02");
+    }
+    public void CastSpell()
+    {
+        anim.Play("SwingQuick");
+    }
+    public void WaitBetweenAttacks()
+    {
+        anim.Play("Idle2");
+    }
 
     public void RunAnim()
     {
@@ -137,6 +149,13 @@ public class MonsterAnim : MonoBehaviour
     public void StartDeadAnim()
     {
         anim.Play("StartDead");
+    }
+    public void DieAnimation6()
+    {
+     //   anim.speed = -1;
+        anim.Play("StandUp02");
+        gameObject.transform.position = new Vector3(transform.position.x, 0.1f, transform.position.z);
+        Invoke("Die", 2.1f);
     }
     public void OldKingSpecialAttack1()
     {

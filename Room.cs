@@ -14,10 +14,16 @@ public class Room : MonoBehaviour
     public List<Vector3> MonsterPos;
     public bool MiniBoss;
     public Vector3 MiniBossLocation;
+    [Header("Room Events")]
     public bool MonsterEvent;
     public List<Vector3> EventSpawnLocations;
     public GameObject TriggerEvent;
     public GameObject SpiderEvent;
+    public List<GameObject> CasterEvent;
+    private int SwarmSize;
+    private int CasterSize;
+    public GameObject EventLoot;
+    private bool EventStarted;
     [Header("RoomObstacles")]
     public List<GameObject> RoomObstacles;
 
@@ -32,6 +38,7 @@ public class Room : MonoBehaviour
     public float CamTop, CamBot, CamLeft, CamRight;
     public float CamCenter;
     private float ASD;
+    public Vector3 RoomBeforeBossRoomMiniMapIconLocation;
     [Header("Other stuff")]
     public int Monsters_;
     public GameObject MimiMapBlock;
@@ -39,6 +46,7 @@ public class Room : MonoBehaviour
     public List<int> MiniMapDoors = new List<int>();
     public GameObject Boss;
     public bool HasLoot;
+    public int CurrentLevel;
     private List<GameObject> Monsters = new List<GameObject>();
 
     void Start()
@@ -57,7 +65,7 @@ public class Room : MonoBehaviour
             InnerRing.transform.parent = null;
         }
 
-        //for (int i = -6; i < 6; i++)
+        //for (int i = -6; i < 6; i++) // dont delete :) used to generate the monsterspawn locations for new rooms.
         //{
         //    for (int i2 = -9; i2 < 9; i2++)
         //    {
@@ -76,8 +84,62 @@ public class Room : MonoBehaviour
     public void StartEvent()
     {
         CloseDoors();
+        EventStarted = true;
         TriggerEvent.SetActive(false);
-        StartCoroutine(NextSpiderInSwarm(50 - 1, 2f));
+        switch (CurrentLevel)
+        {
+            case 0:
+                SwarmSize = 15;
+                CasterSize = 5;
+                break;
+            case 1:
+                SwarmSize = 30;
+                CasterSize = 10;
+                break;
+            case 2:
+                SwarmSize = 60;
+                CasterSize = 10;
+                break;
+            case 3:
+                SwarmSize = 10;
+                CasterSize = 15;
+                break;
+            case 4:
+                SwarmSize = 20;
+                CasterSize = 5;
+                break;
+            case 5:
+                SwarmSize = 30;
+                CasterSize = 10;
+                break;
+            default:
+                SwarmSize = 1;
+                CasterSize = 1;
+                break;
+        }
+
+        var RandomEvent = Random.Range(0, 2);
+        
+        switch (RandomEvent)
+        {
+            case 0:
+                StartCoroutine(NextSpiderInSwarm(SwarmSize, 2f));
+                break;
+            case 1:
+                StartCoroutine(NextCasterInEvent(CasterSize, 2f));
+                break;
+        }
+
+    }
+    IEnumerator NextSpiderInSwarm(int spidercount, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SummonSwarm(spidercount);
+    }
+    IEnumerator NextCasterInEvent(int Count, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SummonCaster(Count);
     }
 
     void SummonSwarm(int count)
@@ -87,22 +149,24 @@ public class Room : MonoBehaviour
         Spider.transform.localPosition = EventSpawnLocations[RandomSpot];
         AddMonster(Spider);
         Spider.GetComponent<Monster>().AggroRange = 50;
-        Spider.GetComponent<Monster>().MovementSpeed = 3f;
-        Spider.GetComponent<Monster>().damage = 0.5f;
-        Spider.GetComponent<Monster>().health = 1;
-        Spider.GetComponent<Monster>().health2 = 1;
-        Spider.GetComponent<Monster>().MonsterTypeSubLayer = 2;
-        Spider.GetComponent<Monster>().meleeRange = 2;
-        //Spider.transform.parent = GameObject.FindGameObjectWithTag("SpiderBossRoom").transform;
-        Spider.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-        Spider.GetComponent<Collider>().GetComponent<CapsuleCollider>().height = 10;
-        Spider.GetComponent<UnityEngine.AI.NavMeshAgent>().radius = 1f;
-    
+        if (CurrentLevel < 3)
+        {
+            Spider.GetComponent<Monster>().MovementSpeed = 4f;
+            Spider.GetComponent<Monster>().damage = 0.5f;
+            Spider.GetComponent<Monster>().health = 1;
+            Spider.GetComponent<Monster>().health2 = 1;
+            Spider.GetComponent<Monster>().MonsterTypeSubLayer = 2;
+            Spider.GetComponent<Monster>().meleeRange = 2;
+            Spider.GetComponent<Monster>().HBtext.gameObject.SetActive(false);
+            //Spider.transform.parent = GameObject.FindGameObjectWithTag("SpiderBossRoom").transform;
+            Spider.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            Spider.GetComponent<Collider>().GetComponent<CapsuleCollider>().height = 10;
+            Spider.GetComponent<UnityEngine.AI.NavMeshAgent>().radius = 1f;
+        }
 
         if (count > 0)
         {
-            //  SummonSwarm(count - 1);
-            StartCoroutine(NextSpiderInSwarm(count - 1, 0.4f));
+            StartCoroutine(NextSpiderInSwarm(count - 1, 0.25f));
         }
         else
         {
@@ -110,11 +174,26 @@ public class Room : MonoBehaviour
         }
     }
 
-    IEnumerator NextSpiderInSwarm(int spidercount, float delay)
+    void SummonCaster(int count)
     {
-        yield return new WaitForSeconds(delay);
-        SummonSwarm(spidercount);
+        var RandomSpot = Random.Range(0, EventSpawnLocations.Count);
+        GameObject Caster = Instantiate(CasterEvent[CurrentLevel], transform.position, transform.rotation, transform);
+        Caster.transform.localPosition = EventSpawnLocations[RandomSpot];
+        AddMonster(Caster);
+        Caster.GetComponent<Monster>().AggroRange = 50;
+        if (count > 0)
+        {
+            StartCoroutine(NextCasterInEvent(count - 1, 0.25f));
+        }
+        else
+        {
+            InvokeRepeating("OpenDoorsIfNoMonsters", 0.1f, 0.5f);
+        }
     }
+
+
+
+
 
 
     public void BuildRoomNavMesh()
@@ -210,6 +289,13 @@ public class Room : MonoBehaviour
         foreach (var door in DoorList)
         {
             OpenDoor(door, true);
+        }
+        if (EventStarted)
+        {
+            EventStarted = false;
+            GameObject CurLoot = Instantiate(EventLoot, new Vector3(transform.position.x, 1, transform.position.z), Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z));
+            CurLoot.transform.parent = gameObject.transform;
+
         }
     }
 

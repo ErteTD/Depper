@@ -59,7 +59,7 @@ public class ExplodeScript : MonoBehaviour
                     }
                     else
                     {
-                        e.Slow(true, 3, 9999);
+                        e.Slow(true, 2, 9999);
                         e.StopAgent();
                     }
                 }

@@ -35,7 +35,7 @@ public class IlluScript : MonoBehaviour
                 Monster e = c.GetComponent<Monster>();
                 if (e != null)
                 {
-                    e.GetComponent<Monster>().TakeDamage(Boom);
+                    e.GetComponent<Monster>().TakeDamage(5);
                 }
             }
             GameObject Exp = Instantiate(CorpseExplosion, transform.position, transform.rotation, transform);
@@ -45,7 +45,7 @@ public class IlluScript : MonoBehaviour
 
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage) // not used currently
     {
         Boom += damage;
     }

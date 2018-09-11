@@ -316,7 +316,7 @@ public class Player : MonoBehaviour, IDamageable {
             Monsters = GameObject.FindGameObjectsWithTag("Monster");
             foreach (GameObject monster in Monsters)
             {
-                if (Vector3.Distance(transform.position, monster.transform.position) < 8f)
+                if (Vector3.Distance(transform.position, monster.transform.position) < 6f)
                 {
                     CastSpell.GetComponent<CastWeapon>().ArmorTrigger();
                 }

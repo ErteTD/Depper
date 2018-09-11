@@ -154,9 +154,9 @@ public class CastWeapon : MonoBehaviour
                         GameObject PoolObj = Instantiate(spell3.ItemObject, Pos + Player1.transform.forward * 4, transform.rotation, transform);
                         PoolObj.transform.parent = null;
                         PoolObj.transform.localScale = new Vector3(1, 1, 1);
-                        PoolObj.GetComponent<BigBoyFire>().PoolNumb = 7;
+                        PoolObj.GetComponent<BigBoyFire>().PoolNumb = 10;
                         PoolObj.GetComponent<BigBoyFire>().PlayerCasting = true;
-                        PoolObj.GetComponent<BigBoyFire>().duration = 5f;
+                        PoolObj.GetComponent<BigBoyFire>().duration = 3f;
                         PoolObj.GetComponent<BigBoyFire>().damage = 1f;
 
                         spellSlotCD = spell3.cooldown;

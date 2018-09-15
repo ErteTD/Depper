@@ -28,8 +28,6 @@ public class TokenScript : MonoBehaviour
         Player_ = GameObject.Find("Player");
         ObjectName.text = ItemName;
 
-
-
         switch (ItemType)
         {
             case 1:
@@ -54,24 +52,25 @@ public class TokenScript : MonoBehaviour
                 break;
 
         }
-
         ObjectType.text = ItemTName;
         //  Invoke("DisableAgent", 0.1f);
-
         Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().speed = 1;
     //    Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().obstacleAvoidanceType = ;
         Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().stoppingDistance = 5;
         transform.localPosition = new Vector3(0, 2.5f, 0);
         rotation = Quaternion.Euler(0, 0, 0);
         
-
     }
 
-    public void DisableAgent()
-    {
-        Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
-        transform.position = new Vector3(transform.position.x, 1.5f, transform.position.z);
-    }
+    //public void DisableAgent()
+    //{
+    //    Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
+    // //   transform.position = new Vector3(transform.position.x, 1.5f, transform.position.z);
+    //}
+    //private void EnableAgent()
+    //{
+    //    Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = true;
+    //}
 
     private void LateUpdate()
     {
@@ -80,19 +79,15 @@ public class TokenScript : MonoBehaviour
     void Update()
     {
         transform.Rotate(0,speed * Time.deltaTime,0);
-
         float dist = Vector3.Distance(Player_.transform.position, transform.position);
 
-
-
-        if ((Vector3.Distance(Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().destination, transform.position) > 0.5f))
+        if (Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled == true)
         {
-            Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().destination = Player_.transform.position;
-            //Vector3 dir = new Vector3(Player_.transform.position.x, 1.5f, Player_.transform.position.z) - this.transform.position;
-            //float distThisFrame = 0.5f * Time.deltaTime;
-            //transform.parent.transform.Translate(dir.normalized * distThisFrame, Space.World);
+            if ((Vector3.Distance(Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().destination, transform.position) > 0.5f))
+            {
+                Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().destination = Player_.transform.position;
+            }
         }
-
 
         if (dist < 2.6 && clicked == true)
         {

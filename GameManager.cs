@@ -14,6 +14,21 @@ public class GameManager : MonoBehaviour
     public GameObject EscMenu;
     public static int minRoom_, maxRoom_, CurrentLevel_;
     public static bool StartLevel_, GiveLoot_;
+    [Header("ShopStuff")]
+    public int RandomSpellBuyCost;
+    public int RandomItemBuyCost;
+    public int SellSpellGold;
+    private bool SellTokenSuccess;
+    public bool ShowSellWindowBool;
+    public AudioSource NotEnoughGoldSound;
+    public AudioSource CloseShopWindow;
+    public AudioSource SellTokenSound;
+    public GameObject ShopWindow;
+    public GameObject SellTokenWindow;
+    public Vector3 CurrentShopLocation;
+    public List<GameObject> Items;
+    public bool ForceHideAllOtherWindows;
+    public Transform ShopRoom;
 
     [Header("Currency")]
     public int Money;
@@ -61,18 +76,39 @@ public class GameManager : MonoBehaviour
     public int AimToken;
 
     [Header("Resource Images")]
+    public GameObject ShowTokensPanel;
+    private bool showTP;
     public Text meteorText;
     public Text coneText;
     public Text ghostText;
     public Text doubleText;
     public Text splitText;
-    public Text channelingText;
+    public Text compText;
     public Text boostText;
     public Text hastenText;
     public Text empowerText;
     public Text bhText;
     public Text pushText;
     public Text poolText;
+    public Text chaosText;
+    public Text channelingText;
+    public Text aimText;
+    // Forgive me father for I have sinned....
+    public Text meteorText_;
+    public Text coneText_;
+    public Text ghostText_;
+    public Text doubleText_;
+    public Text splitText_;
+    public Text compText_;
+    public Text boostText_;
+    public Text hastenText_;
+    public Text empowerText_;
+    public Text bhText_;
+    public Text pushText_;
+    public Text poolText_;
+    public Text chaosText_;
+    public Text channelingText_;
+    public Text aimText_;
 
     [Header("Activly used tokens for each slot")]
     public bool meteorToken_;
@@ -146,6 +182,7 @@ public class GameManager : MonoBehaviour
         MiniCamera = GameObject.Find("MiniMapCamera");
         Cursor.SetCursor(DefCursor, asd, CursorMode.Auto);
         SetTime = Time.timeScale;
+        CurrentGoldText.text = "Gold: " + Money.ToString();
     }
     // Update is called once per frame
 
@@ -163,6 +200,58 @@ public class GameManager : MonoBehaviour
     {
         Money += amount;
         CurrentGoldText.text = "Gold: "+ Money.ToString();
+    }
+
+    public void ShopWindowFunc(bool status)
+    {
+        ShopWindow.SetActive(status);
+        if (status == false)
+        {
+            CloseShopWindow.Play();
+        }
+    }
+
+    public void BuyRandomToken()
+    {
+        if (Money >= RandomSpellBuyCost)
+        {
+            Money -= RandomSpellBuyCost;
+            CurrentGoldText.text = "Gold: " + Money.ToString();
+            var randomToken = Random.Range(0, MapGrid.FindObjectOfType<MapGrid>().Tokens.Count);
+
+            float random1 = Random.Range(0f,0f);
+            float random2 = Random.Range(-4f, -2f);
+
+                var CurLoc = CurrentShopLocation + transform.forward * random1 + transform.right * random2;
+            GameObject CurLoot = Instantiate(MapGrid.FindObjectOfType<MapGrid>().Tokens[randomToken], new Vector3(CurLoc.x, 1, CurLoc.z), Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z));
+            CurLoot.transform.parent = ShopRoom;
+          
+        }
+        else
+        {
+            NotEnoughGoldSound.Play();
+        }
+    }
+    public void BuyRandomItem()
+    {
+        if (Money >= RandomItemBuyCost)
+        {
+            Money -= RandomItemBuyCost;
+            CurrentGoldText.text = "Gold: " + Money.ToString();
+            var randomToken = Random.Range(0, Items.Count);
+
+            float random1 = Random.Range(0f, 0f);
+            float random2 = Random.Range(-4f, -2f);
+
+
+            var CurLoc = CurrentShopLocation + transform.forward * random1 + transform.right * random2;
+            GameObject CurLoot = Instantiate(Items[randomToken], new Vector3(CurLoc.x, 1, CurLoc.z), Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z));
+            CurLoot.transform.parent = ShopRoom;
+        }
+        else
+        {
+            NotEnoughGoldSound.Play();
+        }
     }
 
     public void ButtonRooms(int Type)
@@ -223,6 +312,13 @@ public class GameManager : MonoBehaviour
     {
         SetTime = time;
     }
+
+    public void ShowAvailableTokens()
+    {
+        showTP = !showTP;
+        ShowTokensPanel.SetActive(showTP);
+    }
+
 
     void Update()
     {
@@ -366,7 +462,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void CurrentTokens() // not used atm.
+    public void CurrentTokens()
     {
         meteorText.text = meteorToken.ToString();
         coneText.text = coneToken.ToString();
@@ -380,8 +476,189 @@ public class GameManager : MonoBehaviour
         bhText.text = bhToken.ToString();
         pushText.text = pushToken.ToString();
         poolText.text = poolToken.ToString();
+        chaosText.text = ChaosToken.ToString();
+        compText.text = CompToken.ToString();
+        aimText.text = AimToken.ToString();
+
+        meteorText_.text = meteorToken.ToString();
+        coneText_.text = coneToken.ToString();
+        ghostText_.text = ghostToken.ToString();
+        doubleText_.text = doubleToken.ToString();
+        splitText_.text = splitToken.ToString();
+        channelingText_.text = channelingToken.ToString();
+        boostText_.text = boostToken.ToString();
+        hastenText_.text = hastenToken.ToString();
+        empowerText_.text = empowerToken.ToString();
+        bhText_.text = bhToken.ToString();
+        pushText_.text = pushToken.ToString();
+        poolText_.text = poolToken.ToString();
+        chaosText_.text = ChaosToken.ToString();
+        compText_.text = CompToken.ToString();
+        aimText_.text = AimToken.ToString();
 
     }
+
+    public void OpenSellTokenMenu()
+    {
+        ShowSellWindowBool = !ShowSellWindowBool;
+        SellTokenWindow.SetActive(ShowSellWindowBool);
+        CloseShopWindow.Play();
+    }
+
+    public void SellSpellToken(int spell)
+    {
+        switch (spell)
+        {
+            case 1:
+                if (meteorToken > 0)
+                {
+                    meteorToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+            case 2:
+                if (coneToken > 0)
+                {
+                    coneToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+            case 3:
+                if (ghostToken > 0)
+                {
+                    ghostToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+
+            case 21:
+                if (doubleToken > 0)
+                {
+                    doubleToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+            case 22:
+                if (splitToken > 0)
+                {
+                    splitToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+            case 23:
+                if (CompToken > 0)
+                {
+                    CompToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+
+            case 31:
+                if (boostToken > 0)
+                {
+                    boostToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+            case 32:
+                if (hastenToken > 0)
+                {
+                    hastenToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+            case 33:
+                if (empowerToken > 0)
+                {
+                    empowerToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+            case 41:
+                if (bhToken > 0)
+                {
+                    bhToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+            case 42:
+                if (pushToken > 0)
+                {
+                    pushToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+            case 43:
+                if (poolToken > 0)
+                {
+                    poolToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+
+            case 51:
+                if (ChaosToken > 0)
+                {
+                    ChaosToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+            case 52:
+                if (channelingToken > 0)
+                {
+                    channelingToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+            case 53:
+                if (AimToken > 0)
+                {
+                    AimToken--;
+                    GainGold(SellSpellGold);
+                    SellTokenSuccess = true;
+                }
+                else SellTokenSuccess = false;
+                break;
+        }
+
+        if (SellTokenSuccess)
+        {
+            SellTokenSound.Play();
+        }
+        else
+        {
+            NotEnoughGoldSound.Play();
+        }
+    }
+
 
     public void CheckIfTokenBought(int slot, int tokenlevel)
     {

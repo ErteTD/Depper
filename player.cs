@@ -40,6 +40,8 @@ public class Player : MonoBehaviour, IDamageable {
     private GameObject activeDoor;
     private GameObject activeEvent;
     private GameObject activeToken;
+    private GameObject activeShop;
+    private GameObject activeChest;
     private bool DieOnce;
     public GameObject CurrentRoom;
     private bool BlobArmorBool;
@@ -201,6 +203,24 @@ public class Player : MonoBehaviour, IDamageable {
                 {
                     activeEvent.GetComponent<EventStart>().ClickedElsewhere();
                     activeEvent = null;
+                }
+                if (hit.collider.gameObject.tag == "Shop") // if mouse clicks on a object with the tag Monster, PC will start tracking it and following it.
+                {
+                    activeShop = hit.collider.gameObject;
+                }
+                else if (activeShop != null)
+                {
+                    activeShop.GetComponent<Shop>().ClickedElsewhere();
+                    activeShop = null;
+                }
+                if (hit.collider.gameObject.tag == "Chest") // if mouse clicks on a object with the tag Monster, PC will start tracking it and following it.
+                {
+                    activeChest = hit.collider.gameObject;
+                }
+                else if (activeChest != null)
+                {
+                    activeChest.GetComponent<AmazingChestHead>().ClickedElsewhere();
+                    activeChest = null;
                 }
 
             }

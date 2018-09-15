@@ -90,8 +90,8 @@ public class Monster : MonoBehaviour, IDamageable {
     public bool SpawnMultiBool;
     public int SpawnMultiNumber;
     public int IntendedLevel;
-    
 
+    public GameObject Chest;
     [Header("Boss Weapon")]
     public GameObject BossWeapon;
     [Header("Boss Armor")]
@@ -1455,7 +1455,7 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             BossHealthAct.transform.GetChild(3).gameObject.GetComponent<Text>().text = health.ToString("F1") + " / " + health2;
         }
-        else if (Brother == null && !IamIllu)
+        else if (Brother == null && !IamIllu && HBtext != null)
         {
             HBtext.text = "(" + health.ToString("F1") + " / " + health2.ToString("F0") + ")";
         }
@@ -2040,26 +2040,29 @@ public class Monster : MonoBehaviour, IDamageable {
                 case 0:
                     if (!TheBlob)
                     {
-                        GameObject BossLoot = Instantiate(BossWeapon, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), BossRoom.transform);
+                        GameObject BossLoot = Instantiate(Chest, transform.position, Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z), BossRoom.transform);
                         BossLoot.transform.localPosition = LootLoc;
+                        BossLoot.GetComponent<AmazingChestHead>().CurrentLoot = BossWeapon;
                     }
                     else
                     {
-                        GameObject BossLoot = Instantiate(BossWeapon, PC.transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), BossRoom.transform);
+                        GameObject BossLoot = Instantiate(Chest, PC.transform.position, Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z), BossRoom.transform);
                         BossLoot.transform.localPosition = LootLoc;
+                        BossLoot.GetComponent<AmazingChestHead>().CurrentLoot = BossWeapon;
                     }
                     break;
 
                 case 1:
                     if (!TheBlob)
                     {
-                        GameObject BossLoot2 = Instantiate(BossArmor, transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), BossRoom.transform);
+                        GameObject BossLoot2 = Instantiate(Chest, transform.position, Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z), BossRoom.transform);
                         BossLoot2.transform.localPosition = LootLoc;
+                        BossLoot2.GetComponent<AmazingChestHead>().CurrentLoot = BossArmor;
                     }
                     else
                     {
-                        GameObject BossLoot = Instantiate(BossArmor, PC.transform.position, Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z), BossRoom.transform);
-                        BossLoot.transform.localPosition = LootLoc;
+                        GameObject BossLoot = Instantiate(Chest, PC.transform.position, Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z), BossRoom.transform);
+                        BossLoot.GetComponent<AmazingChestHead>().CurrentLoot = BossArmor;
                     }
                     break;
             }
@@ -2076,7 +2079,7 @@ public class Monster : MonoBehaviour, IDamageable {
             {
                 GameObject CurGold = Instantiate(MonsterGold, new Vector3(transform.position.x, 2, transform.position.z), Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z));
                 CurGold.transform.parent = RoomIAmIn.transform;
-                CurGold.GetComponent<particleAttractorLinear>().GoldAmount = GoldAmount;
+                CurGold.GetComponent<GoldPickUpScript>().GoldAmount = GoldAmount;
             }
         }
     }

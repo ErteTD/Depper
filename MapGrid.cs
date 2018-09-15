@@ -6,19 +6,17 @@ using UnityEngine;
 public class MapGrid : MonoBehaviour
 {
 
+    public GameObject Shop;
     public List<Material> FloorType;
     public GameObject GiveStuff;
     private int TotalRooms;
     public List<GameObject> RoomTypes;
    // public GameObject BasicRoom;
     public GameObject Door;
-
     public int RoomMapLocationX;
     public int RoomMapLocationY;
-
     [HideInInspector] public int XGrid;
     [HideInInspector] public int YGrid;
-
     private int MiniMapCur;
 
  //   private Vector3 DoorLoc;
@@ -51,6 +49,7 @@ public class MapGrid : MonoBehaviour
     private int NumberOfEvents;
     [Header("Loot")]
     public List<GameObject> Tokens;
+    public List<GameObject> Items;
     public List<GameObject> Healing;
     public GameObject Gold;
     private int AmountOfLoot;
@@ -105,14 +104,16 @@ public class MapGrid : MonoBehaviour
         GameObject Base = Instantiate(RoomTypes[0], transform.position, transform.rotation, transform);
         // this is a really disgusting hack that prevents this room from getting loot later on.. sorry
         Base.GetComponent<Room>().HasLoot = true;
-
         Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material = FloorType[CurrentLevel];
-
         GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().CurrentRoom = Base;
 
         var RandomObstacle = Random.Range(0, Obstacle.Count);
         Instantiate(Obstacle[RandomObstacle], Base.transform);
         Base.GetComponent<Room>().BuildRoomNavMesh();
+
+        GameObject Shop_ = Instantiate(Shop, Base.transform);
+        Shop_.transform.localPosition = new Vector3(25, 2.1f, 0f);
+        
 
         GridList.Add(new Vector2Int(0, 0));
         MiniMapList.Add(new Vector2Int(0, 0));
@@ -218,7 +219,18 @@ public class MapGrid : MonoBehaviour
                 GridList.Add(new Vector2Int(XGrid, YGrid));
                 MiniMapList.Add(new Vector2Int(MiniMapList[ListKey].x + MiniMapX, MiniMapList[ListKey].y + MiniMapZ));
                 TotalRooms--;
-                int RRoom = Random.Range(0, RoomTypes.Count);
+
+                int RRoom = 0;
+                if (XGrid != 1 && XGrid != -1 && YGrid != 1 && YGrid != -1)
+                {
+                    RRoom = Random.Range(0, RoomTypes.Count);
+                }
+                else
+                {
+                    RRoom = Random.Range(0, RoomTypes.Count - 1);
+                }
+
+
 
                 //hardcode so miniboss & eventroom always spawn.
                 if (TotalRooms == 2 && NumberOfMiniBosses > 0)
@@ -364,6 +376,7 @@ public class MapGrid : MonoBehaviour
             GameObject BossRoom = Instantiate(Boss[CurrentLevel], transform); // 
 
             Room BRoom = BossRoom.GetComponent<Room>();
+
             BossRoom.transform.position = new Vector3(0f, 0f, (FinalY + 2) * RoomMapLocationY);
 
             Doors.transform.GetChild(0).GetComponent<OneWayDoor>().ConRoom = BossRoom;
@@ -639,8 +652,19 @@ public class MapGrid : MonoBehaviour
     }
     private void RoomEventLoot(Room ERoom)
     {
-        var LootBag = Random.Range(0, Tokens.Count);
-        ERoom.EventLoot = Tokens[LootBag];
+        var EventLootRanom = Random.Range(0, 100);
+        if (EventLootRanom < 40)
+        {
+            var LootBag = Random.Range(0, Tokens.Count);
+            ERoom.EventLoot = Tokens[LootBag];
+        }else if(EventLootRanom < 85){
+            ERoom.EventLoot = Gold;
+            ERoom.EventGold = (CurrentLevel * 5) + 30;         
+        }else
+        {
+            var LootBag = Random.Range(0, Items.Count);
+            ERoom.EventLoot = Items[LootBag];
+        }
     }
 
     //public void SpawnLoot() // Not used currently!! Changed that loot spawns from monsters instead of directly into room.

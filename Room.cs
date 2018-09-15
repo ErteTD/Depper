@@ -15,6 +15,7 @@ public class Room : MonoBehaviour
     public bool MiniBoss;
     public Vector3 MiniBossLocation;
     [Header("Room Events")]
+    public GameObject Chest;
     public bool MonsterEvent;
     public List<Vector3> EventSpawnLocations;
     public GameObject TriggerEvent;
@@ -23,6 +24,7 @@ public class Room : MonoBehaviour
     private int SwarmSize;
     private int CasterSize;
     public GameObject EventLoot;
+    public int EventGold;
     private bool EventStarted;
     [Header("RoomObstacles")]
     public List<GameObject> RoomObstacles;
@@ -191,11 +193,6 @@ public class Room : MonoBehaviour
         }
     }
 
-
-
-
-
-
     public void BuildRoomNavMesh()
     {
         NavGen.BuildNavMesh();
@@ -203,6 +200,10 @@ public class Room : MonoBehaviour
     public void AddMonster(GameObject monster)
     {
         Monsters.Add(monster);
+    }
+    public void RemoveMonster(GameObject monster)
+    {
+        Monsters.Remove(monster);
     }
     void Update()
     {
@@ -215,9 +216,7 @@ public class Room : MonoBehaviour
     }
 
     public void GetDoors()
-    {
-        
-
+    {     
         if (BossRoom)
         {
             for (int i = 0; i < transform.childCount; i++) // all other doors connected through MapGrid.
@@ -293,7 +292,9 @@ public class Room : MonoBehaviour
         if (EventStarted)
         {
             EventStarted = false;
-            GameObject CurLoot = Instantiate(EventLoot, new Vector3(transform.position.x, 1, transform.position.z), Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z));
+            GameObject CurLoot = Instantiate(Chest, new Vector3(transform.position.x, 1, transform.position.z), Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z));
+            CurLoot.GetComponent<AmazingChestHead>().CurrentLoot = EventLoot;
+            CurLoot.GetComponent<AmazingChestHead>().GoldAmount = EventGold;
             CurLoot.transform.parent = gameObject.transform;
 
         }

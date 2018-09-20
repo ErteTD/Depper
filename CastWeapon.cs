@@ -97,7 +97,7 @@ public class CastWeapon : MonoBehaviour
 
     public void WeaponAttack()
     {
-        if (spellSlot1rdy == true)
+        if (spellSlot1rdy == true && Player1.GetComponent<Player>().DieOnce == false)
         {
             switch (CurrentWeapon)
             {
@@ -210,7 +210,7 @@ public class CastWeapon : MonoBehaviour
 
     public void ArmorTrigger()
     {
-        if (spellSlot2rdy == true)
+        if (spellSlot2rdy == true && Player1.GetComponent<Player>().DieOnce == false)
         {
             switch (CurrentArmor)
             {
@@ -232,8 +232,6 @@ public class CastWeapon : MonoBehaviour
                     ArmorIllusion spell2 = Armor[CurrentArmor].GetComponent<ArmorIllusion>();
                     spellSlotCD2 = spell2.cooldown;
                     GameObject Illu = Instantiate(spell2.ItemObject, transform.position, transform.rotation, transform);
-
-
                     Illu.transform.parent = null;
                     Illu.transform.localPosition = new Vector3(Illu.transform.position.x, 0, Illu.transform.position.z);
                     break;
@@ -272,6 +270,16 @@ public class CastWeapon : MonoBehaviour
             CD2 = spellSlotCD2;
             CD2_ = spellSlotCD2;
         }
+    }
+
+    public void ResetCDonDeath()
+    {
+        CD1 = 0;
+        CD2 = 0;
+        CD1_ = 1;
+        CD2_ = 1;
+        slot1.fillAmount = (CD1 / CD1_);
+        slot2.fillAmount = (CD2 / CD2_);
     }
 
     void Update()

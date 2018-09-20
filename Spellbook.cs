@@ -239,7 +239,6 @@ public class Spellbook : MonoBehaviour
     }
     public void LeveltwoSpellChoice(int spellNumb)
     {
-
         Frame1.color = Color.white;
         if (!unselect2 && lvl2choice == spellNumb)
         {
@@ -300,7 +299,6 @@ public class Spellbook : MonoBehaviour
                 CheckCurrency(1);
                 break;
         }
-
     }
     public void LevelthreeSpellChoice(int spellNumb)
     {
@@ -428,6 +426,7 @@ public class Spellbook : MonoBehaviour
                 break;
         }
     }
+
 
     public void LevelfiveSpellChoice(int spellNumb)
     {
@@ -695,6 +694,7 @@ public class Spellbook : MonoBehaviour
             this.GetComponent<ToolTipScript>().Empty6();
             this.GetComponent<ToolTipScript>().SpellCombTip(0);
             this.GetComponent<ToolTipScript>().CurSpellToolTipBox2.SetActive(false);
+            manager.PickedUpItem();
         }
     }
 
@@ -839,7 +839,6 @@ public class Spellbook : MonoBehaviour
         lvl4choice = 0;
         lvl5choice = 0;
         lvl6choice = 0;
-
         toggleSpells = toggleSpells ? false : true;
         finishSpell_ = finishSpell_ ? false : true;
 

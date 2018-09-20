@@ -140,36 +140,20 @@ public class OneWayDoor : MonoBehaviour
         }
 
     }
-
     private void TrustMe()
     {
         clicked = false;
         CantClickDoorDuringLoad = false;
     }
-
-    //private void ResetMonsters() //useless currently.
-    //{
-
-    //    foreach (GameObject monster in Monsters)
-    //    {
-    //        if (monster != null && monster.GetComponent<Monster>())
-    //        {
-    //            monster.GetComponent<Monster>().agent.destination = monster.GetComponent<Monster>().startPosition;
-    //            monster.GetComponent<Monster>().AggroRange = monster.GetComponent<Monster>().AggroRange_;
-    //        }
-    //    }
-    //}
-
     public void BossRoom()
     {
         GetComponent<Light>().color = Color.red;
     }
 
-
     private void OnMouseOver()
     {
         GetComponent<Light>().intensity = 1.5f;
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonDown(0))
         {
             clicked = true;
         }

@@ -38,7 +38,7 @@ public class OldKingAttack3 : MonoBehaviour
             else
             {
                 Explode.SetActive(true);
-                Destroy(Explode, 0.4f);
+                Destroy(Explode, 1f);
                 Explode.transform.parent = null;
                 Destroy(gameObject);
             }
@@ -77,7 +77,7 @@ public class OldKingAttack3 : MonoBehaviour
         if (other.tag == "Wall")
         {
             Explode.SetActive(true);
-            Destroy(Explode, 0.4f);
+            Destroy(Explode, 1f);
             Explode.transform.parent = null;
             Destroy(gameObject);
         }
@@ -85,7 +85,7 @@ public class OldKingAttack3 : MonoBehaviour
         {
             Target.GetComponent<Player>().TakeDamage(damage);
             Explode.SetActive(true);
-            Destroy(Explode, 0.4f);
+            Destroy(Explode, 1f);
             Explode.transform.parent = null;
             Destroy(gameObject);
         }
@@ -108,7 +108,7 @@ public class OldKingAttack3 : MonoBehaviour
                 Destroy(MindControlled, 5);
             }
             Explode.SetActive(true);
-            Destroy(Explode, 0.4f);
+            Destroy(Explode, 1f);
             Explode.transform.parent = null;
             Destroy(gameObject);
         }

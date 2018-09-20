@@ -11,13 +11,14 @@ public class AmazingChestHead : MonoBehaviour
     public GameObject CurrentLoot;
     public int GoldAmount;
     public new Animation animation;
+    public AudioSource SpawnSound;
     public AudioSource OpenSound;
     public AudioSource OpenSound2;
     void Start()
     {
         Player_ = GameObject.Find("Player");
         animation = GetComponent<Animation>();
-        transform.parent.GetComponent<Room>().AddMonster(gameObject);
+        SpawnSound.Play();
     }
     void Update()
     {
@@ -50,7 +51,7 @@ public class AmazingChestHead : MonoBehaviour
         {
             Loot_.GetComponent<GoldPickUpScript>().GoldAmount = GoldAmount;
         }
-        transform.parent.GetComponent<Room>().RemoveMonster(gameObject);
+        transform.parent.GetComponent<Room>().KeepDoorsClosedUntillChestIsOpened = false;
     }
 
 

@@ -212,6 +212,8 @@ public class TokenScript : MonoBehaviour
 
 
         }
+
+        manager.PickedUpItem();
         Destroy(Parent);
     }
 
@@ -219,7 +221,7 @@ public class TokenScript : MonoBehaviour
     {
         GetComponent<Renderer>().material.SetFloat("_Metallic", 0f);
         ShowName.SetActive(true);
-        if (Input.GetMouseButtonDown(0) || (Input.GetMouseButtonDown(1)))
+        if (Input.GetMouseButton(0))
         {
             clicked = true;
         }

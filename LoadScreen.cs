@@ -17,4 +17,15 @@ public class LoadScreen : MonoBehaviour {
         animator.SetTrigger("FadeIn");
         door.EnterRoom();
     }
+
+    public void FadeToDeath()
+    {
+        animator.SetTrigger("Wat");
+    }
+    public void FadeToLife()
+    {
+        animator.SetTrigger("wat2");
+    }
+
+
 }

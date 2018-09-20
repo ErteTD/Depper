@@ -2036,34 +2036,15 @@ public class Monster : MonoBehaviour, IDamageable {
             var RandomLoot = Random.Range(0, 2);
             switch (RandomLoot)
             {
-
                 case 0:
-                    if (!TheBlob)
-                    {
                         GameObject BossLoot = Instantiate(Chest, transform.position, Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z), BossRoom.transform);
                         BossLoot.transform.localPosition = LootLoc;
                         BossLoot.GetComponent<AmazingChestHead>().CurrentLoot = BossWeapon;
-                    }
-                    else
-                    {
-                        GameObject BossLoot = Instantiate(Chest, PC.transform.position, Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z), BossRoom.transform);
-                        BossLoot.transform.localPosition = LootLoc;
-                        BossLoot.GetComponent<AmazingChestHead>().CurrentLoot = BossWeapon;
-                    }
                     break;
-
                 case 1:
-                    if (!TheBlob)
-                    {
                         GameObject BossLoot2 = Instantiate(Chest, transform.position, Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z), BossRoom.transform);
                         BossLoot2.transform.localPosition = LootLoc;
                         BossLoot2.GetComponent<AmazingChestHead>().CurrentLoot = BossArmor;
-                    }
-                    else
-                    {
-                        GameObject BossLoot = Instantiate(Chest, PC.transform.position, Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z), BossRoom.transform);
-                        BossLoot.GetComponent<AmazingChestHead>().CurrentLoot = BossArmor;
-                    }
                     break;
             }
         }
@@ -2152,7 +2133,8 @@ public class Monster : MonoBehaviour, IDamageable {
             }
 
             Loot();
-            transform.parent.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true); // hard code to open door after skellyboss
+            RoomIAmIn.GetComponent<Room>().RemoveMonster(gameObject);
+        //    transform.parent.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true); // hard code to open door after skellyboss
         }
     }
 
@@ -2216,6 +2198,7 @@ public class Monster : MonoBehaviour, IDamageable {
             OldKingSpecialAttack_1 = OldKingSpecialAttack;
             attackCountdown = AttackSpeed;
             hardCodeDansGame = attackAnimCD;
+            BossSound1.PlayDelayed(0.8f);
         }
     }
 

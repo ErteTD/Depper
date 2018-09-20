@@ -16,6 +16,7 @@ public class Room : MonoBehaviour
     public Vector3 MiniBossLocation;
     [Header("Room Events")]
     public GameObject Chest;
+    public bool KeepDoorsClosedUntillChestIsOpened;
     public bool MonsterEvent;
     public List<Vector3> EventSpawnLocations;
     public GameObject TriggerEvent;
@@ -86,6 +87,7 @@ public class Room : MonoBehaviour
     public void StartEvent()
     {
         CloseDoors();
+        KeepDoorsClosedUntillChestIsOpened = true;
         EventStarted = true;
         TriggerEvent.SetActive(false);
         switch (CurrentLevel)
@@ -205,6 +207,12 @@ public class Room : MonoBehaviour
     {
         Monsters.Remove(monster);
     }
+
+    public void Startinvoking()
+    {
+        InvokeRepeating("OpenDoorsIfNoMonsters", 0.1f, 0.5f);
+    }
+
     void Update()
     {
         if (TIMEK)
@@ -219,6 +227,7 @@ public class Room : MonoBehaviour
     {     
         if (BossRoom)
         {
+            KeepDoorsClosedUntillChestIsOpened = true;
             for (int i = 0; i < transform.childCount; i++) // all other doors connected through MapGrid.
             {
                 Transform child = transform.GetChild(i);
@@ -259,7 +268,15 @@ public class Room : MonoBehaviour
     {
         if (Monsters.Count == 0)
         {
-            OpenDoors();
+
+            if (KeepDoorsClosedUntillChestIsOpened == false)
+            {
+                OpenDoors();
+            }
+            else if (EventStarted)
+            {
+                SpawnChest();
+            }
           //  CancelInvoke("OpenDoorsIfNoMonsters");
         }
         else
@@ -272,6 +289,15 @@ public class Room : MonoBehaviour
                 }
             }
         }
+    }
+
+    void SpawnChest()
+    {
+            EventStarted = false;
+            GameObject CurLoot = Instantiate(Chest, new Vector3(transform.position.x, 1, transform.position.z), Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z));
+            CurLoot.GetComponent<AmazingChestHead>().CurrentLoot = EventLoot;
+            CurLoot.GetComponent<AmazingChestHead>().GoldAmount = EventGold;
+            CurLoot.transform.parent = gameObject.transform;
     }
 
     void CloseDoors()
@@ -288,15 +314,6 @@ public class Room : MonoBehaviour
         foreach (var door in DoorList)
         {
             OpenDoor(door, true);
-        }
-        if (EventStarted)
-        {
-            EventStarted = false;
-            GameObject CurLoot = Instantiate(Chest, new Vector3(transform.position.x, 1, transform.position.z), Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z));
-            CurLoot.GetComponent<AmazingChestHead>().CurrentLoot = EventLoot;
-            CurLoot.GetComponent<AmazingChestHead>().GoldAmount = EventGold;
-            CurLoot.transform.parent = gameObject.transform;
-
         }
     }
 

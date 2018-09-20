@@ -584,10 +584,22 @@ public class CastSpell : MonoBehaviour
         spell.CritVis = CritVisual;
     }
 
+    public void ResetSpellCDOnDeath()
+    {
+        CD1 = 0;
+        CD1_ = 1;
+        CD2 = 0;
+        CD2_ = 1;
+        CD3 = 0;
+        CD3_ = 1;
+        slot1.fillAmount = (CD1 / CD1_);
+        slot2.fillAmount = (CD2 / CD2_);
+        slot3.fillAmount = (CD3 / CD3_);
+    }
+
+
     void Update()
     {
-
-
         if (CD1 <= 0f)
         {
             spellSlot1rdy = true;

@@ -17,14 +17,18 @@ public class GameManager : MonoBehaviour
     [Header("ShopStuff")]
     public int RandomSpellBuyCost;
     public int RandomItemBuyCost;
+    public int PotionBuyCost;
     public int SellSpellGold;
+    public int SellItemGold;
     private bool SellTokenSuccess;
     public bool ShowSellWindowBool;
+    public bool ShowSellItemWindowBool;
     public AudioSource NotEnoughGoldSound;
     public AudioSource CloseShopWindow;
     public AudioSource SellTokenSound;
     public GameObject ShopWindow;
     public GameObject SellTokenWindow;
+    public GameObject SellItemWindow;
     public Vector3 CurrentShopLocation;
     public List<GameObject> Items;
     public bool ForceHideAllOtherWindows;
@@ -32,7 +36,10 @@ public class GameManager : MonoBehaviour
 
     [Header("Currency")]
     public int Money;
+    public int Lives;
     public Text CurrentGoldText;
+    public Text CurrentLivesText;
+    public Text DeathScreenLivesText;
 
     [Header("Inventory Weapon")]
     public GameObject SpiderWeapon;
@@ -45,7 +52,6 @@ public class GameManager : MonoBehaviour
     public int IKWeaponToken;
     public GameObject BlobWeapon;
     public int BlobWeaponToken;
-
     [Header("Inventory Armor")]
     public GameObject SpiderArmor;
     public int SpiderArmorToken;
@@ -57,6 +63,18 @@ public class GameManager : MonoBehaviour
     public int IKArmorToken;
     public GameObject BlobArmor;
     public int BlobArmorToken;
+
+    [Header("ShopItems")]
+    public GameObject SpiderWeapon_;
+    public GameObject BlinkWeapon_;
+    public GameObject FireWeapon_;
+    public GameObject IKWeapon_;
+    public GameObject BlobWeapon_;
+    public GameObject SpiderArmor_;
+    public GameObject IlluArmor_;
+    public GameObject RoidArmor_;
+    public GameObject IKArmor_;
+    public GameObject BlobArmor_;
 
     [Header("Resources")]
     public int meteorToken;
@@ -109,6 +127,19 @@ public class GameManager : MonoBehaviour
     public Text chaosText_;
     public Text channelingText_;
     public Text aimText_;
+
+    [Header("Item Count")]
+    public Text Item1;
+    public Text Item2;
+    public Text Item3;
+    public Text Item4;
+    public Text Item5;
+    public Text Item6;
+    public Text Item7;
+    public Text Item8;
+    public Text Item9;
+    public Text Item10;
+
 
     [Header("Activly used tokens for each slot")]
     public bool meteorToken_;
@@ -175,16 +206,29 @@ public class GameManager : MonoBehaviour
     public GameObject MiniMapLargePanel;
     private bool ToggleBoolLargeCamera;
 
+    private CastWeapon cw;
+    private ToolTipScript tts;
+    private Player Player_;
+    private MapGrid MG;
+    private GameObject MainCamera;
+
 
     void Start()
     {
-        Vector2 asd = new Vector2(0, 0);
+        MainCamera = GameObject.Find("MainCamera");
+
+        MG = FindObjectOfType<MapGrid>();
+        Player_ = FindObjectOfType<Player>();
+        cw = FindObjectOfType<CastWeapon>();
+        tts = FindObjectOfType<ToolTipScript>();
+      Vector2 asd = new Vector2(0, 0);
         MiniCamera = GameObject.Find("MiniMapCamera");
         Cursor.SetCursor(DefCursor, asd, CursorMode.Auto);
         SetTime = Time.timeScale;
         CurrentGoldText.text = "Gold: " + Money.ToString();
+        CurrentLivesText.text = "Lives: " + Lives.ToString();
+        DeathScreenLivesText.text = "Continue (" + Lives.ToString() + ")";
     }
-    // Update is called once per frame
 
 
     public void SetCurrentRoom(GameObject room) // not used currently
@@ -222,7 +266,7 @@ public class GameManager : MonoBehaviour
             float random1 = Random.Range(0f,0f);
             float random2 = Random.Range(-4f, -2f);
 
-                var CurLoc = CurrentShopLocation + transform.forward * random1 + transform.right * random2;
+            var CurLoc = CurrentShopLocation + transform.forward * random1 + transform.right * random2;
             GameObject CurLoot = Instantiate(MapGrid.FindObjectOfType<MapGrid>().Tokens[randomToken], new Vector3(CurLoc.x, 1, CurLoc.z), Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z));
             CurLoot.transform.parent = ShopRoom;
           
@@ -232,6 +276,26 @@ public class GameManager : MonoBehaviour
             NotEnoughGoldSound.Play();
         }
     }
+
+    public void BuyHealingPotion()
+    {
+        if (Money >= PotionBuyCost)
+        {
+            Money -= PotionBuyCost;
+            CurrentGoldText.text = "Gold: " + Money.ToString();
+            float random1 = Random.Range(0f, 0f);
+            float random2 = Random.Range(-4f, -2f);
+
+            var CurLoc = CurrentShopLocation + transform.forward * random1 + transform.right * random2;
+            GameObject CurLoot = Instantiate(MapGrid.FindObjectOfType<MapGrid>().Healing[0], new Vector3(CurLoc.x, 1, CurLoc.z), Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z));
+            CurLoot.transform.parent = ShopRoom;
+        }
+        else
+        {
+            NotEnoughGoldSound.Play();
+        }
+    }
+
     public void BuyRandomItem()
     {
         if (Money >= RandomItemBuyCost)
@@ -307,7 +371,6 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-
     public void ControlTime(float time)
     {
         SetTime = time;
@@ -319,37 +382,8 @@ public class GameManager : MonoBehaviour
         ShowTokensPanel.SetActive(showTP);
     }
 
-
     void Update()
     {
-
-        //if (Input.GetKey(KeyCode.RightArrow)) // Minimap control system, currently not used.
-        //{
-        //    MiniCamera.transform.position += new Vector3(10f, 0, 0f) * Time.deltaTime;
-        //    changeInX += 10 * Time.deltaTime;
-        //}
-        //if (Input.GetKey(KeyCode.LeftArrow))
-        //{
-        //    MiniCamera.transform.position += new Vector3(-10f, 0, 0f) * Time.deltaTime;
-        //    changeInX += -10 * Time.deltaTime;
-        //}
-        //if (Input.GetKey(KeyCode.UpArrow))
-        //{
-        //    MiniCamera.transform.position += new Vector3(0, 0, 10f) * Time.deltaTime;
-        //    changeInZ += 10 * Time.deltaTime;
-        //}
-        //if (Input.GetKey(KeyCode.DownArrow))
-        //{
-        //    MiniCamera.transform.position += new Vector3(0f, 0, -10f) * Time.deltaTime;
-        //    changeInZ += -10 * Time.deltaTime;
-        //}
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    MiniCamera.transform.position -= new Vector3(changeInX, 0, changeInZ);
-        //    changeInZ = 0;
-        //    changeInX = 0;
-        //}
-
         if (Input.GetKeyDown(KeyCode.H))
         {
             ShowHide2 = ShowHide2 ? false : true;
@@ -361,72 +395,198 @@ public class GameManager : MonoBehaviour
             ToggleLargeMiniMap();
         }
 
-        // Reset scene with R
-        //if (Input.GetKeyDown(KeyCode.P))
-        //{
-        //    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        //}
-
-        //if (Input.GetKeyDown(KeyCode.T)) //BUG currently, tooltip wont hide if active when this is hidden.
-        //{
-        //    ShowHide = ShowHide ? false : true;
-        //    TokenTT1T.SetActive(false);
-        //    TokenTT2T.SetActive(false);
-        //    TokenTT3T.SetActive(false);
-        //    TokenTT4T.SetActive(false);
-        //    TokenTT5T.SetActive(false);
-        //    TokenTT1.SetActive(ShowHide);
-        //    TokenTT2.SetActive(ShowHide);
-        //    TokenTT3.SetActive(ShowHide);
-        //    TokenTT4.SetActive(ShowHide);
-        //}
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ShowEscMenu();
         }
-        CurrentTokens();  
-        //TokenStoken.
+    }
+
+    public void PickedUpItem()
+    {
+        CurrentTokens();
         if (SpiderWeaponToken >= 1)
         {
             SpiderWeapon.SetActive(true);
+            if (cw.CurrentWeapon != 1 || SpiderWeaponToken > 1)
+            {
+                SpiderWeapon_.SetActive(true);
+            }
+            else
+            {
+                SpiderWeapon_.SetActive(false);
+            }
+        }
+        else
+        {
+            SpiderWeapon.SetActive(false);
+            SpiderWeapon_.SetActive(false);
         }
         if (BlinkWeaponToken >= 1)
         {
             BlinkWeapon.SetActive(true);
+            if (cw.CurrentWeapon != 2 || BlinkWeaponToken > 1)
+            {
+                BlinkWeapon_.SetActive(true);
+            }
+            else
+            {
+                BlinkWeapon_.SetActive(false);
+            }
+        }
+        else
+        {
+            BlinkWeapon.SetActive(false);
+            BlinkWeapon_.SetActive(false);
         }
         if (FireWeaponToken >= 1)
         {
             FireWeapon.SetActive(true);
+            if (cw.CurrentWeapon != 3|| FireWeaponToken > 1)
+            {
+                FireWeapon_.SetActive(true);
+            }
+            else
+            {
+                FireWeapon_.SetActive(false);
+            }
+        }
+        else
+        {
+            FireWeapon.SetActive(false);
+            FireWeapon_.SetActive(false);
         }
         if (IKWeaponToken >= 1)
         {
             IKWeapon.SetActive(true);
+            if (cw.CurrentWeapon != 4|| IKWeaponToken >1)
+            {
+                IKWeapon_.SetActive(true);
+            }
+            else
+            {
+                IKWeapon_.SetActive(false);
+            }
+        }
+        else
+        {
+            IKWeapon_.SetActive(false);
+            IKWeapon.SetActive(false);
         }
         if (BlobWeaponToken >= 1)
         {
             BlobWeapon.SetActive(true);
+            if (cw.CurrentWeapon != 5 ||BlobWeaponToken > 1)
+            {
+                BlobWeapon_.SetActive(true);
+            }
+            else
+            {
+                BlobWeapon_.SetActive(false);
+            }
         }
-        //Armors
+        else
+        {
+            BlobWeapon_.SetActive(false);
+            BlobWeapon.SetActive(false);
+        }
         if (SpiderArmorToken >= 1)
         {
             SpiderArmor.SetActive(true);
+            if (cw.CurrentArmor != 1||SpiderArmorToken>1)
+            {
+                SpiderArmor_.SetActive(true);
+            }
+            else
+            {
+                SpiderArmor_.SetActive(false);
+            }
+        }
+        else
+        {
+            SpiderArmor_.SetActive(false);
+            SpiderArmor.SetActive(false);
         }
         if (IlluArmorToken >= 1)
         {
             IlluArmor.SetActive(true);
+            if (cw.CurrentArmor != 2|| IlluArmorToken>1)
+            {
+                IlluArmor_.SetActive(true);
+            }
+            else
+            {
+                IlluArmor_.SetActive(false);
+            }
+        }
+        else
+        {
+            IlluArmor_.SetActive(false);
+            IlluArmor.SetActive(false);
         }
         if (RoidArmorToken >= 1)
         {
             RoidArmor.SetActive(true);
+            if (cw.CurrentArmor != 3|| RoidArmorToken>1)
+            {
+                RoidArmor_.SetActive(true);
+            }
+            else
+            {
+                RoidArmor_.SetActive(false);
+            }
+        }
+        else
+        {
+            RoidArmor_.SetActive(false);
+            RoidArmor.SetActive(false);
         }
         if (IKArmorToken >= 1)
         {
             IKArmor.SetActive(true);
+            if (cw.CurrentArmor != 4|| IKArmorToken>1)
+            {
+                IKArmor_.SetActive(true);
+            }
+            else
+            {
+                IKArmor_.SetActive(false);
+            }
+        }
+        else
+        {
+            IKArmor_.SetActive(false);
+            IKArmor.SetActive(false);
         }
         if (BlobArmorToken >= 1)
         {
             BlobArmor.SetActive(true);
+            if (cw.CurrentArmor != 5|| BlobArmorToken>1)
+            {
+                BlobArmor_.SetActive(true);
+            }
+            else
+            {
+                BlobArmor_.SetActive(false);
+            }
         }
+        else
+        {
+            BlobArmor_.SetActive(false);
+            BlobArmor.SetActive(false);
+        }
+        Item1.text = SpiderArmorToken.ToString();
+        Item2.text = IlluArmorToken.ToString();
+        Item3.text = RoidArmorToken.ToString();
+        Item4.text = IKArmorToken.ToString();
+        Item5.text = BlobArmorToken.ToString();
+        Item6.text = SpiderWeaponToken.ToString();
+        Item7.text = BlinkWeaponToken.ToString();
+        Item8.text = FireWeaponToken.ToString();
+        Item9.text = IKWeaponToken.ToString();
+        Item10.text = BlobWeaponToken.ToString();
+
+
+
     }
 
     public void ShowEscMenu()
@@ -459,6 +619,35 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = SetTime;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void ContinueAfterDeath()
+    {
+        if (Lives > 0)
+        {
+            MG.CurrentLevel--;
+            MG.maxRoom--;
+            MG.NextLevel();
+            Player_.Continue();
+            MainCamera.GetComponent<CamController>().zLevel = -26;
+            MainCamera.GetComponent<CamController>().zLevel2 = -26;
+            MainCamera.GetComponent<CamController>().xLimit1 = 0;
+            MainCamera.GetComponent<CamController>().xLimit2 = 0;
+            MainCamera.GetComponent<CamController>().zTest = -22;
+            MiniCamera.transform.position = new Vector3(-1000, 100, 0);
+            Lives--;
+            CurrentLivesText.text = "Lives: " + Lives.ToString();
+            DeathScreenLivesText.text = "Continue (" + Lives.ToString() + ")";
+            if (Lives == 0)
+            {
+                DeathScreenLivesText.text = "Game Over";
+            }
+        }
+        else
+        {
+            NotEnoughGoldSound.Play();
+        }
+
     }
 
 
@@ -503,6 +692,20 @@ public class GameManager : MonoBehaviour
         ShowSellWindowBool = !ShowSellWindowBool;
         SellTokenWindow.SetActive(ShowSellWindowBool);
         CloseShopWindow.Play();
+
+        ShowSellItemWindowBool = false;
+        SellItemWindow.SetActive(ShowSellItemWindowBool);
+    }
+
+    public void OpenSellItemMenu()
+    {
+        ShowSellItemWindowBool = !ShowSellItemWindowBool;
+        SellItemWindow.SetActive(ShowSellItemWindowBool);
+        CloseShopWindow.Play();
+        PickedUpItem();
+        ShowSellWindowBool = false;
+        SellTokenWindow.SetActive(ShowSellWindowBool);
+
     }
 
     public void SellSpellToken(int spell)
@@ -657,6 +860,106 @@ public class GameManager : MonoBehaviour
         {
             NotEnoughGoldSound.Play();
         }
+
+        PickedUpItem();
+    }
+
+    public void SellItem(int Item)
+    {
+        switch (Item)
+        {
+            case 1:
+                SpiderArmorToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (SpiderArmor_.activeSelf == false)
+                {
+                    tts.CloseArmor();
+                }
+                break;
+            case 2:
+                IlluArmorToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (IlluArmor_.activeSelf == false)
+                {
+                    tts.CloseArmor();
+                }
+                break;
+            case 3:
+                RoidArmorToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (RoidArmor_.activeSelf == false)
+                {
+                    tts.CloseArmor();
+                }
+                break;
+            case 4:
+                IKArmorToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (IKArmor_.activeSelf == false)
+                {
+                    tts.CloseArmor();
+                }
+                break;
+            case 5:
+                BlobArmorToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (BlobArmor_.activeSelf == false)
+                {
+                    tts.CloseArmor();
+                }
+                break;
+            case 6:
+                SpiderWeaponToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (SpiderWeapon_.activeSelf == false)
+                {
+                    tts.CloseWeapon();
+                }
+                break;
+            case 7:
+                BlinkWeaponToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (BlinkWeapon_.activeSelf == false)
+                {
+                    tts.CloseWeapon();
+                }
+                break;
+            case 8:
+                FireWeaponToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (FireWeapon_.activeSelf == false)
+                {
+                    tts.CloseWeapon();
+                }
+                break;
+            case 9:
+                IKWeaponToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (IKWeapon_.activeSelf == false)
+                {
+                    tts.CloseWeapon();
+                }
+                break;
+            case 10:
+                BlobWeaponToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (BlobWeapon_.activeSelf == false)
+                {
+                    tts.CloseWeapon();
+                }
+                break;
+        }
+        SellTokenSound.Play();
     }
 
 

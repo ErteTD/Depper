@@ -134,7 +134,7 @@ public class SpellProjectile : MonoBehaviour
          // Problem with setting all spells to current room. Mostly with comp/channeling/blessed aim.
             ThePlayer = GameObject.FindGameObjectWithTag("Player");
 
-            if (!enemyCastingspell)
+            if (!enemyCastingspell && !ChaosOrb_)
             {
                 ThePlayer.GetComponent<Player>().curSpellProjectile.Add(gameObject);
             }

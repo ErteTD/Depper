@@ -9,8 +9,10 @@ public class Shop : MonoBehaviour
     public Light EventLight;
     private bool ShopOpen;
     private bool clicked;
+    private ToolTipScript tts;
     void Start()
     {
+        tts = FindObjectOfType<ToolTipScript>();
         Player_ = GameObject.Find("Player");
         GM = GameManager.FindObjectOfType<GameManager>();
     }
@@ -34,6 +36,8 @@ public class Shop : MonoBehaviour
                 ShopOpen = false;
                 GM.ShopWindowFunc(false);
                 GM.SellTokenWindow.SetActive(false);
+                GM.SellItemWindow.SetActive(false);
+                GM.ShowSellItemWindowBool = false;
                 GM.ShowSellWindowBool = false;
                 GM.ForceHideAllOtherWindows = false;
                 GM.ShopRoom = null;
@@ -46,9 +50,15 @@ public class Shop : MonoBehaviour
             ShopOpen = false;
             GM.ShopWindowFunc(false);
             GM.SellTokenWindow.SetActive(false);
+            GM.SellItemWindow.SetActive(false);
+            GM.ShowSellItemWindowBool = false;
             GM.ShowSellWindowBool = false;
             GM.ForceHideAllOtherWindows = false;
             GM.ShopRoom = null;
+            if ((tts.ToolTipHC1|| tts.ToolTipHC2) && (tts.SelectWeapon.activeSelf == false && tts.SelectArmor.activeSelf == false))
+            {
+                tts.CLOSEALLITEMTIPS();
+            }
         }
     }
 
@@ -59,6 +69,7 @@ public class Shop : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             clicked = true;
+
         }
     }
 

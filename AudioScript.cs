@@ -20,6 +20,8 @@ public class AudioScript : MonoBehaviour
     public AudioMixer masterMixer;
     public float MinLevel;
     public float MaxLevel;
+    public float DeathMusicSoundLevel;
+    public float DeathSFXSoundLevel;
 
     void Start()
     {
@@ -29,6 +31,11 @@ public class AudioScript : MonoBehaviour
         SL.value = MasterSoundLevel;
         ML.value = MasterMusicLevel;
         SFXL.value = MasterSFXLevel;
+    }
+    public void ResetVolumeAfterDeath()
+    {
+        SetSoundMusic(MasterMusicLevel);
+        SetSoundSFX(MasterSFXLevel);
     }
 
     public void SetSoundMaster(float soundLevel)
@@ -42,11 +49,14 @@ public class AudioScript : MonoBehaviour
         masterMixer.SetFloat("Music Volume", soundLevel);
         DisplayMusic.text = (Mathf.InverseLerp(MinLevel, MaxLevel, soundLevel) * 100).ToString("F0") + "%";
         MasterMusicLevel = soundLevel;
+        DeathMusicSoundLevel = soundLevel;
     }
     public void SetSoundSFX(float soundLevel)
     {
         masterMixer.SetFloat("SFX Volume", soundLevel);
+        masterMixer.SetFloat("Death", soundLevel);
         DisplaySFX.text = (Mathf.InverseLerp(MinLevel, MaxLevel, soundLevel) * 100).ToString("F0") + "%";
         MasterSFXLevel = soundLevel;
+        DeathSFXSoundLevel = soundLevel;
     }
 }

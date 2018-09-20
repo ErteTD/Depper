@@ -107,10 +107,12 @@ public class ToolTipScript : MonoBehaviour
     private bool toggleWeaponTooltip;
 
     private int CurItemID;
-   
+    private GameManager gm;
+    public bool ToolTipHC1;
+    public bool ToolTipHC2;
     public void Start()
     {
-        
+        gm = FindObjectOfType<GameManager>();
         fire = AllSpells[0].GetComponent<Fireball>();
         frost = AllSpells[1].GetComponent<FrostBolt>();
         lightning = AllSpells[2].GetComponent<LightningBolt>();
@@ -529,24 +531,28 @@ public class ToolTipScript : MonoBehaviour
     }
     public void WeaponTip(bool preview)
     {
+        ToolTipHC1 = false;
         toggleWeaponTooltip = !toggleWeaponTooltip;
         WeaponTipPanel.SetActive(toggleWeaponTooltip);
         int CurID = CastSpell.FindObjectOfType<CastWeapon>().CurrentWeapon;
         if (preview)
         {
             CurID = CurItemID;
+            ToolTipHC1 = true;
         }
         GetWeaponClassFrom(AllWeapons_[CurID], preview);
         
     }
     public void ArmorTip(bool preview)
     {
+        ToolTipHC2 = false;
         toggleArmorTooltip = !toggleArmorTooltip;
         ArmorTipPanel.SetActive(toggleArmorTooltip);
         int CurID = CastSpell.FindObjectOfType<CastWeapon>().CurrentArmor;
         if (preview)
         {
             CurID = CurItemID;
+            ToolTipHC2 = true;
         }
         GetArmorClassFrom(AllArmors_[CurID], preview);
     }
@@ -560,6 +566,14 @@ public class ToolTipScript : MonoBehaviour
         toggleArmorTooltip = !toggleArmorTooltip;
         ArmorTipPanel.SetActive(toggleArmorTooltip);      
     }
+    public void CLOSEALLITEMTIPS()
+    {
+        toggleWeaponTooltip = false;
+        toggleArmorTooltip = false;
+        WeaponTipPanel.SetActive(toggleWeaponTooltip);
+        ArmorTipPanel.SetActive(toggleArmorTooltip);
+    }
+
     public void CurrentItemID(int ID)
     {
         CurItemID = ID;
@@ -572,6 +586,7 @@ public class ToolTipScript : MonoBehaviour
         showWeaponSelect = showWeaponSelect ? false : true;
         SelectWeapon.SetActive(showWeaponSelect);
         ForceCloseWeaponPanels.SetActive(showWeaponSelect);
+        gm.PickedUpItem();
         if (showWeaponSelect == false)
         {
             GetComponent<Spellbook>().SoundFiles[1].Play();
@@ -585,6 +600,7 @@ public class ToolTipScript : MonoBehaviour
         showArmorSelect = showArmorSelect ? false : true;
         SelectArmor.SetActive(showArmorSelect);
         ForceCloseArmorPanels.SetActive(showArmorSelect);
+        gm.PickedUpItem();
         if (showArmorSelect == false)
         {
             GetComponent<Spellbook>().SoundFiles[1].Play();

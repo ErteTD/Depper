@@ -314,7 +314,14 @@ public class Monster : MonoBehaviour, IDamageable {
 
         if (HealthBarCanvas != null)
         {
-            HBtext.text = "(" + health.ToString("F1") + " / " + health2.ToString("F0") + ")";
+            if (health2 < 1)
+            {
+                HBtext.text = "(" + health.ToString("F1") + " / " + health2.ToString("F1") + ")";
+            }
+            else
+            {
+                HBtext.text = "(" + health.ToString("F0") + " / " + health2.ToString("F0") + ")";
+            }
         }
 
         if (OldKing)

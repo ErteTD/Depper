@@ -333,39 +333,46 @@ public class GameManager : MonoBehaviour
             case 1:
                 minRoom_ = 0;
                 maxRoom_ = 0;
-                CurrentLevel_ = 0;
+                CurrentLevel_ = 5;
                 GiveLoot_ = true;
                 break;
             case 2:
                 minRoom_ = 0;
                 maxRoom_ = 0;
-                CurrentLevel_ = 1;
+                CurrentLevel_ = 6;
                 GiveLoot_ = true;
                 break;
             case 3:
                 minRoom_ = 0;
                 maxRoom_ = 0;
-                CurrentLevel_ = 2;
+                CurrentLevel_ = 7;
                 GiveLoot_ = true;
                 break;
             case 4:
                 minRoom_ = 0;
                 maxRoom_ = 0;
-                CurrentLevel_ = 3;
+                CurrentLevel_ = 8;
                 GiveLoot_ = true;
                 break;
             case 5:
-                minRoom_ = 20;
-                maxRoom_ = 20;
-                CurrentLevel_ = 8;
+                minRoom_ = 0;
+                maxRoom_ = 0;
+                CurrentLevel_ = 9;
                 GiveLoot_ = true;
                 break;
             case 6:
                 minRoom_ = 0;
                 maxRoom_ = 0;
-                CurrentLevel_ = 4;
+                CurrentLevel_ = 10;
                 GiveLoot_ = true;
                 break;
+            case 7:
+                minRoom_ = 20;
+                maxRoom_ = 20;
+                CurrentLevel_ = 10;
+                GiveLoot_ = true;
+                break;
+
         }
         StartLevel_ = true;
         Time.timeScale = SetTime;

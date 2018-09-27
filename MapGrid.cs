@@ -64,6 +64,12 @@ public class MapGrid : MonoBehaviour
     [Header("RoomStuff")]
     public List<GameObject> Obstacle;
     public List<GameObject> Boss;
+    public List<GameObject> BossesLevel1;
+    public List<GameObject> BossesLevel2;
+    public List<GameObject> BossesLevel3;
+    public List<GameObject> BossesLevel4;
+    public List<GameObject> BossesLevel5;
+
     List<Vector2Int> GridList = new List<Vector2Int>();
     List<Vector2Int> MiniMapList = new List<Vector2Int>();
     List<GameObject> RoomList = new List<GameObject>();
@@ -365,19 +371,36 @@ public class MapGrid : MonoBehaviour
                 FinalFinalX = LR;
             }
 
-            //DoorLoc = new Vector3(0, 2, 15);
-            //DoorRot = Quaternion.Euler(new Vector3(0, 0, 0));
-
             int Indeex = GridList.IndexOf(FinalFinalX);
             GameObject Doors = Instantiate(Door, RoomList[Indeex].transform);
 
             Doors.transform.localPosition = RoomList[Indeex].GetComponent<Room>().DoorLocations[4];
             Doors.transform.localRotation = Quaternion.Euler(RoomList[Indeex].GetComponent<Room>().DoorRotation[4]);
             Doors.transform.Find("LightAndTrigger").GetComponent<OneWayDoor>().BossRoom();
+            GameObject GenerateBoss;
+            switch (CurrentLevel){
+                case 0:
+                    GenerateBoss = BossesLevel1[Random.Range(0, (BossesLevel1.Count))];
+                    break;
+                case 1:
+                    GenerateBoss = BossesLevel2[Random.Range(0, (BossesLevel2.Count))];
+                    break;
+                case 2:
+                    GenerateBoss = BossesLevel3[Random.Range(0, (BossesLevel3.Count))];
+                    break;
+                case 3:
+                    GenerateBoss = BossesLevel4[Random.Range(0, (BossesLevel4.Count))];
+                    break;
+                case 4:
+                    GenerateBoss = BossesLevel5[Random.Range(0, (BossesLevel5.Count))];
+                    break;
+                // for testing.
+                default:
+                    GenerateBoss = Boss[CurrentLevel+1];
+                    break;
+            }
 
-            //   var RandomBoss = Random.Range(0, Boss.Count); // Boss room currently does not have a challenge raiting.
-            GameObject BossRoom = Instantiate(Boss[CurrentLevel], transform); // 
-
+            GameObject BossRoom = Instantiate(GenerateBoss, transform); // 
             Room BRoom = BossRoom.GetComponent<Room>();
 
             BossRoom.transform.position = new Vector3(0f, 0f, (FinalY + 2) * RoomMapLocationY);

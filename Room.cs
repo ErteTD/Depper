@@ -98,33 +98,33 @@ public class Room : MonoBehaviour
         {
             case 0:
                 SwarmSize = 15;
-                CasterSize = 5;
-                BlobSize = 20;
+                CasterSize = 4;
+                BlobSize = 15;
                 break;
             case 1:
                 SwarmSize = 30;
-                CasterSize = 10;
-                BlobSize = 40;
+                CasterSize = 8;
+                BlobSize = 30;
                 break;
             case 2:
-                SwarmSize = 60;
-                CasterSize = 10;
-                BlobSize = 15;
+                SwarmSize = 50;
+                CasterSize = 7;
+                BlobSize = 10;
                 break;
             case 3:
                 SwarmSize = 10;
-                CasterSize = 15;
-                BlobSize = 25;
+                CasterSize = 11;
+                BlobSize = 20;
                 break;
             case 4:
                 SwarmSize = 20;
                 CasterSize = 5;
-                BlobSize = 5;
+                BlobSize = 4;
                 break;
             case 5:
                 SwarmSize = 30;
-                CasterSize = 10;
-                BlobSize = 10;
+                CasterSize = 8;
+                BlobSize = 8;
                 break;
             default:
                 SwarmSize = 1;

@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public GameObject EscMenu;
     public static int minRoom_, maxRoom_, CurrentLevel_;
     public static bool StartLevel_, GiveLoot_;
+    public GameObject BossHealth;
     [Header("ShopStuff")]
     public int RandomSpellBuyCost;
     public int RandomItemBuyCost;
@@ -638,6 +639,12 @@ public class GameManager : MonoBehaviour
             Lives--;
             CurrentLivesText.text = "Lives: " + Lives.ToString();
             DeathScreenLivesText.text = "Continue (" + Lives.ToString() + ")";
+
+            BossHealth.transform.GetChild(0).gameObject.SetActive(false);
+            BossHealth.transform.GetChild(1).gameObject.SetActive(false);
+            BossHealth.transform.GetChild(2).gameObject.SetActive(false);
+            BossHealth.transform.GetChild(3).gameObject.SetActive(false);
+
             if (Lives == 0)
             {
                 DeathScreenLivesText.text = "Game Over";
@@ -691,7 +698,7 @@ public class GameManager : MonoBehaviour
     {
         ShowSellWindowBool = !ShowSellWindowBool;
         SellTokenWindow.SetActive(ShowSellWindowBool);
-        CloseShopWindow.Play();
+        //CloseShopWindow.Play();
 
         ShowSellItemWindowBool = false;
         SellItemWindow.SetActive(ShowSellItemWindowBool);
@@ -701,11 +708,18 @@ public class GameManager : MonoBehaviour
     {
         ShowSellItemWindowBool = !ShowSellItemWindowBool;
         SellItemWindow.SetActive(ShowSellItemWindowBool);
-        CloseShopWindow.Play();
+       // CloseShopWindow.Play();
         PickedUpItem();
         ShowSellWindowBool = false;
         SellTokenWindow.SetActive(ShowSellWindowBool);
+    }
 
+    public void ForceCloseShopWhenOtherButtonsAreClicked()
+    {
+        SellTokenWindow.SetActive(false);
+        SellItemWindow.SetActive(false);
+        ShowSellItemWindowBool = false;
+        ShowSellWindowBool = false;
     }
 
     public void SellSpellToken(int spell)

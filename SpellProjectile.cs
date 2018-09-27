@@ -329,7 +329,10 @@ public class SpellProjectile : MonoBehaviour
                 other.GetComponent<Player>().TakeDamage(damage);
                 other.GetComponent<Player>().Burn(FireBallBurn, BurnDuration, BurnPercent, damage);
                 other.GetComponent<Player>().Slow(FrostBoltSlow, SlowDuration, SlowPercent);
-                Stop();
+                if (!cone)
+                {
+                    Stop();
+                }
             }
         }
         if (other.tag == "Wall" && tag == "ChaosOrb")
@@ -1125,7 +1128,15 @@ public class SpellProjectile : MonoBehaviour
 
     void SpellIsCone()
     { //3,4,5. 
-        directionF = ThePlayer.transform.forward;
+        if (!enemyCastingspell)
+        {
+            directionF = ThePlayer.transform.forward;
+        }
+        //else
+        //{
+        //    directionF = transform.forward;
+        //}
+
         if (spellName == "Lightningbolt")
         {
            // transform.localScale += new Vector3(transform.localScale.x * 2f, transform.localScale.y * 3f, transform.localScale.z * 4f);
@@ -1145,7 +1156,7 @@ public class SpellProjectile : MonoBehaviour
             loc2 += transform.forward * 4f;
             transform.position = loc2;
         }
-        Invoke("Stop", 1.5f);
+        Invoke("Stop", 1.2f);
     }
 
     public void Crit()

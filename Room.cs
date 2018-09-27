@@ -7,6 +7,8 @@ public class Room : MonoBehaviour
 {
     public GameObject Floor;
     public NavMeshSurface NavGen;
+    public bool ThisRoomHasShop;
+    public bool ThisRoomHasEvent;
     [Header("DoorPositions")]
     public List<Vector3> DoorLocations;
     public List<Vector3> DoorRotation;
@@ -22,8 +24,10 @@ public class Room : MonoBehaviour
     public GameObject TriggerEvent;
     public GameObject SpiderEvent;
     public List<GameObject> CasterEvent;
+    public List<GameObject> BlobEvent;
     private int SwarmSize;
     private int CasterSize;
+    private int BlobSize;
     public GameObject EventLoot;
     public int EventGold;
     private bool EventStarted;
@@ -95,34 +99,41 @@ public class Room : MonoBehaviour
             case 0:
                 SwarmSize = 15;
                 CasterSize = 5;
+                BlobSize = 20;
                 break;
             case 1:
                 SwarmSize = 30;
                 CasterSize = 10;
+                BlobSize = 40;
                 break;
             case 2:
                 SwarmSize = 60;
                 CasterSize = 10;
+                BlobSize = 15;
                 break;
             case 3:
                 SwarmSize = 10;
                 CasterSize = 15;
+                BlobSize = 25;
                 break;
             case 4:
                 SwarmSize = 20;
                 CasterSize = 5;
+                BlobSize = 5;
                 break;
             case 5:
                 SwarmSize = 30;
                 CasterSize = 10;
+                BlobSize = 10;
                 break;
             default:
                 SwarmSize = 1;
                 CasterSize = 1;
+                BlobSize = 1;
                 break;
         }
 
-        var RandomEvent = Random.Range(0, 2);
+        var RandomEvent = Random.Range(0, 3);
         
         switch (RandomEvent)
         {
@@ -131,6 +142,9 @@ public class Room : MonoBehaviour
                 break;
             case 1:
                 StartCoroutine(NextCasterInEvent(CasterSize, 2f));
+                break;
+            case 2:
+                StartCoroutine(NextBlobInEvent(BlobSize, 2f));
                 break;
         }
 
@@ -144,6 +158,11 @@ public class Room : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         SummonCaster(Count);
+    }
+    IEnumerator NextBlobInEvent(int Count, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SummonBlob(Count);
     }
 
     void SummonSwarm(int count)
@@ -188,6 +207,24 @@ public class Room : MonoBehaviour
         if (count > 0)
         {
             StartCoroutine(NextCasterInEvent(count - 1, 0.25f));
+        }
+        else
+        {
+            InvokeRepeating("OpenDoorsIfNoMonsters", 0.1f, 0.5f);
+        }
+    }
+
+    void SummonBlob(int count)
+    {
+        var RandomSpot = Random.Range(0, EventSpawnLocations.Count);
+        GameObject Blob = Instantiate(BlobEvent[CurrentLevel], transform.position, transform.rotation, transform);
+        Blob.transform.localPosition = EventSpawnLocations[RandomSpot];
+        Blob.transform.localPosition = new Vector3(Blob.transform.localPosition.x, 3, Blob.transform.localPosition.z);
+        AddMonster(Blob);
+        Blob.GetComponent<Monster>().AggroRange = 50;
+        if (count > 0)
+        {
+            StartCoroutine(NextBlobInEvent(count - 1, 0.5f));
         }
         else
         {

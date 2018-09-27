@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour, IDamageable {
 
-
+    public GameObject AudioList;
     public GameObject MousePing;
     public GameObject animChild;
     private MonsterAnim anim;
@@ -179,7 +179,7 @@ public class Player : MonoBehaviour, IDamageable {
                         Instantiate(MousePing, DaPoint, Quaternion.Euler(0, 0, 0));
                     }
 
-                    if (dist > 0.1f)
+                    if (dist > 0.1f && hit.collider.tag != "ObstacleCourseClickLayer")
                     {
                         targetPosition = HitGroundlevel;
                         move = true; // when move true, character moves unless rightclick is true.
@@ -318,6 +318,14 @@ public class Player : MonoBehaviour, IDamageable {
         }
     }
 
+
+    protected void LateUpdate()
+    {
+
+            AudioList.transform.rotation = Quaternion.Euler(0,0,0);
+
+    }
+
     private void SpellCastLocationAgentLocation()
     {
         agent.destination = this.transform.position;
@@ -345,6 +353,7 @@ public class Player : MonoBehaviour, IDamageable {
 
     void IlluArmor()
     {
+        bool trigger = false;
         if (CastSpell.GetComponent<CastWeapon>().spellSlot2rdy == true && CastSpell.GetComponent<CastWeapon>().CurrentArmor == 2)
         {
             Monsters = GameObject.FindGameObjectsWithTag("Monster");
@@ -352,8 +361,12 @@ public class Player : MonoBehaviour, IDamageable {
             {
                 if (Vector3.Distance(transform.position, monster.transform.position) < 6f)
                 {
-                    CastSpell.GetComponent<CastWeapon>().ArmorTrigger();
+                    trigger = true;
                 }
+            }
+            if (trigger)
+            {
+                CastSpell.GetComponent<CastWeapon>().ArmorTrigger();
             }
         }
     }

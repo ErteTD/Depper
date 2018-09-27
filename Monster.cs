@@ -30,6 +30,7 @@ public class Monster : MonoBehaviour, IDamageable {
     private Vector3 destination;
     [HideInInspector] public UnityEngine.AI.NavMeshAgent agent;
     private GameObject PC;
+    private GameObject PC2;
     private GameObject PC_;
     private GameObject Illu;
     [HideInInspector] public Vector3 startPosition;
@@ -107,7 +108,9 @@ public class Monster : MonoBehaviour, IDamageable {
     public GameObject currentSpell3;
     public GameObject currentSpell4;
     public GameObject castPoint;
+    private bool DisengageDistanceRemoveAfterAttack;
     public bool SineWaveAttack;
+    public bool Cone;
     public GameObject FireTrail;
     public bool LeaveFireTrail;
     public float LeaveFireTrailCD;
@@ -238,6 +241,7 @@ public class Monster : MonoBehaviour, IDamageable {
     [HideInInspector] public bool BlobDie;
     [HideInInspector] public float BlobDieTimer;
     public bool BlobWeapon;
+    private bool BlobAttack2Phase2;
 
 
 
@@ -310,7 +314,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
         if (HealthBarCanvas != null)
         {
-            HBtext.text = "(" + health.ToString("F0") + " / " + health2.ToString("F0") + ")";
+            HBtext.text = "(" + health.ToString("F1") + " / " + health2.ToString("F0") + ")";
         }
 
         if (OldKing)
@@ -428,7 +432,7 @@ public class Monster : MonoBehaviour, IDamageable {
         BlobAttackCD_2 -= Time.deltaTime;
         if (BlobAttackCD_ < 0)
         {
-            if (HealTimeCounter < 7)
+            if (HealTimeCounter < 6)
             {
                 var RandAttack = Random.Range(0, 5);
                 switch (RandAttack)
@@ -460,14 +464,12 @@ public class Monster : MonoBehaviour, IDamageable {
             }
         }
 
-        if (BlobAttackCD_2 < 0)
+        if (BlobAttackCD_2 < 0 && (health/health2) <= 0.7f)
         {
-
             GameObject CurBlob = Instantiate(BlobAttack2Object, transform.position, transform.rotation, transform);
-            CurBlob.transform.position += CurBlob.transform.forward * 4;
+            CurBlob.transform.position += CurBlob.transform.forward * 6;
             CurBlob.transform.parent = transform.parent;
             Monster CurBlob_ = CurBlob.GetComponent<Monster>();
-
             CurBlob_.BlobAttack2Bool = true;
             CurBlob_.BossRoom = BossRoom;
             ParticleSystem ps = CurBlob_.BlobPS;
@@ -476,8 +478,13 @@ public class Monster : MonoBehaviour, IDamageable {
             var main2 = ps2.main;
             main.startColor = BossLight.color;
             main2.startColor = BossLight.color;
-
             BlobAttackCD_2 = BlobAttackCD2;
+
+            if (health/health2 <= 0.3f)
+            {
+                CurBlob_.BlobAttack2Phase2 = true;
+            }
+
         }
     }
 
@@ -722,32 +729,36 @@ public class Monster : MonoBehaviour, IDamageable {
         //Checks if slowed | burning.
         AmISlowed();
         AmIBurning();
+
         if (!BlobAttackNoTarget)
         {
-            if (GameObject.FindWithTag("Illusion") != null && !StartScene)
-            {
-                PC = GameObject.FindWithTag("Illusion");
-                AttackDelay = 0;
-            }
-            else if (!StartScene) // IlluScript.
-            {
-
-                if (AttackFriend)
-                {
-                    AttackFriendFunc();
-                    AttackDelay = AttackDelay_;
-
-                }
-                else
-                {
-                    PC = PC_;
-                    AttackDelay = AttackDelay_;
-                }
-            }
-            else
+            if (StartScene)
             {
                 PC = StartOpponent;
                 meleeRange = 8;
+            }
+            else if (AttackFriend)
+            {
+                AttackFriendFunc();
+            }
+            else if (GameObject.FindWithTag("Illusion") != null)
+            {
+                PC2 = GameObject.FindWithTag("Illusion");
+                float dist123a = Vector3.Distance(transform.position, PC_.transform.position);
+                float dist123b = Vector3.Distance(transform.position, PC2.transform.position);
+
+                if (dist123a < dist123b)
+                {
+                    PC = PC_;
+                }
+                else
+                {
+                    PC = PC2;
+                }
+            }
+            else // not startscene and no illus
+            {
+                PC = PC_;
             }
         }
         
@@ -755,6 +766,7 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             LeaveFireTrailFunc();
         }
+
 
         if (!CurrentlyRessing && !BlobAttackNoTarget && !TheBlob && PC != null)
         {
@@ -821,13 +833,6 @@ public class Monster : MonoBehaviour, IDamageable {
             else if (dist > AggroRange + 2 && !SpiderBoss && MonsterType != 5)
             {
 
-                //if (InCombat)
-                //{
-                //    ResetMonsterPosition();
-                //    //  agent.destination = startPosition;
-                //    InCombat = false;
-                //}
-                       
                 if (Vector3.Distance(transform.position, agent.destination) < 2f)
                 {
                     if (MonsterType == 1) { anim.IdleAnim(); }
@@ -861,7 +866,10 @@ public class Monster : MonoBehaviour, IDamageable {
             if (((dist <= meleeRange + 0.5f) || (CastingSpellTimer > 0)) && dist <= AggroRange) { canAttack = true; }
             else if (dist > meleeRange + DisengageDistance) { canAttack = false; }
 
-            if (canAttack && !BBStill)
+           if (dist <= meleeRange+0.5f && DisengageDistanceRemoveAfterAttack) { DisengageDistanceRemoveAfterAttack = false; }
+           else if (DisengageDistanceRemoveAfterAttack) { canAttack = false; }
+
+            if (canAttack && !BBStill && !DisengageDistanceRemoveAfterAttack)
             {
                 if (!SpiderBoss && !TimeKSpin && !TKSpawning)
                 {
@@ -915,6 +923,14 @@ public class Monster : MonoBehaviour, IDamageable {
                     agent.speed = MovementSpeed;
                 }
             }
+
+
+            if (BlobAttack2Phase2 && attackCountdown < 0)
+            {
+                BlobBossAttack2Phase2Attack();
+            }
+
+
             CastingSpellTimer -= Time.deltaTime;
             attackCountdown -= Time.deltaTime;
             hardCodeDansGame -= Time.deltaTime;
@@ -1102,7 +1118,7 @@ public class Monster : MonoBehaviour, IDamageable {
             CastingSpellTimer = hardCodeDansGame;
             Invoke("StartMovingAfterAttackLands", hardCodeDansGame);
             float dist = Vector3.Distance(transform.position, PC.transform.position);
-            if (GameObject.FindWithTag("Illusion") != null && !StartScene)
+            if (PC == PC2 && !StartScene)
             {
                 PC.GetComponent<IlluScript>().TakeDamage(damage);
                 MeleeAttackLand.Play();
@@ -1238,6 +1254,7 @@ public class Monster : MonoBehaviour, IDamageable {
                         spell.BurnDuration = currentSpell.GetComponent<Fireball>().BurnDuration;
                         spell.BurnPercent = currentSpell.GetComponent<Fireball>().BurnPercent;
                         spell.SineWaveAttack = SineWaveAttack;
+                        spell.cone = Cone;
                         break;
                     case 3:
                         spell.projectilespeed = currentSpell.GetComponent<LightningBolt>().projectilespeed;
@@ -1245,6 +1262,11 @@ public class Monster : MonoBehaviour, IDamageable {
                         spell.LBBounce = currentSpell.GetComponent<LightningBolt>().LBBounce;
                         spell.LBBounceAmount = currentSpell.GetComponent<LightningBolt>().LBBounceAmount = 1;
                         break;
+                }
+
+                if (MonsterType == 2)
+                {
+                    DisengageDistanceRemoveAfterAttack = true;
                 }
 
                 if (MonsterType == 4)
@@ -1650,6 +1672,30 @@ public class Monster : MonoBehaviour, IDamageable {
                 e.FriendAttacked();
             }
         }
+    }
+
+    void BlobBossAttack2Phase2Attack()
+    {
+        GameObject CurBlob = Instantiate(BlobAttack1Object, transform.position, transform.rotation, transform);
+        AddToRoomMonsterList(CurBlob);
+        Monster CurBlob_ = CurBlob.GetComponent<Monster>();
+        ParticleSystem ps = BlobPS;
+        var main = ps.main;
+        ParticleSystem ps3 = CurBlob_.BlobPS;
+        var main3 = ps3.main;
+        ParticleSystem ps4 = CurBlob_.BlobPS2;
+        var main4 = ps4.main;
+        main3.startColor = main.startColor;
+        main4.startColor = main.startColor;
+        CurBlob_.health = 2;
+        CurBlob_.health2 = 2;
+        CurBlob_.Healboss = false;
+        CurBlob_.MovementSpeed = 8;
+        CurBlob_.MovementSpeed_ = 8;
+        CurBlob_.BlobAttackNoTarget = true;
+        CurBlob_.BlobDie = false;
+        CurBlob.transform.parent = null;
+        attackCountdown = AttackSpeed;
     }
 
     void BlobExplodeOnDeath()

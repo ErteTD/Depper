@@ -12,6 +12,7 @@ public class IlluScript : MonoBehaviour
     public Image Durationbar;
     [HideInInspector] public float duration2;
     public GameObject CorpseExplosion;
+    private bool OnlyOnce;
 
     // Use this for initialization
     void Start()
@@ -26,16 +27,17 @@ public class IlluScript : MonoBehaviour
         duration -= Time.deltaTime;
         Durationbar.fillAmount = duration / duration2;
 
-        if (duration <= 0)
+        if (duration <= 0 && !OnlyOnce)
         {
-            Collider[] cols = Physics.OverlapSphere(transform.position, 10f);
+            OnlyOnce = true;
+            Collider[] cols = Physics.OverlapSphere(transform.position, 6f);
 
             foreach (Collider c in cols)
             {
                 Monster e = c.GetComponent<Monster>();
                 if (e != null)
                 {
-                    e.GetComponent<Monster>().TakeDamage(5);
+                    e.GetComponent<Monster>().TakeDamage(2);
                 }
             }
             GameObject Exp = Instantiate(CorpseExplosion, transform.position, transform.rotation, transform);

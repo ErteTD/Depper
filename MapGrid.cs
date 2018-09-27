@@ -76,6 +76,8 @@ public class MapGrid : MonoBehaviour
     public GameObject RoomBlock;
     private int MiniMapX, MiniMapZ;
     public GameObject MiniMapDoor;
+    public GameObject MiniMapShop;
+    public GameObject MiniMapEvent;
 
     void Start()
     {
@@ -113,7 +115,7 @@ public class MapGrid : MonoBehaviour
 
         GameObject Shop_ = Instantiate(Shop, Base.transform);
         Shop_.transform.localPosition = new Vector3(25, 2.1f, 0f);
-        
+        Base.GetComponent<Room>().ThisRoomHasShop = true;
 
         GridList.Add(new Vector2Int(0, 0));
         MiniMapList.Add(new Vector2Int(0, 0));
@@ -279,6 +281,7 @@ public class MapGrid : MonoBehaviour
                 else {
                     Base_.CurrentLevel = CurrentLevel;
                     Base_.EventInThisRoom();
+                    Base_.ThisRoomHasEvent = true;
                     RoomEventLoot(Base_);
                     NumberOfEvents--;
                 }
@@ -463,7 +466,17 @@ public class MapGrid : MonoBehaviour
                         }
                     }
                 }
-               // RoomList[Counter].GetComponent<Room>().DoorList[item]
+
+                if (RoomList[Counter].GetComponent<Room>().ThisRoomHasShop)
+                {
+                    GameObject MMD = Instantiate(MiniMapShop, MiniMapBlock.transform.position, MiniMapBlock.transform.rotation, MiniMapBlock.transform);
+                    MMD.transform.localPosition = new Vector3(0, 1, 0);
+                }
+                if( RoomList[Counter].GetComponent<Room>().ThisRoomHasEvent){
+                    GameObject MMD = Instantiate(MiniMapEvent, MiniMapBlock.transform.position, MiniMapBlock.transform.rotation, MiniMapBlock.transform);
+                    MMD.transform.localPosition = new Vector3(0, 1, 0);
+                }
+
                 LastRoom = MiniMapBlock;
 
                 if (Counter > 0) // so wont deactive first room

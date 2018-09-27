@@ -55,7 +55,7 @@ public class MonsterAnim : MonoBehaviour
     }
     public void RunAnimation()
     {
-        animation.Play("run");
+        animation.Play("walk");
     }
     public void RunAnimation2()
     {
@@ -90,6 +90,7 @@ public class MonsterAnim : MonoBehaviour
     public void AttackAnimation()
     {
         animation.Play("hpunch");
+        animation["hpunch"].speed = 0.75f;
     }
     public void AttackAnimation2()
     {

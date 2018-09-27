@@ -221,20 +221,16 @@ public class Spellbook : MonoBehaviour
 
     public void OpenSlot(int slot)
     {
-
     if (!openBool)
         {
              DontFinishSpell = false;
         }
-
         this.gameObject.GetComponent<ToolTipScript>().CloseAllItemPanels();
-
         openBool = openBool ? false : true;
     }
 
     public void LeveloneSpellChoice(int spellNumb)
     {
-
         lvl1choice = spellNumb;
     }
     public void LeveltwoSpellChoice(int spellNumb)
@@ -266,9 +262,8 @@ public class Spellbook : MonoBehaviour
         }
         if (!DontFinishSpell)
         {
-            FinishSpell(); // CHANGE MADE HERE.
+            FinishSpell();
         }
-
 
         switch (lvl2choice)
         {

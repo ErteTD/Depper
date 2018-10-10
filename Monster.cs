@@ -136,6 +136,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public bool Boss;
     public bool SpiderBoss;
     public bool BigBoy;
+    public bool FrostTrail;
     public bool TimeKeeper;
     public bool OldKing;
     public bool TheBlob;
@@ -197,6 +198,10 @@ public class Monster : MonoBehaviour, IDamageable {
     private bool BBStill;
     private float BigBoyStepSoundDelay;
 
+    [Header("Frosttrail")]
+    public float FrostTrailAttack1;
+    private float FrostTrailAttack1_;
+
     [Header("Old King")]
     public GameObject Skill1Projectile;
     public GameObject Skill2Projectile;
@@ -242,6 +247,8 @@ public class Monster : MonoBehaviour, IDamageable {
     [HideInInspector] public float BlobDieTimer;
     public bool BlobWeapon;
     private bool BlobAttack2Phase2;
+
+    
 
 
 
@@ -307,7 +314,7 @@ public class Monster : MonoBehaviour, IDamageable {
                 attackCountdown = StartSceneAS;
             }
         }
-        if (!IamIllu)
+        if (!IamIllu && !Brother)
         {
             health2 = health;
         }
@@ -349,7 +356,6 @@ public class Monster : MonoBehaviour, IDamageable {
         }
         if (TimeKeeper && !IamIllu)
         {
-            ChangeColor = true;
             agent.isStopped = true;
             AggroRange = 999f;
             attackCountdown = 9;
@@ -712,6 +718,59 @@ public class Monster : MonoBehaviour, IDamageable {
         AttackFriend = false;
     }
 
+
+    void FrostTrailAttack()
+    {
+        FrostTrailAttack1_ -= Time.deltaTime;
+        if (FrostTrailAttack1_ < 0)
+        {
+            int AttackCount = 0;
+
+            if (health <= (health2 / (4f/3f))){
+                AttackCount = 1;
+            }
+            if (health <= (health2 / 2))
+            {
+                AttackCount = 2;
+            }
+            if (health <= (health2 / 4))
+            {
+                AttackCount = 3;
+            }
+
+            if (AttackCount > 0)
+            {
+                FrostTrailFrostMeter(AttackCount);
+            }
+            FrostTrailAttack1_ = FrostTrailAttack1;
+        }
+    }
+
+    void FrostTrailFrostMeter(int Count)
+    {
+        GameObject test123 = Instantiate(currentspellObject, castPoint.transform.position, castPoint.transform.rotation, castPoint.transform);
+        SpellProjectile spell = test123.GetComponent<SpellProjectile>();
+        spell.projectilespeed = currentSpell.GetComponent<FrostBolt>().projectilespeed;
+        spell.damage = currentSpell.GetComponent<FrostBolt>().damagePure;
+        spell.FrostBoltSlow = currentSpell.GetComponent<FrostBolt>().FrostBoltSlow;
+        spell.SlowDuration = currentSpell.GetComponent<FrostBolt>().SlowDuration;
+        spell.SlowPercent = currentSpell.GetComponent<FrostBolt>().SlowPercent;
+        spell.aoeSizeMeteor = 3f;
+        spell.BigBoyFrost = FrostAttack;
+        float RandomSpot = Random.Range(-5f*Count, 5f * Count);
+        float RandomSpot2 = Random.Range(-5 * Count, 5f * Count);
+        //  spell.transform.localScale = new Vector3(2f, 1.5f, 1.5f);
+        spell.spellCastLocation = new Vector3(PC.transform.position.x + RandomSpot, 1, PC.transform.position.z + RandomSpot2);
+        spell.transform.position = new Vector3(PC.transform.position.x + RandomSpot, 1, PC.transform.position.z + RandomSpot2);
+        spell.enemyCastingspell = true;
+        Count--;
+        if (Count > 0)
+        {
+            FrostTrailFrostMeter(Count);
+        }
+        
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -731,6 +790,10 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             TheBlobAttack();
             ChangeColorBlob();
+        }
+        if (FrostTrail && InCombat)
+        {
+            FrostTrailAttack();
         }
 
         //Checks if slowed | burning.
@@ -971,7 +1034,10 @@ public class Monster : MonoBehaviour, IDamageable {
             {
                 health += (health2 / ResTimer * Time.deltaTime);
                 Healthbar.fillAmount = health / health2;
-                HBtext.text = "(" + health.ToString("F0") + " / " + health2.ToString("F0") + ")";
+                if (health >= 0)
+                {
+                    HBtext.text = "(" + health.ToString("F0") + " / " + health2.ToString("F0") + ")";
+                }
             }
         }
 
@@ -1303,7 +1369,7 @@ public class Monster : MonoBehaviour, IDamageable {
             if (SwarmCD_ <= 0 && !Swarm)
             {
                 Swarm = true;
-                attackCountdown = 13f;
+                attackCountdown = 8f;
                 SwarmCD_ = SwarmCD;
 
                 Invoke("StartSwarm", 1.5f);
@@ -1350,8 +1416,8 @@ public class Monster : MonoBehaviour, IDamageable {
         Spider.GetComponent<Monster>().AggroRange = 50;
         Spider.GetComponent<Monster>().MovementSpeed = 3f;
         Spider.GetComponent<Monster>().damage = 0.5f;
-        Spider.GetComponent<Monster>().health = 1;
-        Spider.GetComponent<Monster>().health2 = 1;
+        Spider.GetComponent<Monster>().health = 0.7f;
+        Spider.GetComponent<Monster>().health2 = 0.7f;
         Spider.GetComponent<Monster>().MonsterTypeSubLayer = 2;
         Spider.GetComponent<Monster>().meleeRange = 2;
         Spider.transform.parent = GameObject.FindGameObjectWithTag("SpiderBossRoom").transform;
@@ -1473,6 +1539,11 @@ public class Monster : MonoBehaviour, IDamageable {
         dist += h / Mathf.Tan(a);  // correct for small height differences
                                    // calculate the velocity magnitude
         var vel = Mathf.Sqrt(dist * Physics.gravity.magnitude / Mathf.Sin(2 * a));
+        if (float.IsNaN(vel))
+        {
+            vel = 1;
+        }
+
         return vel * dir.normalized;
     }
     void FakeFight(float damage)
@@ -1525,9 +1596,16 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             BossHealthAct.transform.GetChild(3).gameObject.GetComponent<Text>().text = health.ToString("F1") + " / " + health2;
         }
-        else if (Brother == null && !IamIllu)
+        else if (Brother == null && !IamIllu && tag == "Monster")
         {
-            HBtext.text = "("+health.ToString("F1") + " / " + health2.ToString("F0")+")";
+            if (health > 0.1f)
+            {
+                HBtext.text = "(" + health.ToString("F1") + " / " + health2.ToString("F0") + ")";
+            }
+            else if (health > 0)
+            {
+                HBtext.text = "(0.1 / " + health2.ToString("F0") + ")";
+            }
         }
 
         if (!TimeKeeper && !StartScene)
@@ -1716,6 +1794,7 @@ public class Monster : MonoBehaviour, IDamageable {
             AddToRoomMonsterList(CurBlob);
             Monster CurBlob_ = CurBlob.GetComponent<Monster>();
             CurBlob.transform.rotation = Quaternion.Euler(RotateDir);
+            CurBlob.transform.position += CurBlob.transform.forward * 2;
             ParticleSystem ps = BlobPS;
             var main = ps.main;
             yAxis += 36;
@@ -1748,6 +1827,7 @@ public class Monster : MonoBehaviour, IDamageable {
     {
         health = 0;
         RegenLife = true;
+
         if (!OldKing)
         {
             Invoke("Resurected", ResTimer);
@@ -1827,7 +1907,7 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             CurrentlyFrozen = true;
           //  meleeRange = 0f;
-            if (MonsterType != 5)
+            if (MonsterType != 5 && agent.isOnNavMesh)
             {
                 if (!agent.isStopped)
                 {
@@ -1878,7 +1958,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
             MovementSpeed /= str;
 
-            if (MonsterType != 5)
+            if (MonsterType != 5 && agent != null)
             {
                 agent.speed = MovementSpeed;
             }
@@ -2205,7 +2285,7 @@ public class Monster : MonoBehaviour, IDamageable {
                 case 0:
                     if (SkeletonList.Count > 0)
                     {
-                        OldKingAttack1(1, 0); // TEMP, change back to 1.
+                        OldKingAttack1(1, 0);
                     }
                     else
                     {
@@ -2228,7 +2308,7 @@ public class Monster : MonoBehaviour, IDamageable {
                 case 3:
                     if (SkeletonListAlive.Count < 4)
                     {
-                        OldKingAttack1(3, -2 / 3f); // TEMP, change back to 1.
+                        OldKingAttack1(3, -2 / 3f);
                     }
                     else
                     {
@@ -2325,7 +2405,7 @@ public class Monster : MonoBehaviour, IDamageable {
         Skel.health = ((Skel.health2 * HP));
 
         Skel.Healthbar.transform.parent.gameObject.transform.parent.gameObject.SetActive(true);
-        Skel.HBtext.text = "(" + health.ToString("F1") + " / " + health2.ToString("F0") + ")";
+        Skel.HBtext.text = "(0 / " + Skel.health2.ToString("F0") + ")";
         Skel.SkeletonKing = gameObject.GetComponent<Monster>();
 
         Skel.agent.radius = 1f;
@@ -2345,7 +2425,7 @@ public class Monster : MonoBehaviour, IDamageable {
         Skel.KillMonster();
         GameObject Defi = Instantiate(Skill2Defile, Skel.transform.position, Skel.transform.rotation, transform);
         Defi.transform.position = new Vector3(Defi.transform.position.x, 3f, Defi.transform.position.z);
-        Defi.transform.parent = null;
+        Defi.transform.parent = RoomIAmIn.transform;
         Skel.Defiling = true;
         Skel.CurDefile = Defi;
         AllDefiles.Add(Defi);
@@ -2480,6 +2560,7 @@ public class Monster : MonoBehaviour, IDamageable {
             spell.SlowDuration = currentSpell.GetComponent<FrostBolt>().SlowDuration;
             spell.SlowPercent = currentSpell.GetComponent<FrostBolt>().SlowPercent + 0.1f;
             spell.aoeSizeMeteor = 3f;
+            spell.ActualPlayer = PC_.GetComponent<Player>();
             spell.BigBoyFrost = FrostAttack;
             float RandomSpot = Random.Range(-36f, 36f);
             float RandomSpot2 = Random.Range(-22, 18.5f);
@@ -2488,8 +2569,7 @@ public class Monster : MonoBehaviour, IDamageable {
             spell.transform.position = new Vector3(transform.parent.transform.position.x + RandomSpot, 1, transform.parent.transform.position.z + RandomSpot2);
             spell.enemyCastingspell = true;
 
-
-            float RandomTime = Random.Range(0, 0.2f);
+            float RandomTime = Random.Range(0.1f, 0.2f);
             FrostNumber--;
             Invoke("FrostAttackFunc", RandomTime);
         }
@@ -2530,7 +2610,7 @@ public class Monster : MonoBehaviour, IDamageable {
         agent.speed = MovementSpeed;
         AttackDelay = AttackDelay_;
         anim.anim.speed = 0.5f;
-        //  ChangeColor = false;
+        ChangeColor = false; // Why was this commented out?
     }
 
     void BigBoySmash5Anim()
@@ -2551,6 +2631,7 @@ public class Monster : MonoBehaviour, IDamageable {
         GameObject BiGHelp = Instantiate(gameObject, HelpPos, HelpRot, gameObject.transform.parent);
         BiGHelp.GetComponent<Monster>().SummonHelp = true;
         BiGHelp.GetComponent<Monster>().Boss = false;
+        BiGHelp.GetComponent<Monster>().ChangeColor = false;
         BiGHelp.GetComponent<Monster>().health = health;
         BiGHelp.GetComponent<Monster>().health2 = health2;
         SummonHelp = true;

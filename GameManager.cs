@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour
     public Text CurrentGoldText;
     public Text CurrentLivesText;
     public Text DeathScreenLivesText;
+    public Text CurrentLevelText;
 
     [Header("Inventory Weapon")]
     public GameObject SpiderWeapon;
@@ -239,6 +240,10 @@ public class GameManager : MonoBehaviour
     public GameObject GetCurrentRoom() // not used currently
     {
         return CurrentRoom;
+    }
+    public void CurrentLevel(int lvl)
+    {
+        CurrentLevelText.text = "Level " + (lvl + 1).ToString();
     }
 
     public void GainGold(int amount)

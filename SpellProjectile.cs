@@ -17,7 +17,7 @@ public class SpellProjectile : MonoBehaviour
     private Vector3 Direction;
     private Vector3 cone123;
     private Quaternion coneQuat;
-
+    private int GhostCastCharges = 10;
     public bool enemyCastingspell = false;
 
     [HideInInspector] public Vector3 spellCastLocation;
@@ -119,12 +119,12 @@ public class SpellProjectile : MonoBehaviour
     private GameObject NearestEnemy_;
     private float Distance_;
     private float NewTargetTimer;
-    private Player ActualPlayer;
+    public Player ActualPlayer;
     private float GameTime;
     public bool SineWaveAttack;
     private float randomFreq;
     private float randomMag;
-
+    public bool FireTrailCone;
     private void Start()
     {
         ActualPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
@@ -184,7 +184,10 @@ public class SpellProjectile : MonoBehaviour
 
         if (!channeling || aoeSizeMeteor > 0)
         {
-            transform.parent = null;
+            if (!FireTrailCone)
+            {
+                transform.parent = null;
+            }
         }
 
         if (aoeSizeMeteor > 0)
@@ -352,7 +355,7 @@ public class SpellProjectile : MonoBehaviour
             if (!enemyCastingspell)
             {
                 Monster e = c.GetComponent<Monster>();
-                if (e != null)
+                if (e != null && e.tag == "Monster")
                 {
                     Monster enemy = e.GetComponent<Monster>();
                     DealDamageOnce(enemy);                 
@@ -370,8 +373,9 @@ public class SpellProjectile : MonoBehaviour
         }
         if (enemyCastingspell)//only for bigboy atm
         {
-          GameObject BigBoyFrostEffect = Instantiate(BigBoyFrost, transform.position, transform.rotation);
-            ActualPlayer.SpellsCastInThisRoom.Add(BigBoyFrostEffect);
+        GameObject BigBoyFrostEffect = Instantiate(BigBoyFrost, transform.position, transform.rotation);
+        ActualPlayer.SpellsCastInThisRoom.Add(BigBoyFrostEffect);
+
         }
         Stop();
     }
@@ -382,9 +386,15 @@ public class SpellProjectile : MonoBehaviour
         enemy.Burn(FireBallBurn, BurnDuration, BurnPercent, damage);
         enemy.BoltBounce(LBBounce, channeling, Unmodified, gameObject, chainID);
         enemy.TakeDamage(damage);
-        if (ghostCast) // TEST Ghostcast nerf.
+        if (ghostCast)
         {
             damage *= 0.9f;
+
+            if (GhostCastCharges <= 0)
+            {
+                Stop();
+            }
+            GhostCastCharges--;
         }
         if (TempTestTarget != null)
         {
@@ -1180,7 +1190,10 @@ public class SpellProjectile : MonoBehaviour
 
     public void Stop()
     {
-        ActualPlayer.SpellsCastInThisRoom.Remove(gameObject);
+        if (ActualPlayer != null)
+        {
+            ActualPlayer.SpellsCastInThisRoom.Remove(gameObject);
+        }
 
         if (HitVisualEffect != null)
         {

@@ -18,21 +18,35 @@ public class ConeCasterObject : MonoBehaviour {
 	
 	void Update () {
 
+        //AttackTimer_ -= Time.deltaTime;
+        //if (AttackTimer_ <= 0)
+        //{
+        //    Shoot();
+        //    AttackTimer_ = AttackTimer;
+        //    if (Rotating)
+        //    {
+        //        transform.rotation = Quaternion.Euler(0, RotAngel, 0);
+        //    }
+        //}
+
+        //if (Rotating)
+        //{
+        //    RotAngel += (RotSpeed * Time.deltaTime);
+        //}
+
         AttackTimer_ -= Time.deltaTime;
         if (AttackTimer_ <= 0)
         {
             Shoot();
             AttackTimer_ = AttackTimer;
-            if (Rotating)
-            {
-                transform.rotation = Quaternion.Euler(0, RotAngel, 0);
-            }
         }
 
         if (Rotating)
         {
             RotAngel += (RotSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Euler(0, RotAngel, 0);
         }
+
     }
 
     void Shoot()
@@ -40,15 +54,23 @@ public class ConeCasterObject : MonoBehaviour {
         GameObject test123 = Instantiate(currentspellObject, transform.position, transform.rotation, transform);
         SpellProjectile spell = test123.GetComponent<SpellProjectile>();
         //test123.transform.parent = null;
-        spell.damage = 1;
+        if (!Rotating)
+        {
+            spell.damage = 1;
+        }
+        else
+        {
+            spell.damage = 0.3f;
+        }
         spell.SlowDuration = 2;
-        spell.SlowPercent = 0.3f;
+        spell.SlowPercent = 1.25f;
         spell.BurnDuration = 2;
         spell.BurnPercent = 0.3f;
         spell.FireBallBurn = FireType;
         spell.FrostBoltSlow = FrostType;
         spell.cone = true;
         spell.enemyCastingspell = true;
+        spell.FireTrailCone = true;
         ShapeCone(test123);
     }
     void ShapeCone(GameObject cone)

@@ -13,7 +13,6 @@ public class CastWeapon : MonoBehaviour
     private float CD1_;
     private bool spellSlot1rdy;
     public Text coolDownTextDisplay1;
-    public Text coolDownTextDisplay1_;
     public Image slot1;
     public GameObject Player1;
     public ParticleSystem TelePortEffect;
@@ -27,7 +26,6 @@ public class CastWeapon : MonoBehaviour
     private float CD2_;
     [HideInInspector] public bool spellSlot2rdy;
     public Text coolDownTextDisplay2;
-    public Text coolDownTextDisplay2_;
     public Image slot2;
     [HideInInspector] public float spellSlotCD2;
     public List<GameObject> Armor;
@@ -295,24 +293,20 @@ public class CastWeapon : MonoBehaviour
         {
             spellSlot1rdy = true;
             coolDownTextDisplay1.enabled = false;
-            coolDownTextDisplay1_.enabled = false;
         }
         else
         {
             if (CD1 > 0.1f)
             {
                 coolDownTextDisplay1.enabled = true;
-                coolDownTextDisplay1_.enabled = true;
             }
             else
             {
                 coolDownTextDisplay1.enabled = false;
-                coolDownTextDisplay1_.enabled = false;
             }
             CD1 -= Time.deltaTime;
             slot1.fillAmount = (CD1 / CD1_);
             coolDownTextDisplay1.text = (Mathf.Ceil(CD1).ToString)("0");
-            coolDownTextDisplay1_.text = (Mathf.Ceil(CD1).ToString)("0");
             spellSlot1rdy = false;
         }
 
@@ -320,24 +314,20 @@ public class CastWeapon : MonoBehaviour
         {
             spellSlot2rdy = true;
             coolDownTextDisplay2.enabled = false;
-            coolDownTextDisplay2_.enabled = false;
         }
         else
         {
             if (CD2 > 0.1f)
             {
                 coolDownTextDisplay2.enabled = true;
-                coolDownTextDisplay2_.enabled = true;
             }
             else
             {
                 coolDownTextDisplay2.enabled = false;
-                coolDownTextDisplay2_.enabled = false;
             }
             CD2 -= Time.deltaTime;
             slot2.fillAmount = (CD2 / CD2_);
             coolDownTextDisplay2.text = (Mathf.Ceil(CD2).ToString)("0");
-            coolDownTextDisplay2_.text = (Mathf.Ceil(CD2).ToString)("0");
             spellSlot2rdy = false;
         }
 

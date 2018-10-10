@@ -41,6 +41,7 @@ public class ToolTipScript : MonoBehaviour
     public Text CooldownPercent;
     public Text Effect;
     public Color PositiveStatColor;
+    public Color StartStatColor;
     public Image SpellImage;
     public Image NoSpellImage;
 
@@ -151,10 +152,10 @@ public class ToolTipScript : MonoBehaviour
         if (spell.cooldownPercent < 1) { CooldownPercent.color = PositiveStatColor; CooldownPercent.text = ((spell.cooldownPercent * 100)).ToString("F0") + "%"; }
         else if (spell.cooldownPercent > 1) { CooldownPercent.color = Color.red; CooldownPercent.text = ((spell.cooldownPercent * 100)).ToString("F0") + "%"; }
 
-        if (spell.damagePure == 0) { DamagePure.color = Color.black; DamagePure.text = "---"; }
-        if (spell.damagePercent == 0) { DamagePercet.color = Color.black; DamagePercet.text = "---"; }
-        if (spell.cooldownSeconds == 0) { CooldownSeconds.color = Color.black; CooldownSeconds.text = "---"; }
-        if (spell.cooldownPercent == 0) { CooldownPercent.color = Color.black; CooldownPercent.text = "---"; }
+        if (spell.damagePure == 0) { DamagePure.color = StartStatColor; DamagePure.text = "---"; }
+        if (spell.damagePercent == 0) { DamagePercet.color = StartStatColor; DamagePercet.text = "---"; }
+        if (spell.cooldownSeconds == 0) { CooldownSeconds.color = StartStatColor; CooldownSeconds.text = "---"; }
+        if (spell.cooldownPercent == 0) { CooldownPercent.color = StartStatColor; CooldownPercent.text = "---"; }
 
         SpellImage.sprite = spell.GetComponent<Image>().sprite;
     }
@@ -165,10 +166,10 @@ public class ToolTipScript : MonoBehaviour
         SpellModifierPanel.SetActive(true);
 
         Spellname.text = "???";
-        DamagePure.color = Color.black; DamagePure.text = "???"; 
-        DamagePercet.color = Color.black; DamagePercet.text = "???"; 
-        CooldownSeconds.color = Color.black; CooldownSeconds.text = "???"; 
-        CooldownPercent.color = Color.black; CooldownPercent.text = "???";
+        DamagePure.color = StartStatColor; DamagePure.text = "???"; 
+        DamagePercet.color = StartStatColor; DamagePercet.text = "???"; 
+        CooldownSeconds.color = StartStatColor; CooldownSeconds.text = "???"; 
+        CooldownPercent.color = StartStatColor; CooldownPercent.text = "???";
         Effect.text = "???";
         SpellImage.sprite = NoSpellImage.sprite;
 

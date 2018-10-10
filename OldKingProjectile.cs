@@ -21,10 +21,7 @@ public class OldKingProjectile : MonoBehaviour {
             {
                 Skeleton.GetComponent<Monster>().TakeDamage(-CurHealth);
                 //Skeleton.GetComponent<Monster>().Healthbar.fillAmount = Skeleton.GetComponent<Monster>().health / Skeleton.GetComponent<Monster>().health2;
-
- 
             }
-
             Destroy(gameObject);
         }
         else

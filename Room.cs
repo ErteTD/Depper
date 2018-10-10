@@ -176,8 +176,8 @@ public class Room : MonoBehaviour
         {
             Spider.GetComponent<Monster>().MovementSpeed = 4f;
             Spider.GetComponent<Monster>().damage = 0.5f;
-            Spider.GetComponent<Monster>().health = 1;
-            Spider.GetComponent<Monster>().health2 = 1;
+            Spider.GetComponent<Monster>().health = 0.7f;
+            Spider.GetComponent<Monster>().health2 = 0.7f;
             Spider.GetComponent<Monster>().MonsterTypeSubLayer = 2;
             Spider.GetComponent<Monster>().meleeRange = 2;
             Spider.GetComponent<Monster>().HBtext.gameObject.SetActive(false);

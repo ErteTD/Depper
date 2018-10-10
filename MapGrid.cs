@@ -621,7 +621,7 @@ public class MapGrid : MonoBehaviour
             {
                 Monster.MonsterCanDropGold = true;
                 Monster.MonsterGold = Gold;
-                Monster.GoldAmount = Mathf.RoundToInt(Monster.MonsterCR);
+                Monster.GoldAmount = Mathf.RoundToInt(Monster.MonsterCR+((CurrentLevel+1)*2));
                 Monster.GoldDropChance = 30;
             }
         }
@@ -631,7 +631,7 @@ public class MapGrid : MonoBehaviour
     {
         Mboss.MonsterCanDropGold = true;
         Mboss.MonsterGold = Gold;
-        Mboss.GoldAmount = (CurrentLevel*5)+20;
+        Mboss.GoldAmount = (CurrentLevel*5)+25;
         Mboss.GoldDropChance = 100;
     }
     private void RoomEventLoot(Room ERoom)
@@ -643,7 +643,7 @@ public class MapGrid : MonoBehaviour
             ERoom.EventLoot = Tokens[LootBag];
         }else if(EventLootRanom < 85){
             ERoom.EventLoot = Gold;
-            ERoom.EventGold = (CurrentLevel * 5) + 30;         
+            ERoom.EventGold = (CurrentLevel * 5) + 35;         
         }else
         {
             var LootBag = Random.Range(0, Items.Count);

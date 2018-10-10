@@ -25,9 +25,11 @@ public class Room : MonoBehaviour
     public GameObject SpiderEvent;
     public List<GameObject> CasterEvent;
     public List<GameObject> BlobEvent;
+    public GameObject SkeletonEvent;
     private int SwarmSize;
     private int CasterSize;
     private int BlobSize;
+    private int SkeletonSize;
     public GameObject EventLoot;
     public int EventGold;
     private bool EventStarted;
@@ -100,40 +102,47 @@ public class Room : MonoBehaviour
                 SwarmSize = 15;
                 CasterSize = 4;
                 BlobSize = 15;
+                SkeletonSize = 1;
                 break;
             case 1:
                 SwarmSize = 30;
                 CasterSize = 8;
                 BlobSize = 30;
+                SkeletonSize = 3;
                 break;
             case 2:
                 SwarmSize = 50;
                 CasterSize = 7;
                 BlobSize = 10;
+                SkeletonSize = 5;
                 break;
             case 3:
                 SwarmSize = 10;
                 CasterSize = 11;
                 BlobSize = 20;
+                SkeletonSize = 7;
                 break;
             case 4:
                 SwarmSize = 20;
                 CasterSize = 5;
                 BlobSize = 4;
+                SkeletonSize = 9;
                 break;
             case 5:
                 SwarmSize = 30;
                 CasterSize = 8;
                 BlobSize = 8;
+                SkeletonSize = 11;
                 break;
             default:
                 SwarmSize = 1;
                 CasterSize = 1;
                 BlobSize = 1;
+                SkeletonSize = 1;
                 break;
         }
 
-        var RandomEvent = Random.Range(0, 3);
+        var RandomEvent = Random.Range(3, 4);
         
         switch (RandomEvent)
         {
@@ -145,6 +154,9 @@ public class Room : MonoBehaviour
                 break;
             case 2:
                 StartCoroutine(NextBlobInEvent(BlobSize, 2f));
+                break;
+            case 3:
+                StartCoroutine(NextSkeletonInEvent(SkeletonSize, 2f));
                 break;
         }
 
@@ -163,6 +175,34 @@ public class Room : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         SummonBlob(Count);
+    }
+
+    IEnumerator NextSkeletonInEvent(int Count, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SummonSkeleton(Count);
+    }
+
+    void SummonSkeleton(int count)
+    {
+        var RandomSpot = Random.Range(0, EventSpawnLocations.Count);
+        GameObject Skeleton = Instantiate(SkeletonEvent, transform.position, transform.rotation, transform);
+        Skeleton.transform.localPosition = EventSpawnLocations[RandomSpot];
+        AddMonster(Skeleton);
+        Monster Skel = Skeleton.GetComponent<Monster>();
+        Skel.AggroRange = 50;
+        Skel.Immortal = true;
+        Skel.EventSkeleton = true;
+        Skel.MovementSpeed = 6;
+        Skel.RoomIAmIn = gameObject;
+        if (count > 0)
+        {
+            StartCoroutine(NextSkeletonInEvent(count - 1, 0.25f));
+        }
+        else
+        {
+            InvokeRepeating("OpenDoorsIfNoMonsters", 0.1f, 0.5f);
+        }
     }
 
     void SummonSwarm(int count)
@@ -231,6 +271,32 @@ public class Room : MonoBehaviour
             InvokeRepeating("OpenDoorsIfNoMonsters", 0.1f, 0.5f);
         }
     }
+
+    public void SkeletonSeeIfFriendAlive(Monster deadSkeleton)
+    {
+        List<GameObject> tempList = new List<GameObject>();
+        foreach (var skeleton in Monsters)
+        {
+            //  private List<GameObject> Monsters = new List<GameObject>();
+            if (skeleton != null)
+            {
+                if (skeleton.GetComponent<Monster>().EventSkeleton && skeleton.tag == "Monster")
+                {
+                    tempList.Add(skeleton);
+                }
+            }
+        }
+        if (tempList.Count > 0)
+        {
+            var RandomRes = Random.Range(0, tempList.Count);
+            tempList[RandomRes].GetComponent<Monster>().ResEventSkeleton(deadSkeleton);
+            return;
+        }
+
+        Destroy(deadSkeleton.gameObject);
+    }
+
+
 
     public void BuildRoomNavMesh()
     {
@@ -327,6 +393,8 @@ public class Room : MonoBehaviour
             }
         }
     }
+
+
 
     void SpawnChest()
     {

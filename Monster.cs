@@ -67,6 +67,8 @@ public class Monster : MonoBehaviour, IDamageable {
     private bool CheckIfFrostBoosted;
     private bool OnlyOnce = false;
     private bool CurrentlyFrozen;
+    [Header("Event Specific Interaction")]
+    public bool EventSkeleton;
     [Header("Loot")]
     public bool MonsterHasLoot;
     public bool MonsterCanDropGold;
@@ -1739,7 +1741,7 @@ public class Monster : MonoBehaviour, IDamageable {
                 }
                 meleeRange = meleeRange_;
             }
-            if (!OldKing)
+            if (!OldKing && SkeletonKing != null)
             {
                 SkeletonKing.SkeletonList.Add(gameObject);
                 SkeletonKing.SkeletonListAlive.Remove(gameObject);
@@ -2229,7 +2231,42 @@ public class Monster : MonoBehaviour, IDamageable {
             Invoke("LongLiveTheKing", 2.5f);
             BossHealthAct.transform.GetChild(3).gameObject.GetComponent<Text>().text = health.ToString("F1") + " / " + health2;
         }
+
+        if (EventSkeleton) //SKELETONEVENT
+        {
+            Invoke("StartEventRes", 2f);
+        }
     }
+    void StartEventRes()
+    {
+        RoomIAmIn.GetComponent<Room>().SkeletonSeeIfFriendAlive(this);
+    }
+    
+
+    public void ResEventSkeleton(Monster ResTarget)
+    {
+
+        transform.LookAt(ResTarget.gameObject.transform);
+        StartCoroutine(SpawnMinion(ResTarget.gameObject, 1f, 0));
+        GameObject Visual = Instantiate(Skill1Projectile, transform);
+        Visual.transform.position = new Vector3(transform.position.x, 3, transform.position.z);
+        Visual.GetComponent<OldKingProjectile>().Skeleton = ResTarget.gameObject;
+        float dist = Vector3.Distance(transform.position, ResTarget.gameObject.transform.position);
+        Visual.GetComponent<OldKingProjectile>().distance = dist;
+        Visual.transform.parent = null;
+        OldKingAttackEnd();
+
+        agent.isStopped = true;
+        BBStill = true; // lets see.. Remember to turn off.
+        CancelInvoke("StartMovingAfterAttackLands");
+        CancelInvoke("OldKingAttackEnd");
+        attackCountdown = AttackSpeed;
+        hardCodeDansGame = attackAnimCD;
+        anim.OldKingSpecialAttack1();
+        Invoke("OldKingAttackEnd", 3.89f);
+
+    }
+
 
     public void LongLiveTheKing()
     {
@@ -2406,7 +2443,10 @@ public class Monster : MonoBehaviour, IDamageable {
 
         Skel.Healthbar.transform.parent.gameObject.transform.parent.gameObject.SetActive(true);
         Skel.HBtext.text = "(0 / " + Skel.health2.ToString("F0") + ")";
-        Skel.SkeletonKing = gameObject.GetComponent<Monster>();
+        if (!EventSkeleton)
+        {
+            Skel.SkeletonKing = gameObject.GetComponent<Monster>();
+        }
 
         Skel.agent.radius = 1f;
 

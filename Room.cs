@@ -142,7 +142,7 @@ public class Room : MonoBehaviour
                 break;
         }
 
-        var RandomEvent = Random.Range(3, 4);
+        var RandomEvent = Random.Range(0, 4);
         
         switch (RandomEvent)
         {

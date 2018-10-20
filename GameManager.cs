@@ -270,7 +270,7 @@ public class GameManager : MonoBehaviour
             var randomToken = Random.Range(0, MapGrid.FindObjectOfType<MapGrid>().Tokens.Count);
 
             float random1 = Random.Range(0f,0f);
-            float random2 = Random.Range(-4f, -2f);
+            float random2 = Random.Range(-5f, -3f);
 
             var CurLoc = CurrentShopLocation + transform.forward * random1 + transform.right * random2;
             GameObject CurLoot = Instantiate(MapGrid.FindObjectOfType<MapGrid>().Tokens[randomToken], new Vector3(CurLoc.x, 1, CurLoc.z), Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z));
@@ -290,7 +290,7 @@ public class GameManager : MonoBehaviour
             Money -= PotionBuyCost;
             CurrentGoldText.text = "Gold: " + Money.ToString();
             float random1 = Random.Range(0f, 0f);
-            float random2 = Random.Range(-4f, -2f);
+            float random2 = Random.Range(-5f, -3f);
 
             var CurLoc = CurrentShopLocation + transform.forward * random1 + transform.right * random2;
             GameObject CurLoot = Instantiate(MapGrid.FindObjectOfType<MapGrid>().Healing[0], new Vector3(CurLoc.x, 1, CurLoc.z), Quaternion.Euler(90f, transform.rotation.y, transform.rotation.z));
@@ -311,7 +311,7 @@ public class GameManager : MonoBehaviour
             var randomToken = Random.Range(0, Items.Count);
 
             float random1 = Random.Range(0f, 0f);
-            float random2 = Random.Range(-4f, -2f);
+            float random2 = Random.Range(-5f, -3f);
 
 
             var CurLoc = CurrentShopLocation + transform.forward * random1 + transform.right * random2;
@@ -372,6 +372,18 @@ public class GameManager : MonoBehaviour
                 GiveLoot_ = true;
                 break;
             case 7:
+                minRoom_ = 0;
+                maxRoom_ = 0;
+                CurrentLevel_ = 11;
+                GiveLoot_ = true;
+                break;
+            case 8:
+                minRoom_ = 0;
+                maxRoom_ = 0;
+                CurrentLevel_ = 12;
+                GiveLoot_ = true;
+                break;
+            case 20:
                 minRoom_ = 20;
                 maxRoom_ = 20;
                 CurrentLevel_ = 10;

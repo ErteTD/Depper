@@ -9,11 +9,15 @@ public class MonsterAnim : MonoBehaviour
     public new Animation animation;
 
     // Use this for initialization
+
+
+
     void Awake()
     {
         anim = GetComponent<Animator>();
         animation = GetComponent<Animation>();
     }
+
 
     public void IdleAnim()
     {

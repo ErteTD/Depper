@@ -392,8 +392,8 @@ public class ToolTipScript : MonoBehaviour
                 break;
             case 33:
                 curSpellname[2] = "-" + companion.spellname;
-                curExtraCD2 = 1;
-                curDamageModifierlvl3 = 1;
+                curExtraCD2 = companion.cooldownPercent;
+                curDamageModifierlvl3 = companion.damagePercent;
                 spellCombTip3 = true;
                 SpellImage3.sprite = companion.GetComponent<Image>().sprite;
                 break;
@@ -442,6 +442,7 @@ public class ToolTipScript : MonoBehaviour
                 break;
             case 62:
                 curSpellname[5] = "-" + channling.spellname;
+                curExtraCD5 = channling.cooldownPercent;
                 curExtraCD5 = channling.cooldownPercent;
                 curDamageModifierlvl5 = channling.damagePercent;
                 spellCombTip6 = true;

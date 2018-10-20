@@ -2,7 +2,7 @@
 
 public abstract class MasterSpell : MonoBehaviour
 {
-    [TextArea]
+    [TextArea(3,10)]
     public string effect;
     public string spellname;
     public float damagePure;

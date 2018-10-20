@@ -1205,8 +1205,8 @@ public class Spellbook : MonoBehaviour
             cast.CompOrbCD = Corb.Cooldown;
             cast.CompOrbDur = Corb.duration;
             cast.CompOrb = Corb.CompOrb;
-            cast.damage1Per = 1f;
-            cast.cd1Per = 1f;
+            cast.damage1Per = Corb.damagePercent;
+            cast.cd1Per = Corb.cooldownPercent;
             cast.doubleCast = false;
             cast.splitCast = false;
         }
@@ -1344,12 +1344,13 @@ public class Spellbook : MonoBehaviour
         { //Channel
 
             cast.damage4Per = channel.damagePercent;
+            cast.cd4Pure = channel.cooldownPercent;
             cast.channel = channel.channeling;
             cast.cd4Per = channel.cooldownPercent;
             cast.chanDur = channel.chanDur;
             cast.ChaosOrb_ = false;
             cast.BlessedAim = false;
-            cast.cd4Pure = 0;
+
         }
 
         if (lvl6choiceNOW == 3)

@@ -57,7 +57,14 @@ public class TokenScript : MonoBehaviour
         Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().speed = 1;
     //    Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().obstacleAvoidanceType = ;
         Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().stoppingDistance = 5;
-        transform.localPosition = new Vector3(0, 2.5f, 0);
+        if (ItemType == 1 || ItemType == 2)
+        {
+            transform.localPosition = new Vector3(0, 4f, 0);
+        }
+        else
+        {
+            transform.localPosition = new Vector3(0, 2.5f, 0);
+        }
         rotation = Quaternion.Euler(0, 0, 0);
         
     }

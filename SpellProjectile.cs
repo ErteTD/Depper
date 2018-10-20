@@ -782,6 +782,10 @@ public class SpellProjectile : MonoBehaviour
             {
                 pos_.y = 1.5f;
             }
+            else
+            {
+                pos_.y = 0;
+            }
             if (SplitChanRight)
             {
                 pos_ += (transform.right * 7.5f);
@@ -792,7 +796,7 @@ public class SpellProjectile : MonoBehaviour
             }
             chanLoc = pos_;
             spellCastLocation = pos_;
-            gameObject.transform.position = ThePlayer.transform.position + new Vector3(0, 1.5f, 0f) + ThePlayer.transform.right * MultiChanPosX;
+            gameObject.transform.position = ThePlayer.transform.position + new Vector3(0, pos_.y, 0f) + ThePlayer.transform.right * MultiChanPosX;
         }
 
         if (ghostCast) // script makes ghostcast work with channeling.

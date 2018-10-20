@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Player : MonoBehaviour, IDamageable {
+public class Player : MonoBehaviour, IDamageable
+{
 
     public GameObject AudioList;
     public GameObject MousePing;
@@ -82,7 +83,7 @@ public class Player : MonoBehaviour, IDamageable {
     void Start()
     {
         AS = FindObjectOfType<AudioScript>();
-       DeathScreen = GameObject.Find("DeathScreenTrigger").GetComponent<LoadScreen>();
+        DeathScreen = GameObject.Find("DeathScreenTrigger").GetComponent<LoadScreen>();
         CS = CastSpell.GetComponent<CastSpell>();
         CW = FindObjectOfType<CastWeapon>();
         anim = animChild.GetComponent<MonsterAnim>();
@@ -173,7 +174,7 @@ public class Player : MonoBehaviour, IDamageable {
                 {
                     Vector3 HitGroundlevel = new Vector3(hit.point.x, 1, hit.point.z);
                     float dist = Vector3.Distance(HitGroundlevel, transform.position); // distance between click point and PC
-                    if (Input.GetMouseButtonDown(0) && (hit.collider.tag == "Floor" || hit.collider.tag == "Door" || hit.collider.tag == "Wall"))
+                    if (Input.GetMouseButtonDown(0) && (hit.collider.tag == "Floor" || hit.collider.tag == "Door" || hit.collider.tag == "Wall" || hit.collider.tag == "Shop" || hit.collider.tag == "Chest"))
                     {
                         Vector3 DaPoint = new Vector3(hit.point.x, hit.point.y + 0.1f, hit.point.z);
                         Instantiate(MousePing, DaPoint, Quaternion.Euler(0, 0, 0));
@@ -215,6 +216,7 @@ public class Player : MonoBehaviour, IDamageable {
                     }
                     if (hit.collider.gameObject.tag == "Shop") // if mouse clicks on a object with the tag Monster, PC will start tracking it and following it.
                     {
+                        targetPosition = new Vector3(hit.collider.transform.position.x - 4, hit.collider.transform.position.y, hit.collider.transform.position.z);
                         activeShop = hit.collider.gameObject;
                     }
                     else if (activeShop != null)
@@ -225,6 +227,7 @@ public class Player : MonoBehaviour, IDamageable {
                     if (hit.collider.gameObject.tag == "Chest") // if mouse clicks on a object with the tag Monster, PC will start tracking it and following it.
                     {
                         activeChest = hit.collider.gameObject;
+                        targetPosition = new Vector3(hit.collider.transform.position.x, hit.collider.transform.position.y, hit.collider.transform.position.z - 3);
                     }
                     else if (activeChest != null)
                     {
@@ -318,12 +321,34 @@ public class Player : MonoBehaviour, IDamageable {
         }
     }
 
-
     protected void LateUpdate()
     {
 
-            AudioList.transform.rotation = Quaternion.Euler(0,0,0);
+        AudioList.transform.rotation = Quaternion.Euler(0, 0, 0);
 
+    }
+
+    public IEnumerator TeleportPlayerToStartAreaOnTrailBosses(float delay, Vector3 Loc, GameObject BossRoom)
+    {
+        yield return new WaitForSeconds(delay);
+
+        ParticleSystem TelePortEffect = CastSpell.GetComponent<CastWeapon>().TelePortEffect;
+        ParticleSystem Tele1Effect = Instantiate(TelePortEffect, transform.position, transform.rotation);
+        Tele1Effect.transform.parent = transform;
+        Loc += new Vector3(BossRoom.transform.position.x - 9, BossRoom.transform.position.y, BossRoom.transform.position.z);
+        ParticleSystem Tele1Effect2 = Instantiate(TelePortEffect, Loc, transform.rotation);
+        Destroy(Tele1Effect.transform.gameObject, 3.1f);
+        Destroy(Tele1Effect2.transform.gameObject, 3.1f);
+        StartCoroutine(TelePortPlayer(1, Tele1Effect, Loc));
+    }
+
+    IEnumerator TelePortPlayer(float delay, ParticleSystem Tele1Effect, Vector3 TeleLoc)
+    {
+        yield return new WaitForSeconds(delay);
+        Tele1Effect.transform.parent = null;
+        agent.Warp(TeleLoc);
+        targetPosition = transform.position;
+        agent.destination = transform.position;
     }
 
     private void SpellCastLocationAgentLocation()
@@ -450,7 +475,7 @@ public class Player : MonoBehaviour, IDamageable {
     public void CritVis()
     {
         GameObject Crit = Instantiate(CritVisual, transform);
-            Crit.transform.localPosition = new Vector3(0, 5, 0);
+        Crit.transform.localPosition = new Vector3(0, 5, 0);
         Destroy(Crit, 0.8f);
     }
 
@@ -496,7 +521,7 @@ public class Player : MonoBehaviour, IDamageable {
         DeathScreen.FadeToDeath();
         DeathSound.PlayDelayed(1);
         DeathSoundLaugh.PlayDelayed(3);
-        
+
     }
 
     public void Continue()
@@ -507,7 +532,7 @@ public class Player : MonoBehaviour, IDamageable {
         health = 10;
         HealthText.text = health.ToString("F0");
         HealthBar.fillAmount = health / fullhealth;
-        DieOnce = false;      
+        DieOnce = false;
         DeathScreen.FadeToLife();
         AS.ResetVolumeAfterDeath();
         RoomChangeDestroyPreviousRoomSpells();

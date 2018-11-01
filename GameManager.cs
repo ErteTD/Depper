@@ -5,8 +5,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
-
-
     public bool SlotIsInUse1;
     public bool SlotIsInUse2;
     public bool SlotIsInUse3;
@@ -217,8 +215,10 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        MainCamera = GameObject.Find("MainCamera");
+        Lives = MenuScript.Lives;
 
+
+        MainCamera = GameObject.Find("MainCamera");
         MG = FindObjectOfType<MapGrid>();
         Player_ = FindObjectOfType<Player>();
         cw = FindObjectOfType<CastWeapon>();
@@ -228,8 +228,16 @@ public class GameManager : MonoBehaviour
         Cursor.SetCursor(DefCursor, asd, CursorMode.Auto);
         SetTime = Time.timeScale;
         CurrentGoldText.text = "Gold: " + Money.ToString();
-        CurrentLivesText.text = "Lives: " + Lives.ToString();
-        DeathScreenLivesText.text = "Continue (" + Lives.ToString() + ")";
+        if (!MenuScript.InfiniteLives)
+        {
+            CurrentLivesText.text = "Lives: " + Lives.ToString();
+            DeathScreenLivesText.text = "Continue (" + Lives.ToString() + ")";
+        }
+        else
+        {
+            CurrentLivesText.text = "Lives:  ∞";
+            DeathScreenLivesText.text = "Continue ∞";
+        }
     }
 
 
@@ -638,9 +646,12 @@ public class GameManager : MonoBehaviour
 
     public void EscButton()
     {
-        Application.Quit();
+            Time.timeScale = 1;
+            SceneManager.LoadScene("Menu");
     }
-    public void RestartButton()
+
+
+public void RestartButton()
     {
         Time.timeScale = SetTime;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -660,9 +671,18 @@ public class GameManager : MonoBehaviour
             MainCamera.GetComponent<CamController>().xLimit2 = 0;
             MainCamera.GetComponent<CamController>().zTest = -22;
             MiniCamera.transform.position = new Vector3(-1000, 100, 0);
-            Lives--;
-            CurrentLivesText.text = "Lives: " + Lives.ToString();
-            DeathScreenLivesText.text = "Continue (" + Lives.ToString() + ")";
+            if (!MenuScript.InfiniteLives)
+            {
+                Lives--;
+                CurrentLivesText.text = "Lives: " + Lives.ToString();
+                DeathScreenLivesText.text = "Continue (" + Lives.ToString() + ")";
+            }
+            else
+            {
+                CurrentLivesText.text = "Lives:  ∞";
+                DeathScreenLivesText.text = "Continue ∞";
+            }
+
 
             BossHealth.transform.GetChild(0).gameObject.SetActive(false);
             BossHealth.transform.GetChild(1).gameObject.SetActive(false);

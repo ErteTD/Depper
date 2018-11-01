@@ -637,13 +637,13 @@ public class MapGrid : MonoBehaviour
     private void RoomEventLoot(Room ERoom)
     {
         var EventLootRanom = Random.Range(0, 100);
-        if (EventLootRanom < 40)
+        if (EventLootRanom < 85)
         {
             var LootBag = Random.Range(0, Tokens.Count);
             ERoom.EventLoot = Tokens[LootBag];
-        }else if(EventLootRanom < 85){
-            ERoom.EventLoot = Gold;
-            ERoom.EventGold = (CurrentLevel * 5) + 35;         
+        //}else if(EventLootRanom < 85){
+        //    ERoom.EventLoot = Gold;
+        //    ERoom.EventGold = (CurrentLevel * 5) + 35;         
         }else
         {
             var LootBag = Random.Range(0, Items.Count);

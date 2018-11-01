@@ -433,8 +433,6 @@ public class Player : MonoBehaviour, IDamageable
             {
                 CastSpell.GetComponent<CastWeapon>().ArmorTrigger();
             }
-
-
         }
     }
 

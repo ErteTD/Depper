@@ -25,7 +25,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public float turnRate;
     public float AttackDelay = 0.4f;
     private float AttackDelay_;
-    private bool InCombat;
+    public bool InCombat;
     [HideInInspector] public bool AttackFriend;
     private Vector3 destination;
     [HideInInspector] public UnityEngine.AI.NavMeshAgent agent;
@@ -117,6 +117,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public bool LeaveFireTrail;
     public float LeaveFireTrailCD;
     private float LeaveFireTrailCD_;
+    public bool StartMenuFakeScene;
 
     [Header("Special abilities")]
     public bool Resurrect;
@@ -218,6 +219,7 @@ public class Monster : MonoBehaviour, IDamageable {
     private bool RealDeath;
     public bool StartScene;
     public float StartSceneAS;
+    public float StartSceneAttackRange;
     public GameObject StartOpponent;
     public Monster SkeletonKing;
     public bool Defiling;
@@ -397,6 +399,29 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             Invoke("BlobExpire", BlobDieTimer);
         }
+
+    }
+
+    public void StartFake()
+    {
+        AttackFriend = true;
+        attackCountdown = Random.Range(1f, 2f);
+        InvokeRepeating("AttackFriendFunc", 0.1f, 1);
+    }
+
+    public void StopFake()
+    {
+        AttackFriend = false;
+        CancelInvoke("AttackFriendFunc");
+        CancelInvoke("Attack");
+        InCombat = false;
+        agent.destination = transform.position;
+        if (MonsterType == 1) { anim.IdleAnim(); }
+        if (MonsterType == 2) { anim.IdleAnimation(); }
+        if (MonsterType == 3) { anim.IdleAnimation2(); }
+        if (MonsterType == 4) { anim.PlayerIdle(); } // Timekeeper
+        if (MonsterType == 6) { anim.IdleAnimation3(); }
+        if (MonsterType == 7) { anim.IdleAnimation3(); }
     }
 
   public  void AddToRoomMonsterList(GameObject Monster_)
@@ -1043,7 +1068,7 @@ public class Monster : MonoBehaviour, IDamageable {
             if (StartScene)
             {
                 PC = StartOpponent;
-                meleeRange = 8;
+                meleeRange = StartSceneAttackRange;
             }
             else if (AttackFriend)
             {
@@ -1317,9 +1342,10 @@ public class Monster : MonoBehaviour, IDamageable {
         CurrentlyInBlackHole = false;
     }
 
-    void ResetMonsterPosition()
+    public void ResetMonsterPosition()
     {
         agent.destination = startPosition;
+
     }
 
     void OnTriggerEnter(Collider other)

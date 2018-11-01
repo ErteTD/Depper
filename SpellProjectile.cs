@@ -127,8 +127,11 @@ public class SpellProjectile : MonoBehaviour
     public bool FireTrailCone;
     private void Start()
     {
-        ActualPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        ActualPlayer.SpellsCastInThisRoom.Add(gameObject);
+        if (GameObject.FindGameObjectWithTag("Player") != null)
+        {
+            ActualPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+            ActualPlayer.SpellsCastInThisRoom.Add(gameObject);
+        }
         if (!CompOrbPlayer)
         {     
          // Problem with setting all spells to current room. Mostly with comp/channeling/blessed aim.
@@ -136,7 +139,10 @@ public class SpellProjectile : MonoBehaviour
 
             if (!enemyCastingspell && !ChaosOrb_)
             {
-                ThePlayer.GetComponent<Player>().curSpellProjectile.Add(gameObject);
+                if (GameObject.FindGameObjectWithTag("Player") != null)
+                {
+                    ThePlayer.GetComponent<Player>().curSpellProjectile.Add(gameObject);
+                }
             }
         }
 
@@ -423,9 +429,9 @@ public class SpellProjectile : MonoBehaviour
         if (pool) //poolscript
         {
             GameObject PoolObj = Instantiate(PoolInst, new Vector3(transform.position.x, 1, transform.position.z), PoolInst.transform.rotation, transform);
-            ActualPlayer.SpellsCastInThisRoom.Add(PoolInst);
+            ActualPlayer.SpellsCastInThisRoom.Add(PoolObj);
             PoolObj.transform.parent = null;
-            PoolObj.transform.localScale = new Vector3(1, 2, 2);
+            PoolObj.transform.localScale = new Vector3(2, 2, 2);
             Poolscript curPool = PoolObj.GetComponent<Poolscript>();
             curPool.TriggerKillMe(Poolduration);
             curPool.damage = PoolDamage;
@@ -480,7 +486,7 @@ public class SpellProjectile : MonoBehaviour
             GameObject PoolObj = Instantiate(PoolInst, new Vector3(enemy.transform.position.x, 1, enemy.transform.position.z), PoolInst.transform.rotation, transform);
             ActualPlayer.SpellsCastInThisRoom.Add(PoolObj);
             PoolObj.transform.parent = null;
-            PoolObj.transform.localScale = new Vector3(1, 2, 2);
+            PoolObj.transform.localScale = new Vector3(2, 2, 2);
             Poolscript curPool = PoolObj.GetComponent<Poolscript>();
             curPool.TriggerKillMe(Poolduration);
             curPool.damage = PoolDamage;

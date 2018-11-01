@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class AudioScript : MonoBehaviour
 {
     private static float MasterSoundLevel = -10;
-    private static float MasterMusicLevel = -10;
+    private static float MasterMusicLevel = -5;
     private static float MasterSFXLevel = -10;
 
     public Text DisplayMaster;
@@ -43,6 +43,12 @@ public class AudioScript : MonoBehaviour
         masterMixer.SetFloat("Master Volume", soundLevel);
         DisplayMaster.text = (Mathf.InverseLerp(MinLevel, MaxLevel, soundLevel) * 100).ToString("F0") + "%";
         MasterSoundLevel = soundLevel;
+
+        if (soundLevel == -40)
+        {
+            masterMixer.SetFloat("Master Volume", -80);
+            MasterSoundLevel = -80;
+        }
     }
     public void SetSoundMusic(float soundLevel)
     {
@@ -50,6 +56,14 @@ public class AudioScript : MonoBehaviour
         DisplayMusic.text = (Mathf.InverseLerp(MinLevel, MaxLevel, soundLevel) * 100).ToString("F0") + "%";
         MasterMusicLevel = soundLevel;
         DeathMusicSoundLevel = soundLevel;
+
+        if (soundLevel == -40)
+        {
+            masterMixer.SetFloat("Music Volume", -80);
+            MasterMusicLevel = -80;
+            DeathMusicSoundLevel = -80;
+        }
+
     }
     public void SetSoundSFX(float soundLevel)
     {
@@ -58,5 +72,13 @@ public class AudioScript : MonoBehaviour
         DisplaySFX.text = (Mathf.InverseLerp(MinLevel, MaxLevel, soundLevel) * 100).ToString("F0") + "%";
         MasterSFXLevel = soundLevel;
         DeathSFXSoundLevel = soundLevel;
+
+        if (soundLevel == -40)
+        {
+            masterMixer.SetFloat("SFX Volume", -80);
+            masterMixer.SetFloat("Death", -80);
+            MasterSFXLevel = -80;
+            DeathSFXSoundLevel = -80;
+        }
     }
 }

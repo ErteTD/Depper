@@ -17,6 +17,8 @@ public class ExplodeScript : MonoBehaviour
     public bool FireTrueFrostFalse;
     public bool ArmorProc;
     public float Area;
+    public bool GolemExplosion;
+    public float DestoryDur = 2f;
     public void Start()
     {
         if (!ArmorProc)
@@ -30,37 +32,41 @@ public class ExplodeScript : MonoBehaviour
             Area = 8;
             ExplodeNow();
         }
-        Destroy(gameObject, 2f);
+        Destroy(gameObject, DestoryDur);
     }
 
     public void ExplodeNow()
     {
         Explosion.SetActive(true);
-        Collider[] cols2 = Physics.OverlapSphere(transform.position, Area);
-        foreach (Collider c in cols2)
+
+        if (!GolemExplosion)
         {
-            Monster e = c.GetComponent<Monster>();
-            if (e != null && e.gameObject != gameObject)
+            Collider[] cols2 = Physics.OverlapSphere(transform.position, Area);
+            foreach (Collider c in cols2)
             {
-                if (FireTrueFrostFalse == true)
+                Monster e = c.GetComponent<Monster>();
+                if (e != null && e.gameObject != gameObject)
                 {
-                    e.Burn(true, BoostBurnDur, BoostBurnPer, BurnDamage * BoostBurnPer);
-                    e.TakeDamage(BoostTotalBurn * BoostBurnPer);
-                }
-                else if (!IlluExplosion)
-                {
-                    if (e.MonsterType != 5)
+                    if (FireTrueFrostFalse == true)
                     {
-                        if (!ArmorProc)
-                        {
-                            e.Slow(true, BoostBurnDur, BoostBurnPer);
-                        }
-                        e.StopAgent();
+                        e.Burn(true, BoostBurnDur, BoostBurnPer, BurnDamage * BoostBurnPer);
+                        e.TakeDamage(BoostTotalBurn * BoostBurnPer);
                     }
-                    else
+                    else if (!IlluExplosion)
                     {
-                        e.Slow(true, 2, 9999);
-                        e.StopAgent();
+                        if (e.MonsterType != 5)
+                        {
+                            if (!ArmorProc)
+                            {
+                                e.Slow(true, BoostBurnDur, BoostBurnPer);
+                            }
+                            e.StopAgent();
+                        }
+                        else
+                        {
+                            e.Slow(true, 2, 9999);
+                            e.StopAgent();
+                        }
                     }
                 }
             }

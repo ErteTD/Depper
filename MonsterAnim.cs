@@ -38,6 +38,11 @@ public class MonsterAnim : MonoBehaviour
     public void IdleAnimation4()
     {
         anim.Play("boss_golem_idle01");
+        Debug.Log("HelloWasIcalled? Idle");
+    }
+    public void IdleAnimation5()
+    {
+        anim.Play("fallen_guardian_idle01_04");
     }
 
     public void Spawn()//for bigboyboss.
@@ -85,6 +90,10 @@ public class MonsterAnim : MonoBehaviour
     {
         anim.Play("boss_golem_walk01");
         anim.speed = 2.5f;
+    }
+    public void RunAnim5()
+    {
+        anim.Play("fallen_guardian_run01");
     }
 
     public void AttackAnim()
@@ -134,6 +143,10 @@ public class MonsterAnim : MonoBehaviour
     {
         anim.Play("boss_golem_skill01", -1, 0);
         anim.speed = 2f;
+    }
+    public void AttackAnimation5()
+    {
+        anim.Play("fallen_guardian_boss_skill_attack03_1", -1, 0f);
     }
 
     public void DieAnim()
@@ -188,6 +201,25 @@ public class MonsterAnim : MonoBehaviour
         anim.speed = 0.5f;
         anim.Play("boss_golem_skill04"); // stop at frame 80.
     }
+
+    public void StoneGolemCrumble()
+    {
+        anim.speed = 1f;
+        anim.Play("boss_golem_death01");
+    }
+
+    public void DieAnimation8()
+    {
+        anim.Play("fallen_guardian_death01_06");
+        Invoke("Die", 4f);
+    }
+    public void SpawnGolem()
+    {
+        anim.speed = 1.5f;
+        anim.Play("boss_golem_born01", -1);
+        Debug.Log("HelloWasIcalled? SpawnGolem");
+    }
+
     public void OldKingSpecialAttack1()
     {
         anim.Play("Skill");

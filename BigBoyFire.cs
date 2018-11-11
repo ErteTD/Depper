@@ -32,6 +32,7 @@ public class BigBoyFire : MonoBehaviour
             Destroy(gameObject, duration + 1);
             Invoke("ActivatePool", 1.2f);
             Invoke("AnotherOne", 1.15f);
+            transform.parent = null;
         }
     }
     void AnotherOne()

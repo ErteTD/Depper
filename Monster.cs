@@ -146,6 +146,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public bool OldKing;
     public bool TheBlob;
     public bool Order;
+    public bool MageBoss;
     public Vector3 LootLoc;
     public GameObject BossHealthAct;
     public Room BossRoom;
@@ -258,9 +259,18 @@ public class Monster : MonoBehaviour, IDamageable {
     private bool OrderPhase2Orb;
     List<GameObject> Orbs = new List<GameObject>();
 
-    [Header("Dragon && StoneGolems")]
+    [Header("Mage && StoneGolems")]
+    public GameObject ZapAttack;
+    public float MageAttackCD;
+    private float MageAttackCD_;
+    public List<GameObject> Rocks = new List<GameObject>();
+    public GameObject NewStoneGolem;
     public GameObject DeadGolemStonen;
+    public GameObject ZapExplosion;
+    public Monster MageBossForGolems;
     public bool StoneGolem;
+    public Vector3 MageStart;
+    private bool BossCastingSpell;
 
     [Header("Sounds")]
     public AudioSource MeleeAttackStart;
@@ -372,6 +382,8 @@ public class Monster : MonoBehaviour, IDamageable {
             BossHealthAct.transform.GetChild(2).gameObject.GetComponent<Text>().text = BossName;
             BossHealthAct.transform.GetChild(3).gameObject.GetComponent<Text>().text = health + " / " + health2;
             Healthbar.transform.parent.gameObject.transform.parent.gameObject.SetActive(false);
+
+            MageStart = transform.position;
         }
         if (TimeKeeper && !IamIllu)
         {
@@ -417,6 +429,13 @@ public class Monster : MonoBehaviour, IDamageable {
     public void StoneGolemRandomHardCode()
     {
         animChild.SetActive(true);
+        if (StoneGolem)
+        {
+            anim.SpawnGolem();
+            agent.isStopped = true;
+            BBStill = true;
+            Invoke("SmallSpawnAnimStop", 4f);
+        }
     }
 
     public void StartFake()
@@ -448,499 +467,6 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             BossRoom.AddMonster(Monster_);
         }
-    }
-
-
-    void ChangeColorBlob()
-    {
-        if (timeLeft <= 0)
-        {
-
-            BossLight.color = targetColor;
-
-            var RandColor = Random.Range(0, 6);
-            switch (RandColor)
-            {
-                case 0:
-                    targetColor = new Color(1, Random.value, 0, 1);
-                    break;
-                case 1:
-                    targetColor = new Color(1, 0, Random.value, 1);
-                    break;
-                case 2:
-                    targetColor = new Color(0, 1, Random.value, 1);
-                    break;
-                case 3:
-                    targetColor = new Color(0, Random.value, 1, 1);
-                    break;
-                case 4:
-                    targetColor = new Color(Random.value, 0, 1, 1);
-                    break;
-                case 5:
-                    targetColor = new Color(Random.value, 1, 0, 1);
-                    break;
-            }
-            timeLeft = 2.5f;
-        }
-        else
-        {
-            BossLight.color = Color.Lerp(BossLight.color, targetColor, Time.deltaTime);
-            timeLeft -= Time.deltaTime;
-        }
-
-
-    }
-
-    void OrderAttack()
-    {
-        BlobAttackCD_ -= Time.deltaTime;
-        BlobAttackCD_2 -= Time.deltaTime;
-        BlobAttackCD_3 -= Time.deltaTime;
-        if (BlobAttackCD_ < 0)
-        {
-            var RandAttack = Random.Range(0, 3);
-            switch (RandAttack)
-            {
-                case 0:
-                    OrderOne();
-                    break;
-                case 1:
-                    OrderTwo();
-                    break;
-                case 2:
-                    OrderThree();
-                    break;
-            }
-            BlobAttackCD_2 += 6;
-            BlobAttackCD_ = BlobAttackCD;
-        }
-        if (BlobAttackCD_3 < 0 && health <= health2 * 0.7f)
-        {
-            OrderPhase3();
-            BlobAttackCD_3 = BlobAttackCD3;
-
-        }
-
-         if (BlobAttackCD_2 < 0 && health <= health2 * 0.35f)
-        {
-            OrderPhase2();
-            BlobAttackCD_2 = BlobAttackCD2;
-            BlobAttackCD_ += 8;
-        }
-    }
-
-    void OrderPhase3()
-    {
-        float AttackDelay_ = 0;
-        int BlobDirMod = 0;
-        for (int i = 0; i < 18; i++)
-        {
-            StartCoroutine(Order1(gameObject, 5, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 0.5f, AttackDelay_, Color.white));
-            AttackDelay_ += 0.01f;
-            BlobDirMod += 18;
-        }
-    }
-
-    void OrderPhase2()
-    {
-        float AttackDelay_ = 0;
-        int BlobDirMod = 90;
-        bool side = true;
-        for (int i = 0; i < 6; i++)
-        { 
-            StartCoroutine(Order1(gameObject, 4, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 12, AttackDelay_, Color.black));
-            AttackDelay_ += 0.8f;
-
-        if (side)
-        {
-            BlobDirMod = -90;
-                side = false;
-        }
-        else
-        {
-            BlobDirMod = 90;
-                side = true;
-        }
-        }
-    }
-
-
-
-    void OrderOne()
-    {
-        float AttackDelay_ = 0;
-        int BlobDirMod = 0;
-        for (int i = 0; i < 12; i++)
-        {
-            StartCoroutine(Order1(gameObject, 1, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 12, AttackDelay_, Color.yellow));
-            AttackDelay_ += 0.2f;
-        }
-    }
-    void OrderTwo()
-    {
-        float AttackDelay_ = 0;
-        var RandAttack = Random.Range(0, 2);
-        int BlobDirMod;
-        bool side;
-        if (RandAttack == 0)
-        {
-            BlobDirMod = -50;
-            side = true;
-        }
-        else
-        {
-            BlobDirMod = 50;
-            side = false;
-        }
-
-        for (int i = 0; i < 11; i++)
-        {
-            StartCoroutine(Order1(gameObject, 2, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 9, AttackDelay_,Color.red));
-            AttackDelay_ += 0.1f;
-            if (side)
-            {
-                BlobDirMod += 10;
-            }
-            else
-            {
-                BlobDirMod -= 10;
-            }
-        }
-    }
-    void OrderThree()
-    {
-        float AttackDelay_ = 0;
-        var RandAttack = Random.Range(0, 2);
-        int BlobDirMod;
-        bool side;
-        if (RandAttack == 0)
-        {
-            side = false;
-            BlobDirMod = -25;
-        }
-        else
-        {
-            side = true;
-            BlobDirMod = 25;
-        }
-        for (int i = 0; i < 15; i++)
-        {
-            StartCoroutine(Order1(gameObject, 3, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 9, AttackDelay_, Color.green));
-            AttackDelay_ += 0.2f;
-
-            if (BlobDirMod <= -25 && side == false)
-            {
-                side = true;
-            }else if (BlobDirMod >= 25 && side == true) {
-                side = false;
-            }
-
-            if (side == true)
-            {
-                BlobDirMod += 15;
-            }
-            else
-            {
-                BlobDirMod -= 15;
-            }
-
-        }
-    }
-
-
-    IEnumerator Order1(GameObject BlobDad, int AttackNumb, Vector3 BlobRot, int DirMod, float BHealth, float Bspeed, float delay, Color Bcolor)
-    {
-        yield return new WaitForSeconds(delay);
-        OrderAttackFunction(BlobDad, AttackNumb, BlobRot, DirMod, BHealth, Bspeed, Bcolor);
-    }
-
-    void OrderAttackFunction(GameObject BlobDad, int AttackNumb, Vector3 BlobRot, int DirMod, float BHealth, float Bspeed, Color Bcolor)
-    {
-        GameObject CurBlob = Instantiate(BlobAttack1Object, transform.position, transform.rotation, transform);
-        AddToRoomMonsterList(CurBlob);
-        Monster CurBlob_ = CurBlob.GetComponent<Monster>();
-
-        if (AttackNumb == 1 || AttackNumb == 2 || AttackNumb == 3 || AttackNumb == 4 || AttackNumb == 5)
-        {
-            CurBlob.transform.LookAt(PC.transform);
-            CurBlob.transform.Rotate(Vector3.up * DirMod);
-        }
-
-            
-        if (AttackNumb == 4) // phase 2 seeking blob.
-        {
-            CurBlob_.OrderPhase2Orb = true;
-        }
-
-        if (AttackNumb == 5)
-        {
-            var PushDistance = Random.Range(0, 5);
-            CurBlob_.PushResistance = PushDistance;
-            CurBlob_.pushDir = CurBlob_.transform.forward;
-            CurBlob_.pushed = true;
-        }
-
-        Orbs.Add(CurBlob);
-
-        CurBlob.transform.position += CurBlob.transform.forward * 3;
-        CurBlob.transform.parent = transform.parent;
-
-        ParticleSystem ps = CurBlob_.BlobPS;
-        var main = ps.main;
-        ParticleSystem ps2 = CurBlob_.BlobPS2;
-        var main2 = ps2.main;
-
-        main.startColor = Bcolor;
-        main2.startColor = Bcolor;
-        CurBlob_.health = BHealth;
-        CurBlob_.health2 = BHealth;
-        CurBlob_.MovementSpeed = Bspeed;
-        CurBlob_.MovementSpeed_ = Bspeed;
-        CurBlob_.BlobAttackNoTarget = true;
-        CurBlob_.BlobDie = false;
-    }
-
-    public void OrbDieAfterBossIsDead()
-    {
-        var DieTimer = Random.Range(1f, 3f);
-        Invoke("KillMonster", DieTimer);
-    }
-
-    void TheBlobAttack()
-    {
-        BlobAttackCD_ -= Time.deltaTime;
-        BlobAttackCD_2 -= Time.deltaTime;
-        if (BlobAttackCD_ < 0)
-        {
-            if (HealTimeCounter < 6)
-            {
-                var RandAttack = Random.Range(0, 5);
-                switch (RandAttack)
-                {
-                    case 0:
-                        BlobOne();
-                        break;
-                    case 1:
-                        BlobTwo();
-                        break;
-                    case 2:
-                        BlobThree();
-                        break;
-                    case 3:
-                        BlobFour();
-                        break;
-                    case 4:
-                        BlobFive();
-                        break;
-                }
-                HealTimeCounter++;
-                BlobAttackCD_ = BlobAttackCD;
-            }
-            else
-            {
-                BlobHeal();
-                HealTimeCounter = 0;
-                BlobAttackCD_ = BlobAttackCD * 1.5f;
-            }
-        }
-
-        if (BlobAttackCD_2 < 0 && (health/health2) <= 0.7f)
-        {
-            GameObject CurBlob = Instantiate(BlobAttack2Object, transform.position, transform.rotation, transform);
-            CurBlob.transform.position += CurBlob.transform.forward * 6;
-            CurBlob.transform.parent = transform.parent;
-            Monster CurBlob_ = CurBlob.GetComponent<Monster>();
-            CurBlob_.BlobAttack2Bool = true;
-            CurBlob_.BossRoom = BossRoom;
-            ParticleSystem ps = CurBlob_.BlobPS;
-            var main = ps.main;
-            ParticleSystem ps2 = CurBlob_.BlobPS2;
-            var main2 = ps2.main;
-            main.startColor = BossLight.color;
-            main2.startColor = BossLight.color;
-            BlobAttackCD_2 = BlobAttackCD2;
-
-            if (health/health2 <= 0.3f)
-            {
-                CurBlob_.BlobAttack2Phase2 = true;
-            }
-
-        }
-    }
-
-    void BlobHeal()
-    {
-        float AttackDelay_ = 0;
-        for (int i = 0; i < 20; i++)
-        {
-            foreach (var BlobSpawn in BlobCornerList)
-            {
-                Vector3 StartLoc = BlobSpawn.transform.position;
-                StartCoroutine(Blob1(gameObject, true, 0, StartLoc, 0, 2f, 5, 5f, AttackDelay_));
-            }
-            AttackDelay_ += 0.5f;
-        }
-    }
-
-    void BlobOne()
-    {
-        float AttackDelay_ = 0;
-        int BlobCounter = 0;
-        int BlobDirMod = 0;
-        for (int i = 0; i < 70; i++)
-        {
-            BlobCounter++;
-            if (BlobCounter == 1)
-            {
-                BlobDirMod = 0;
-            }
-            if (BlobCounter == 2)
-            {
-                BlobDirMod = 30;
-            }
-            if (BlobCounter == 3)
-            {
-                BlobDirMod = -30;
-                BlobCounter = 0;
-            }
-            StartCoroutine(Blob1(gameObject, false, 1, new Vector3(0, 0, 0), BlobDirMod, 2, 15, 4f, AttackDelay_));
-            AttackDelay_ += 0.1f;
-        }
-    }
-
-    void BlobTwo()
-    {
-        float AttackDelay_ = 0;
-        transform.LookAt(PC.transform.position);
-        Vector3 RotateDir = transform.rotation.eulerAngles;
-        float yAxis = RotateDir.y;
-
-        for (int i = 0; i < 100; i++)
-        {
-            RotateDir = new Vector3(0, yAxis, 0);
-            yAxis += 11;
-            StartCoroutine(Blob1(gameObject, false, 2, RotateDir, 0, 2, 15, 4, AttackDelay_));
-            AttackDelay_ += 0.07f;
-        }
-    }
-
-    void BlobThree()
-    {
-        float AttackDelay_ = 0;
-        Vector3 RotateDir;
-        for (int i = 0; i < 70; i++)
-        {
-            var yAxis = Random.Range(0, 360);
-            RotateDir = new Vector3(0, yAxis, 0);
-
-            StartCoroutine(Blob1(gameObject, false, 3, RotateDir, 0, 2, 15, 4, AttackDelay_));
-            AttackDelay_ += 0.1f;
-        }
-    }
-
-    void BlobFour()
-    {
-        float AttackDelay_ = 0;
-        transform.LookAt(PC.transform.position);
-        Vector3 RotateDir = transform.rotation.eulerAngles;
-        float yAxis = RotateDir.y;
-
-        for (int i = 0; i < 70; i++)
-        {
-            RotateDir = new Vector3(0, yAxis, 0);
-
-            yAxis += 22;
-
-            StartCoroutine(Blob1(gameObject, false, 4, RotateDir, 0, 2, 17, 4, AttackDelay_));
-            AttackDelay_ += 0.1f;
-        }
-    }
-
-    void BlobFive() // longer dur.
-    {
-        float AttackDelay_ = 0;
-        transform.LookAt(PC.transform.position);
-        Vector3 RotateDir = transform.rotation.eulerAngles;
-        float yAxis = RotateDir.y;
-
-        for (int i = 0; i < 50; i++)
-        {
-            RotateDir = new Vector3(0, yAxis, 0);
-
-            yAxis += 11;
-
-            StartCoroutine(Blob1(gameObject, false, 5, RotateDir, 0, 2, 8, 6, AttackDelay_));
-            AttackDelay_ += 0.06f;
-        }
-    }
-
-    IEnumerator Blob1(GameObject BlobDad, bool heal, int AttackNumb, Vector3 BlobRot, int DirMod, float BHealth, float Bspeed, float lifeTime, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        Blob1AttackFunction(BlobDad, heal, AttackNumb,BlobRot,DirMod, BHealth,Bspeed,lifeTime);
-    }
-
-    private void Blob1AttackFunction(GameObject BlobDad, bool heal, int AttackNumb, Vector3 BlobRot, int DirMod, float BHealth, float Bspeed, float lifeTime)
-    {
-        GameObject CurBlob = Instantiate(BlobAttack1Object, transform.position, transform.rotation, transform);
-        AddToRoomMonsterList(CurBlob);
-        Monster CurBlob_ = CurBlob.GetComponent<Monster>();
-        if (!heal)
-        {
-            BlobDad.GetComponent<Monster>().TakeDamage(0.5f);
-        }
-        ParticleSystem ps = CurBlob_.BlobPS;
-        var main = ps.main;
-        if (AttackNumb == 1)
-        {
-            CurBlob.transform.LookAt(PC.transform);
-            CurBlob.transform.Rotate(Vector3.up * DirMod);
-        }
-        if (AttackNumb == 2 || AttackNumb == 3 || AttackNumb == 4 || AttackNumb == 5)
-        {
-            CurBlob.transform.rotation = Quaternion.Euler(BlobRot);
-        }
-        if (AttackNumb == 4)
-        {
-            CurBlob_.BlobAttack4 = true;
-            CurBlob_.Blob4RotSpeed = 55;
-        }
-        if (AttackNumb == 5)
-        {
-            CurBlob_.BlobAttack4 = true;
-            CurBlob_.Blob4RotSpeed = 32;
-        }
-        if (AttackNumb == 0) // heal
-        {
-            CurBlob.transform.position = BlobRot;
-            CurBlob.transform.LookAt(BlobDad.transform);
-            CurBlob.transform.parent = null;
-        }
-        else // so wont trigger on heal but all other attacks.
-        {
-            CurBlob.transform.position += CurBlob.transform.forward * 4;
-            CurBlob.transform.parent = transform.parent;
-        }
-        ParticleSystem ps2 = CurBlob_.BlobPS2;
-        var main2 = ps2.main;
-        main.startColor = BossLight.color;
-        main2.startColor = BossLight.color;
-        CurBlob_.health = BHealth;
-        CurBlob_.health2 = BHealth;
-        CurBlob_.Healboss = heal;
-        CurBlob_.MovementSpeed = Bspeed;
-        CurBlob_.MovementSpeed_ = Bspeed;
-        CurBlob_.BlobAttackNoTarget = true;
-        CurBlob_.BlobDie = false;
-        CurBlob_.BlobDieTimer = lifeTime;
-    }
-
-    void BlobExpire()
-    {
-        transform.GetChild(0).gameObject.SetActive(true);
-        Destroy(transform.GetChild(0).gameObject, 0.99f);
-        transform.GetChild(0).gameObject.transform.parent = null;
-        Destroy(gameObject);
     }
 
     void TimeKeeperAlive()
@@ -991,66 +517,65 @@ public class Monster : MonoBehaviour, IDamageable {
         AttackFriend = false;
     }
 
-
-    void FrostTrailAttack()
+    void BossStopCastingSpellAnim()
     {
-        FrostTrailAttack1_ -= Time.deltaTime;
-        if (FrostTrailAttack1_ < 0)
+        BossCastingSpell = false;
+    }
+
+    void MageBossAttack()
+    {
+        MageAttackCD_ -= Time.deltaTime;
+        if (MageAttackCD_ < 0)
         {
-            int AttackCount = 0;
 
-            if (health <= (health2 / (4f/3f))){
-                AttackCount = 1;
-            }
-            if (health <= (health2 / 2))
+            if (Rocks.Count > 0)
             {
-                AttackCount = 2;
-            }
-            if (health <= (health2 / 4))
-            {
-                AttackCount = 3;
+                BossCastingSpell = true;
+                Invoke("BossStopCastingSpellAnim", 2.5f);
+                MageBossSkill1();
             }
 
-            if (AttackCount > 0)
-            {
-                FrostTrailFrostMeter(AttackCount);
-            }
-            FrostTrailAttack1_ = FrostTrailAttack1;
+
+            MageAttackCD_ = MageAttackCD;
         }
     }
 
-    void FrostTrailFrostMeter(int Count)
+    void MageBossSkill1()
     {
-        GameObject test123 = Instantiate(currentspellObject, castPoint.transform.position, castPoint.transform.rotation, castPoint.transform);
-        SpellProjectile spell = test123.GetComponent<SpellProjectile>();
-        spell.projectilespeed = currentSpell.GetComponent<FrostBolt>().projectilespeed;
-        spell.damage = currentSpell.GetComponent<FrostBolt>().damagePure;
-        spell.FrostBoltSlow = currentSpell.GetComponent<FrostBolt>().FrostBoltSlow;
-        spell.SlowDuration = currentSpell.GetComponent<FrostBolt>().SlowDuration;
-        spell.SlowPercent = currentSpell.GetComponent<FrostBolt>().SlowPercent;
-        spell.aoeSizeMeteor = 3f;
-        spell.BigBoyFrost = FrostAttack;
-        float RandomSpot = Random.Range(-5f*Count, 5f * Count);
-        float RandomSpot2 = Random.Range(-5 * Count, 5f * Count);
-        //  spell.transform.localScale = new Vector3(2f, 1.5f, 1.5f);
-        spell.spellCastLocation = new Vector3(PC.transform.position.x + RandomSpot, 1, PC.transform.position.z + RandomSpot2);
-        spell.transform.position = new Vector3(PC.transform.position.x + RandomSpot, 1, PC.transform.position.z + RandomSpot2);
-        spell.enemyCastingspell = true;
-        Count--;
+        var RandomRock = Random.Range(0, Rocks.Count);
 
-        PC_.GetComponent<Player>().SpellsCastInThisRoom.Add(test123);
-
-        if (Count > 0)
-        {
-            FrostTrailFrostMeter(Count);
-        }
-        
+        RotateTowards(Rocks[RandomRock].transform);
+        anim.AttackAnimation5();
+        StartCoroutine(ZapRock(Rocks[RandomRock], 1.5f));
     }
 
-    // Update is called once per frame
-    void Update()
+
+
+    IEnumerator ZapRock(GameObject Rock, float delay)
     {
-        if (Boss)
+        yield return new WaitForSeconds(delay);
+        GameObject Zap = Instantiate(ZapAttack, castPoint.transform.position, transform.rotation);
+        Zap.transform.parent = null;
+        var ZapDistance = Vector3.Distance(castPoint.transform.position, Rock.transform.position);
+        ParticleSystemRenderer ZapParticle = Zap.GetComponent<ParticleSystemRenderer>();
+        ZapParticle.lengthScale = (ZapDistance / 5);
+        Rocks.Remove(Rock);
+        Destroy(Zap, 1.5f);
+        Destroy(Rock, 3.5f);
+        StartCoroutine(CrumbleRock(Rock, 1f));
+
+        Instantiate(ZapExplosion, new Vector3(Rock.transform.position.x, Rock.transform.position.y + 3, Rock.transform.position.z), ZapExplosion.transform.rotation);
+    }
+    IEnumerator CrumbleRock(GameObject Rock, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Rock.transform.GetChild(0).gameObject.GetComponent<MonsterAnim>().StoneGolemCrumble();
+    }
+
+        // Update is called once per frame
+        void Update()
+    {
+        if (SkeletonKing)
         {
             BossHealthAct.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().fillAmount = health / health2;
         }
@@ -1071,10 +596,13 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             OrderAttack();
         }
-
         if (FrostTrail && InCombat)
         {
             FrostTrailAttack();
+        }
+        if (MageBoss && InCombat)
+        {
+            MageBossAttack();
         }
 
         //Checks if slowed | burning.
@@ -1130,7 +658,14 @@ public class Monster : MonoBehaviour, IDamageable {
                 {
                     if (agent.isOnNavMesh && ((Vector3.Distance(destination, PC.transform.position) > 1) || CurrentlyInBlackHole || RefreshNavMeshTargetPosition <0))
                     {
-                        destination = PC.transform.position;
+                        if (!MageBoss)
+                        {
+                            destination = PC.transform.position;
+                        }
+                        else
+                        {
+                            destination = MageStart;
+                        }
                         agent.destination = destination;
                         RefreshNavMeshTargetPosition = 0.25f;
                     }
@@ -1162,7 +697,13 @@ public class Monster : MonoBehaviour, IDamageable {
                         if (MonsterType == 6) { anim.RunAnimation3(MonsterTypeSubLayer); }
                         if (MonsterType == 7) { anim.WalkAnim(); }
                         if (MonsterType == 8) { anim.RunAnim4(); }
+                        if (MonsterType == 9) { anim.RunAnim5(); }
+                        
                         BigBoyStepSoundDelay -= Time.deltaTime;
+                    } else if (MageBoss && hardCodeDansGame < 0 && !BossCastingSpell)
+                    {
+                         anim.IdleAnimation5();
+                        RotateTowards(PC.transform);
                     }
                 }
                 if (callForHelpCD <= 0f)
@@ -1180,7 +721,7 @@ public class Monster : MonoBehaviour, IDamageable {
                 }
                 callForHelpCD -= Time.deltaTime;
             }
-            else if (dist > AggroRange + 2 && !SpiderBoss && MonsterType != 5)
+            else if (dist > AggroRange + 2  && !SpiderBoss && MonsterType != 5)
             {
 
                 if (Vector3.Distance(transform.position, agent.destination) < 2f)
@@ -1192,6 +733,7 @@ public class Monster : MonoBehaviour, IDamageable {
                     if (MonsterType == 6) { anim.IdleAnimation3(); }
                     if (MonsterType == 7) { anim.IdleAnimation3(); }
                     if (MonsterType == 8) { anim.IdleAnimation4(); }
+                    if (MonsterType == 9) { anim.IdleAnimation5(); }
                 }
             }
             if (SpiderBoss)
@@ -1237,15 +779,16 @@ public class Monster : MonoBehaviour, IDamageable {
                     if (MonsterType == 6) { anim.AttackAnimation3(); }
                     if (MonsterType == 7) { anim.CastSpell(); }
                     if (MonsterType == 8) { anim.AttackAnimation4(); }
+                    if (MonsterType == 9) { anim.AttackAnimation5(); }
 
                     Invoke("Attack", AttackDelay);
 
-                    if ((MonsterType == 1 || MonsterType == 3 || MonsterType == 6 || MonsterType == 8) && !SpiderBoss)
+                    if ((MonsterType == 1 || MonsterType == 3 || MonsterType == 6 || MonsterType == 8 || MonsterType == 9) && !SpiderBoss)
                     {
                         MeleeAttackStart.PlayDelayed(AttacStartDelay);
                     }
 
-                    if (MonsterType == 1 || MonsterType == 3 || MonsterType == 5 || MonsterType == 6 || SpiderBoss || MonsterType == 8) // non casters
+                    if (MonsterType == 1 || MonsterType == 3 || MonsterType == 5 || MonsterType == 6 || SpiderBoss || MonsterType == 8 || MonsterType == 9) // non casters
                     {
                         attackCountdown = AttackSpeed;
                     }
@@ -1286,13 +829,20 @@ public class Monster : MonoBehaviour, IDamageable {
             CastingSpellTimer -= Time.deltaTime;
             attackCountdown -= Time.deltaTime;
             hardCodeDansGame -= Time.deltaTime;
-            MirrorImageCD_ -= Time.deltaTime;
-            Ratatatata_ -= Time.deltaTime;
-            BigBoySpecial1_ -= Time.deltaTime;
-            SwarmCD_ -= Time.deltaTime;
             RefreshNavMeshTargetPosition -= Time.deltaTime;
             LeaveFireTrailCD_ -= Time.deltaTime;
-            EventSkeletonCD_ -= Time.deltaTime;
+            if (Boss)
+            {
+                MirrorImageCD_ -= Time.deltaTime;
+                Ratatatata_ -= Time.deltaTime;
+                BigBoySpecial1_ -= Time.deltaTime;
+                SwarmCD_ -= Time.deltaTime;
+            }
+
+            if (EventSkeleton)
+            {
+                EventSkeletonCD_ -= Time.deltaTime;
+            }
 
             if (IlluHit)
             {
@@ -1470,7 +1020,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
     public void Attack()
     {
-        if (MonsterType == 1 || MonsterType == 6 || MonsterType == 8 || (MonsterType == 3 && !SpiderBoss) && !CurrentlyRessing)
+        if (MonsterType == 1 || MonsterType == 6 || MonsterType == 8 || MonsterType == 9 || (MonsterType == 3 && !SpiderBoss) && !CurrentlyRessing)
         {
             StopMovingAfterAttacking = true;
             CastingSpellTimer = hardCodeDansGame;
@@ -1840,6 +1390,7 @@ public class Monster : MonoBehaviour, IDamageable {
         if (Boss)
         {
             BossHealthAct.transform.GetChild(3).gameObject.GetComponent<Text>().text = health.ToString("F1") + " / " + health2;
+            BossHealthAct.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().fillAmount = health / health2;
         }
         else if (Brother == null && !IamIllu && HBtext != null)
         {
@@ -1883,9 +1434,11 @@ public class Monster : MonoBehaviour, IDamageable {
             if (health > 0.1f)
             {
                 BossHealthAct.transform.GetChild(3).gameObject.GetComponent<Text>().text = health.ToString("F1") + " / " + health2;
+                BossHealthAct.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().fillAmount = health / health2;
             } else if (health > 0)
             {
                 BossHealthAct.transform.GetChild(3).gameObject.GetComponent<Text>().text = "0.1 / " + health2;
+                BossHealthAct.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().fillAmount = health / health2;
             }
         }
         else if (Brother == null && !IamIllu && tag == "Monster")
@@ -2006,11 +1559,13 @@ public class Monster : MonoBehaviour, IDamageable {
         if (StoneGolem) { 
             anim.StoneGolemTurnToStone();
             GameObject Rock = Instantiate(DeadGolemStonen, transform.position, DeadGolemStonen.transform.rotation);
+            MageBossForGolems.Rocks.Add(Rock);
             Rock.transform.parent = transform.parent;
             Rock.transform.localPosition = transform.localPosition + transform.forward * 1;
             Rock.transform.localRotation = transform.localRotation;
             animChild.transform.parent = Rock.transform;
         }
+        if (MonsterType == 9) { anim.DieAnimation8(); }
 
         if (IamIllu)
         {
@@ -2570,6 +2125,7 @@ public class Monster : MonoBehaviour, IDamageable {
             OldKingSpecialAttack_1 = 6f;
             Invoke("LongLiveTheKing", 2.5f);
             BossHealthAct.transform.GetChild(3).gameObject.GetComponent<Text>().text = health.ToString("F1") + " / " + health2;
+            BossHealthAct.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().fillAmount = health / health2;
         }
 
         if (EventSkeleton) //SKELETONEVENT
@@ -2820,6 +2376,559 @@ public class Monster : MonoBehaviour, IDamageable {
             agent.isStopped = false;
         }
     }
+    //FrostTrail boss
+
+    void FrostTrailAttack()
+    {
+        FrostTrailAttack1_ -= Time.deltaTime;
+        if (FrostTrailAttack1_ < 0)
+        {
+            int AttackCount = 0;
+
+            if (health <= (health2 / (4f / 3f)))
+            {
+                AttackCount = 1;
+            }
+            if (health <= (health2 / 2))
+            {
+                AttackCount = 2;
+            }
+            if (health <= (health2 / 4))
+            {
+                AttackCount = 3;
+            }
+
+            if (AttackCount > 0)
+            {
+                FrostTrailFrostMeter(AttackCount);
+            }
+            FrostTrailAttack1_ = FrostTrailAttack1;
+        }
+    }
+
+    void FrostTrailFrostMeter(int Count)
+    {
+        GameObject test123 = Instantiate(currentspellObject, castPoint.transform.position, castPoint.transform.rotation, castPoint.transform);
+        SpellProjectile spell = test123.GetComponent<SpellProjectile>();
+        spell.projectilespeed = currentSpell.GetComponent<FrostBolt>().projectilespeed;
+        spell.damage = currentSpell.GetComponent<FrostBolt>().damagePure;
+        spell.FrostBoltSlow = currentSpell.GetComponent<FrostBolt>().FrostBoltSlow;
+        spell.SlowDuration = currentSpell.GetComponent<FrostBolt>().SlowDuration;
+        spell.SlowPercent = currentSpell.GetComponent<FrostBolt>().SlowPercent;
+        spell.aoeSizeMeteor = 3f;
+        spell.BigBoyFrost = FrostAttack;
+        float RandomSpot = Random.Range(-5f * Count, 5f * Count);
+        float RandomSpot2 = Random.Range(-5 * Count, 5f * Count);
+        //  spell.transform.localScale = new Vector3(2f, 1.5f, 1.5f);
+        spell.spellCastLocation = new Vector3(PC.transform.position.x + RandomSpot, 1, PC.transform.position.z + RandomSpot2);
+        spell.transform.position = new Vector3(PC.transform.position.x + RandomSpot, 1, PC.transform.position.z + RandomSpot2);
+        spell.enemyCastingspell = true;
+        Count--;
+
+        PC_.GetComponent<Player>().SpellsCastInThisRoom.Add(test123);
+
+        if (Count > 0)
+        {
+            FrostTrailFrostMeter(Count);
+        }
+
+    }
+
+    //Most blob boss code
+    void ChangeColorBlob()
+    {
+        if (timeLeft <= 0)
+        {
+
+            BossLight.color = targetColor;
+
+            var RandColor = Random.Range(0, 6);
+            switch (RandColor)
+            {
+                case 0:
+                    targetColor = new Color(1, Random.value, 0, 1);
+                    break;
+                case 1:
+                    targetColor = new Color(1, 0, Random.value, 1);
+                    break;
+                case 2:
+                    targetColor = new Color(0, 1, Random.value, 1);
+                    break;
+                case 3:
+                    targetColor = new Color(0, Random.value, 1, 1);
+                    break;
+                case 4:
+                    targetColor = new Color(Random.value, 0, 1, 1);
+                    break;
+                case 5:
+                    targetColor = new Color(Random.value, 1, 0, 1);
+                    break;
+            }
+            timeLeft = 2.5f;
+        }
+        else
+        {
+            BossLight.color = Color.Lerp(BossLight.color, targetColor, Time.deltaTime);
+            timeLeft -= Time.deltaTime;
+        }
+
+
+    }
+
+    void OrderAttack()
+    {
+        BlobAttackCD_ -= Time.deltaTime;
+        BlobAttackCD_2 -= Time.deltaTime;
+        BlobAttackCD_3 -= Time.deltaTime;
+        if (BlobAttackCD_ < 0)
+        {
+            var RandAttack = Random.Range(0, 3);
+            switch (RandAttack)
+            {
+                case 0:
+                    OrderOne();
+                    break;
+                case 1:
+                    OrderTwo();
+                    break;
+                case 2:
+                    OrderThree();
+                    break;
+            }
+            BlobAttackCD_2 += 6;
+            BlobAttackCD_ = BlobAttackCD;
+        }
+        if (BlobAttackCD_3 < 0 && health <= health2 * 0.7f)
+        {
+            OrderPhase3();
+            BlobAttackCD_3 = BlobAttackCD3;
+
+        }
+
+        if (BlobAttackCD_2 < 0 && health <= health2 * 0.35f)
+        {
+            OrderPhase2();
+            BlobAttackCD_2 = BlobAttackCD2;
+            BlobAttackCD_ += 8;
+        }
+    }
+
+    void OrderPhase3()
+    {
+        float AttackDelay_ = 0;
+        int BlobDirMod = 0;
+        for (int i = 0; i < 18; i++)
+        {
+            StartCoroutine(Order1(gameObject, 5, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 0.5f, AttackDelay_, Color.white));
+            AttackDelay_ += 0.01f;
+            BlobDirMod += 18;
+        }
+    }
+
+    void OrderPhase2()
+    {
+        float AttackDelay_ = 0;
+        int BlobDirMod = 90;
+        bool side = true;
+        for (int i = 0; i < 6; i++)
+        {
+            StartCoroutine(Order1(gameObject, 4, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 12, AttackDelay_, Color.black));
+            AttackDelay_ += 0.8f;
+
+            if (side)
+            {
+                BlobDirMod = -90;
+                side = false;
+            }
+            else
+            {
+                BlobDirMod = 90;
+                side = true;
+            }
+        }
+    }
+
+
+
+    void OrderOne()
+    {
+        float AttackDelay_ = 0;
+        int BlobDirMod = 0;
+        for (int i = 0; i < 12; i++)
+        {
+            StartCoroutine(Order1(gameObject, 1, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 12, AttackDelay_, Color.yellow));
+            AttackDelay_ += 0.2f;
+        }
+    }
+    void OrderTwo()
+    {
+        float AttackDelay_ = 0;
+        var RandAttack = Random.Range(0, 2);
+        int BlobDirMod;
+        bool side;
+        if (RandAttack == 0)
+        {
+            BlobDirMod = -50;
+            side = true;
+        }
+        else
+        {
+            BlobDirMod = 50;
+            side = false;
+        }
+
+        for (int i = 0; i < 11; i++)
+        {
+            StartCoroutine(Order1(gameObject, 2, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 9, AttackDelay_, Color.red));
+            AttackDelay_ += 0.1f;
+            if (side)
+            {
+                BlobDirMod += 10;
+            }
+            else
+            {
+                BlobDirMod -= 10;
+            }
+        }
+    }
+    void OrderThree()
+    {
+        float AttackDelay_ = 0;
+        var RandAttack = Random.Range(0, 2);
+        int BlobDirMod;
+        bool side;
+        if (RandAttack == 0)
+        {
+            side = false;
+            BlobDirMod = -25;
+        }
+        else
+        {
+            side = true;
+            BlobDirMod = 25;
+        }
+        for (int i = 0; i < 15; i++)
+        {
+            StartCoroutine(Order1(gameObject, 3, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 9, AttackDelay_, Color.green));
+            AttackDelay_ += 0.2f;
+
+            if (BlobDirMod <= -25 && side == false)
+            {
+                side = true;
+            }
+            else if (BlobDirMod >= 25 && side == true)
+            {
+                side = false;
+            }
+
+            if (side == true)
+            {
+                BlobDirMod += 15;
+            }
+            else
+            {
+                BlobDirMod -= 15;
+            }
+
+        }
+    }
+
+
+    IEnumerator Order1(GameObject BlobDad, int AttackNumb, Vector3 BlobRot, int DirMod, float BHealth, float Bspeed, float delay, Color Bcolor)
+    {
+        yield return new WaitForSeconds(delay);
+        OrderAttackFunction(BlobDad, AttackNumb, BlobRot, DirMod, BHealth, Bspeed, Bcolor);
+    }
+
+    void OrderAttackFunction(GameObject BlobDad, int AttackNumb, Vector3 BlobRot, int DirMod, float BHealth, float Bspeed, Color Bcolor)
+    {
+        GameObject CurBlob = Instantiate(BlobAttack1Object, transform.position, transform.rotation, transform);
+        AddToRoomMonsterList(CurBlob);
+        Monster CurBlob_ = CurBlob.GetComponent<Monster>();
+
+        if (AttackNumb == 1 || AttackNumb == 2 || AttackNumb == 3 || AttackNumb == 4 || AttackNumb == 5)
+        {
+            CurBlob.transform.LookAt(PC.transform);
+            CurBlob.transform.Rotate(Vector3.up * DirMod);
+        }
+
+
+        if (AttackNumb == 4) // phase 2 seeking blob.
+        {
+            CurBlob_.OrderPhase2Orb = true;
+        }
+
+        if (AttackNumb == 5)
+        {
+            var PushDistance = Random.Range(0, 5);
+            CurBlob_.PushResistance = PushDistance;
+            CurBlob_.pushDir = CurBlob_.transform.forward;
+            CurBlob_.pushed = true;
+        }
+
+        Orbs.Add(CurBlob);
+
+        CurBlob.transform.position += CurBlob.transform.forward * 3;
+        CurBlob.transform.parent = transform.parent;
+
+        ParticleSystem ps = CurBlob_.BlobPS;
+        var main = ps.main;
+        ParticleSystem ps2 = CurBlob_.BlobPS2;
+        var main2 = ps2.main;
+
+        main.startColor = Bcolor;
+        main2.startColor = Bcolor;
+        CurBlob_.health = BHealth;
+        CurBlob_.health2 = BHealth;
+        CurBlob_.MovementSpeed = Bspeed;
+        CurBlob_.MovementSpeed_ = Bspeed;
+        CurBlob_.BlobAttackNoTarget = true;
+        CurBlob_.BlobDie = false;
+    }
+
+    public void OrbDieAfterBossIsDead()
+    {
+        var DieTimer = Random.Range(1f, 3f);
+        Invoke("KillMonster", DieTimer);
+    }
+
+    void TheBlobAttack()
+    {
+        BlobAttackCD_ -= Time.deltaTime;
+        BlobAttackCD_2 -= Time.deltaTime;
+        if (BlobAttackCD_ < 0)
+        {
+            if (HealTimeCounter < 6)
+            {
+                var RandAttack = Random.Range(0, 5);
+                switch (RandAttack)
+                {
+                    case 0:
+                        BlobOne();
+                        break;
+                    case 1:
+                        BlobTwo();
+                        break;
+                    case 2:
+                        BlobThree();
+                        break;
+                    case 3:
+                        BlobFour();
+                        break;
+                    case 4:
+                        BlobFive();
+                        break;
+                }
+                HealTimeCounter++;
+                BlobAttackCD_ = BlobAttackCD;
+            }
+            else
+            {
+                BlobHeal();
+                HealTimeCounter = 0;
+                BlobAttackCD_ = BlobAttackCD * 1.5f;
+            }
+        }
+
+        if (BlobAttackCD_2 < 0 && (health / health2) <= 0.7f)
+        {
+            GameObject CurBlob = Instantiate(BlobAttack2Object, transform.position, transform.rotation, transform);
+            CurBlob.transform.position += CurBlob.transform.forward * 6;
+            CurBlob.transform.parent = transform.parent;
+            Monster CurBlob_ = CurBlob.GetComponent<Monster>();
+            CurBlob_.BlobAttack2Bool = true;
+            CurBlob_.BossRoom = BossRoom;
+            ParticleSystem ps = CurBlob_.BlobPS;
+            var main = ps.main;
+            ParticleSystem ps2 = CurBlob_.BlobPS2;
+            var main2 = ps2.main;
+            main.startColor = BossLight.color;
+            main2.startColor = BossLight.color;
+            BlobAttackCD_2 = BlobAttackCD2;
+
+            if (health / health2 <= 0.3f)
+            {
+                CurBlob_.BlobAttack2Phase2 = true;
+            }
+
+        }
+    }
+
+    void BlobHeal()
+    {
+        float AttackDelay_ = 0;
+        for (int i = 0; i < 20; i++)
+        {
+            foreach (var BlobSpawn in BlobCornerList)
+            {
+                Vector3 StartLoc = BlobSpawn.transform.position;
+                StartCoroutine(Blob1(gameObject, true, 0, StartLoc, 0, 2f, 5, 5f, AttackDelay_));
+            }
+            AttackDelay_ += 0.5f;
+        }
+    }
+
+    void BlobOne()
+    {
+        float AttackDelay_ = 0;
+        int BlobCounter = 0;
+        int BlobDirMod = 0;
+        for (int i = 0; i < 70; i++)
+        {
+            BlobCounter++;
+            if (BlobCounter == 1)
+            {
+                BlobDirMod = 0;
+            }
+            if (BlobCounter == 2)
+            {
+                BlobDirMod = 30;
+            }
+            if (BlobCounter == 3)
+            {
+                BlobDirMod = -30;
+                BlobCounter = 0;
+            }
+            StartCoroutine(Blob1(gameObject, false, 1, new Vector3(0, 0, 0), BlobDirMod, 2, 15, 4f, AttackDelay_));
+            AttackDelay_ += 0.1f;
+        }
+    }
+
+    void BlobTwo()
+    {
+        float AttackDelay_ = 0;
+        transform.LookAt(PC.transform.position);
+        Vector3 RotateDir = transform.rotation.eulerAngles;
+        float yAxis = RotateDir.y;
+
+        for (int i = 0; i < 100; i++)
+        {
+            RotateDir = new Vector3(0, yAxis, 0);
+            yAxis += 11;
+            StartCoroutine(Blob1(gameObject, false, 2, RotateDir, 0, 2, 15, 4, AttackDelay_));
+            AttackDelay_ += 0.07f;
+        }
+    }
+
+    void BlobThree()
+    {
+        float AttackDelay_ = 0;
+        Vector3 RotateDir;
+        for (int i = 0; i < 70; i++)
+        {
+            var yAxis = Random.Range(0, 360);
+            RotateDir = new Vector3(0, yAxis, 0);
+
+            StartCoroutine(Blob1(gameObject, false, 3, RotateDir, 0, 2, 15, 4, AttackDelay_));
+            AttackDelay_ += 0.1f;
+        }
+    }
+
+    void BlobFour()
+    {
+        float AttackDelay_ = 0;
+        transform.LookAt(PC.transform.position);
+        Vector3 RotateDir = transform.rotation.eulerAngles;
+        float yAxis = RotateDir.y;
+
+        for (int i = 0; i < 70; i++)
+        {
+            RotateDir = new Vector3(0, yAxis, 0);
+
+            yAxis += 22;
+
+            StartCoroutine(Blob1(gameObject, false, 4, RotateDir, 0, 2, 17, 4, AttackDelay_));
+            AttackDelay_ += 0.1f;
+        }
+    }
+
+    void BlobFive() // longer dur.
+    {
+        float AttackDelay_ = 0;
+        transform.LookAt(PC.transform.position);
+        Vector3 RotateDir = transform.rotation.eulerAngles;
+        float yAxis = RotateDir.y;
+
+        for (int i = 0; i < 50; i++)
+        {
+            RotateDir = new Vector3(0, yAxis, 0);
+
+            yAxis += 11;
+
+            StartCoroutine(Blob1(gameObject, false, 5, RotateDir, 0, 2, 8, 6, AttackDelay_));
+            AttackDelay_ += 0.06f;
+        }
+    }
+
+    IEnumerator Blob1(GameObject BlobDad, bool heal, int AttackNumb, Vector3 BlobRot, int DirMod, float BHealth, float Bspeed, float lifeTime, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Blob1AttackFunction(BlobDad, heal, AttackNumb, BlobRot, DirMod, BHealth, Bspeed, lifeTime);
+    }
+
+    private void Blob1AttackFunction(GameObject BlobDad, bool heal, int AttackNumb, Vector3 BlobRot, int DirMod, float BHealth, float Bspeed, float lifeTime)
+    {
+        GameObject CurBlob = Instantiate(BlobAttack1Object, transform.position, transform.rotation, transform);
+        AddToRoomMonsterList(CurBlob);
+        Monster CurBlob_ = CurBlob.GetComponent<Monster>();
+        if (!heal)
+        {
+            BlobDad.GetComponent<Monster>().TakeDamage(0.5f);
+        }
+        ParticleSystem ps = CurBlob_.BlobPS;
+        var main = ps.main;
+        if (AttackNumb == 1)
+        {
+            CurBlob.transform.LookAt(PC.transform);
+            CurBlob.transform.Rotate(Vector3.up * DirMod);
+        }
+        if (AttackNumb == 2 || AttackNumb == 3 || AttackNumb == 4 || AttackNumb == 5)
+        {
+            CurBlob.transform.rotation = Quaternion.Euler(BlobRot);
+        }
+        if (AttackNumb == 4)
+        {
+            CurBlob_.BlobAttack4 = true;
+            CurBlob_.Blob4RotSpeed = 55;
+        }
+        if (AttackNumb == 5)
+        {
+            CurBlob_.BlobAttack4 = true;
+            CurBlob_.Blob4RotSpeed = 32;
+        }
+        if (AttackNumb == 0) // heal
+        {
+            CurBlob.transform.position = BlobRot;
+            CurBlob.transform.LookAt(BlobDad.transform);
+            CurBlob.transform.parent = null;
+        }
+        else // so wont trigger on heal but all other attacks.
+        {
+            CurBlob.transform.position += CurBlob.transform.forward * 4;
+            CurBlob.transform.parent = transform.parent;
+        }
+        ParticleSystem ps2 = CurBlob_.BlobPS2;
+        var main2 = ps2.main;
+        main.startColor = BossLight.color;
+        main2.startColor = BossLight.color;
+        CurBlob_.health = BHealth;
+        CurBlob_.health2 = BHealth;
+        CurBlob_.Healboss = heal;
+        CurBlob_.MovementSpeed = Bspeed;
+        CurBlob_.MovementSpeed_ = Bspeed;
+        CurBlob_.BlobAttackNoTarget = true;
+        CurBlob_.BlobDie = false;
+        CurBlob_.BlobDieTimer = lifeTime;
+    }
+
+    void BlobExpire()
+    {
+        transform.GetChild(0).gameObject.SetActive(true);
+        Destroy(transform.GetChild(0).gameObject, 0.99f);
+        transform.GetChild(0).gameObject.transform.parent = null;
+        Destroy(gameObject);
+    }
+
 
     // Most bigboy code below
     void BigBoyAggro() // start/after special attack resetting to normal mode.

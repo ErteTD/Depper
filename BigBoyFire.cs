@@ -16,14 +16,23 @@ public class BigBoyFire : MonoBehaviour
     public float SlowDuration;
     public float SlowPercent;
     public bool PlayerCasting;
-
+    public bool StoneGolemFire;
     public GameObject ActPool;
 
     private void Start()
     {
-        Destroy(gameObject, duration);
-        Invoke("AnotherOne", 0.15f);
-        Invoke("ActivatePool", 0.2f);
+        if (!StoneGolemFire)
+        {
+            Destroy(gameObject, duration);
+            Invoke("AnotherOne", 0.15f);
+            Invoke("ActivatePool", 0.2f);
+        }
+        else
+        {
+            Destroy(gameObject, duration + 1);
+            Invoke("ActivatePool", 1.2f);
+            Invoke("AnotherOne", 1.15f);
+        }
     }
     void AnotherOne()
     {
@@ -34,6 +43,7 @@ public class BigBoyFire : MonoBehaviour
             GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().SpellsCastInThisRoom.Add(PoolObj);
             PoolObj.transform.parent = null;
             PoolObj.GetComponent<BigBoyFire>().PoolNumb = PoolNumb - 1;
+            PoolObj.GetComponent<BigBoyFire>().StoneGolemFire = false;
 
         }
     }

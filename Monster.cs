@@ -69,6 +69,8 @@ public class Monster : MonoBehaviour, IDamageable {
     private bool CurrentlyFrozen;
     [Header("Event Specific Interaction")]
     public bool EventSkeleton;
+    public float EventSkeletonCD;
+    public float EventSkeletonCD_;
     [Header("Loot")]
     public bool MonsterHasLoot;
     public bool MonsterCanDropGold;
@@ -178,7 +180,6 @@ public class Monster : MonoBehaviour, IDamageable {
     public GameObject Smallboy;
     public bool SummonHelp;
     private GameObject Brother;
-    public float HelpHP;
     public float BigBoySpecial1;
     private float BigBoySpecial1_;
     private int BigBoyCurrentAttack;
@@ -257,6 +258,10 @@ public class Monster : MonoBehaviour, IDamageable {
     private bool OrderPhase2Orb;
     List<GameObject> Orbs = new List<GameObject>();
 
+    [Header("Dragon && StoneGolems")]
+    public GameObject DeadGolemStonen;
+    public bool StoneGolem;
+
     [Header("Sounds")]
     public AudioSource MeleeAttackStart;
     public float AttacStartDelay;
@@ -325,6 +330,11 @@ public class Monster : MonoBehaviour, IDamageable {
         }
         if (!IamIllu && !Brother)
         {
+            if (Boss)
+            {
+                health *= MenuScript.BossHealthModifier;
+            }
+
             health2 = health;
         }
 
@@ -343,7 +353,7 @@ public class Monster : MonoBehaviour, IDamageable {
         if (OldKing)
         {
             OldKingSpecialAttack_1 = OldKingSpecialAttack;
-            health -= 250;
+            health -= (health2/2);
             Healthbar.fillAmount = health / health2;
             StartOpponent.GetComponent<Monster>().health -= 11;
             StartOpponent.GetComponent<Monster>().Healthbar.fillAmount = StartOpponent.GetComponent<Monster>().health / StartOpponent.GetComponent<Monster>().health2;
@@ -399,7 +409,14 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             Invoke("BlobExpire", BlobDieTimer);
         }
-
+        if (MonsterType == 8)
+        {
+            Invoke("StoneGolemRandomHardCode", 0.1f);
+        }
+    }
+    public void StoneGolemRandomHardCode()
+    {
+        animChild.SetActive(true);
     }
 
     public void StartFake()
@@ -422,6 +439,7 @@ public class Monster : MonoBehaviour, IDamageable {
         if (MonsterType == 4) { anim.PlayerIdle(); } // Timekeeper
         if (MonsterType == 6) { anim.IdleAnimation3(); }
         if (MonsterType == 7) { anim.IdleAnimation3(); }
+        if (MonsterType == 8) { anim.IdleAnimation4(); }
     }
 
   public  void AddToRoomMonsterList(GameObject Monster_)
@@ -1143,6 +1161,7 @@ public class Monster : MonoBehaviour, IDamageable {
                         if (MonsterType == 4) { anim.PlayerIdle(); } // Timekeeper
                         if (MonsterType == 6) { anim.RunAnimation3(MonsterTypeSubLayer); }
                         if (MonsterType == 7) { anim.WalkAnim(); }
+                        if (MonsterType == 8) { anim.RunAnim4(); }
                         BigBoyStepSoundDelay -= Time.deltaTime;
                     }
                 }
@@ -1172,6 +1191,7 @@ public class Monster : MonoBehaviour, IDamageable {
                     if (MonsterType == 4) { anim.PlayerIdle(); } // Timekeeper
                     if (MonsterType == 6) { anim.IdleAnimation3(); }
                     if (MonsterType == 7) { anim.IdleAnimation3(); }
+                    if (MonsterType == 8) { anim.IdleAnimation4(); }
                 }
             }
             if (SpiderBoss)
@@ -1216,15 +1236,16 @@ public class Monster : MonoBehaviour, IDamageable {
                     if (MonsterType == 4) { anim.TimeKeeperAttack(); }
                     if (MonsterType == 6) { anim.AttackAnimation3(); }
                     if (MonsterType == 7) { anim.CastSpell(); }
+                    if (MonsterType == 8) { anim.AttackAnimation4(); }
 
                     Invoke("Attack", AttackDelay);
 
-                    if ((MonsterType == 1 || MonsterType == 3 || MonsterType == 6) && !SpiderBoss)
+                    if ((MonsterType == 1 || MonsterType == 3 || MonsterType == 6 || MonsterType == 8) && !SpiderBoss)
                     {
                         MeleeAttackStart.PlayDelayed(AttacStartDelay);
                     }
 
-                    if (MonsterType == 1 || MonsterType == 3 || MonsterType == 5 || MonsterType == 6 || SpiderBoss) // non casters
+                    if (MonsterType == 1 || MonsterType == 3 || MonsterType == 5 || MonsterType == 6 || SpiderBoss || MonsterType == 8) // non casters
                     {
                         attackCountdown = AttackSpeed;
                     }
@@ -1271,6 +1292,7 @@ public class Monster : MonoBehaviour, IDamageable {
             SwarmCD_ -= Time.deltaTime;
             RefreshNavMeshTargetPosition -= Time.deltaTime;
             LeaveFireTrailCD_ -= Time.deltaTime;
+            EventSkeletonCD_ -= Time.deltaTime;
 
             if (IlluHit)
             {
@@ -1448,7 +1470,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
     public void Attack()
     {
-        if (MonsterType == 1 || MonsterType == 6 || (MonsterType == 3 && !SpiderBoss) && !CurrentlyRessing)
+        if (MonsterType == 1 || MonsterType == 6 || MonsterType == 8 || (MonsterType == 3 && !SpiderBoss) && !CurrentlyRessing)
         {
             StopMovingAfterAttacking = true;
             CastingSpellTimer = hardCodeDansGame;
@@ -1970,6 +1992,25 @@ public class Monster : MonoBehaviour, IDamageable {
         if (MonsterType == 6 && Resurrect && !Immortal) { anim.DieAnimation3(); }
         if (MonsterType == 6 && !Resurrect && !Immortal) { anim.DieAnimation4(); }
         if (MonsterType == 7) { anim.DieAnimation6(); }
+        if (MonsterType == 8 && !StoneGolem) {
+            anim.DieAnimation7();
+            GameObject FireAt = Instantiate(FireAttack, transform.position, transform.rotation);
+            FireAt.transform.parent = transform.parent;
+            FireAt.transform.localPosition = transform.localPosition + transform.forward * 3;
+            FireAt.transform.localRotation = transform.localRotation;
+            FireAt.GetComponent<BigBoyFire>().duration = 1;
+            FireAt.GetComponent<BigBoyFire>().StoneGolemFire = true;
+            FireAt.GetComponent<BigBoyFire>().PoolNumb = 6;
+            animChild.transform.parent = FireAt.transform;
+        }
+        if (StoneGolem) { 
+            anim.StoneGolemTurnToStone();
+            GameObject Rock = Instantiate(DeadGolemStonen, transform.position, DeadGolemStonen.transform.rotation);
+            Rock.transform.parent = transform.parent;
+            Rock.transform.localPosition = transform.localPosition + transform.forward * 1;
+            Rock.transform.localRotation = transform.localRotation;
+            animChild.transform.parent = Rock.transform;
+        }
 
         if (IamIllu)
         {
@@ -1977,7 +2018,7 @@ public class Monster : MonoBehaviour, IDamageable {
             manag.Illus.Remove(gameObject);
         }
 
-        if (animChild != null && !Resurrect)
+        if (animChild != null && !Resurrect && !StoneGolem)
         {
             animChild.transform.parent = null;
         }
@@ -2243,7 +2284,10 @@ public class Monster : MonoBehaviour, IDamageable {
 
     public void FriendAttacked()
     {
-        AggroRange = 999;
+        if (!StoneGolem)
+        {
+            AggroRange = 999;
+        }
     }
 
     public void Slow(bool slow, float dur, float str) //Could slow attackspeed aswell, though might take a bit of work to slow down animations aswell.
@@ -2560,6 +2604,7 @@ public class Monster : MonoBehaviour, IDamageable {
         hardCodeDansGame = attackAnimCD;
         anim.OldKingSpecialAttack1();
         Invoke("OldKingAttackEnd", 3.89f);
+        EventSkeletonCD_ = EventSkeletonCD;
 
     }
 
@@ -2779,7 +2824,7 @@ public class Monster : MonoBehaviour, IDamageable {
     // Most bigboy code below
     void BigBoyAggro() // start/after special attack resetting to normal mode.
     {
-        if (!SummonHelp && health <= HelpHP)
+        if (!SummonHelp && (health <= (health2/2)))
         {
             BigBoyGlow5.SetActive(true);
             BigBoyGlow5b.SetActive(true);

@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
     public int Lives;
     public Text CurrentGoldText;
     public Text CurrentLivesText;
+    public Text CurrentGameModeText;
     public Text DeathScreenLivesText;
     public Text CurrentLevelText;
 
@@ -228,6 +229,7 @@ public class GameManager : MonoBehaviour
         Cursor.SetCursor(DefCursor, asd, CursorMode.Auto);
         SetTime = Time.timeScale;
         CurrentGoldText.text = "Gold: " + Money.ToString();
+        CurrentGameModeText.text = MenuScript.GameDifficulty;
         if (!MenuScript.InfiniteLives)
         {
             CurrentLivesText.text = "Lives: " + Lives.ToString();

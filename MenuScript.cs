@@ -6,50 +6,86 @@ using UnityEngine.UI;
 
 public class MenuScript : MonoBehaviour {
     AsyncOperation async;
+    [Header ("Mode settings")]
     public static int Lives;
     public static bool InfiniteLives;
+    public static float MonsterDensity = 1;
+    public static float GoldDropChance = 0;
+    public static float BossHealthModifier = 1;
+    public static string GameDifficulty = "Normal";
+
+
+
+
     public List<Monster> Mlist;
-
-
     private bool BarBool;
     public GameObject LoadingBar;
     public Image loadingBar;
     public Text textPourcentage;
     [Header ("Settings")]
     public Toggle VSyncToggle;
+    public Toggle FSToggle;
     public Dropdown ScreenResolution;
     internal static int VsyncIni;
-    internal static int Screen1;
-    internal static int Screen2;
+    internal static bool ResChecked;
+    internal static int ResCheckInt;
+
+    internal static Resolution[] resolutions;
+    List<int> FakeCount = new List<int>();
+    private bool DontUpdateRes;
+
 
     public void Start()
     {
+        DontUpdateRes = true;
+        resolutions = Screen.resolutions;
+        ScreenResolution.ClearOptions();
+       
+        List<string> options = new List<string>();
+        int currentResolutionIndex = 0;
+        bool checkDuplicate;
+        FakeCount.Clear();
 
+        for (int i = 0; i < resolutions.Length; i++)
+        {
+            string option = resolutions[i].width + " x " + resolutions[i].height;
+            
+            checkDuplicate = false;
 
-        if (Screen.width == 1366 & Screen.height == 768)
-        {
-            ScreenResolution.value = 0;
+            foreach (var item in options)
+            {
+                if (item == option)
+                {
+                    checkDuplicate = true;
+                }
+            }
+            if (checkDuplicate == false)
+            {
+                options.Add(option);
+                FakeCount.Add(i);
+                if (resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height)
+                {
+                    currentResolutionIndex = i;
+                }
+            }
         }
-        else if (Screen.width == 1600 & Screen.height == 900)
+        ScreenResolution.AddOptions(options);
+        if (ResChecked)
         {
-            ScreenResolution.value = 1;
-        }
-        else if (Screen.width == 1920 & Screen.height == 1080)
-        {
-            ScreenResolution.value = 2;
-        }
-        else if (Screen.width == 2560 & Screen.height == 1440)
-        {
-            ScreenResolution.value = 3;
+            ScreenResolution.value = ResCheckInt;
         }
         else
         {
-            ChooseResolution();
-            ScreenResolution.value = 2;
+            ScreenResolution.value = currentResolutionIndex;
         }
-
+        ScreenResolution.RefreshShownValue();
+        
     }
 
+    public void SetFullScreen (bool isFullscreen)
+    {
+        Screen.fullScreen = isFullscreen;
+    }
 
     public void Getsettings()
     {
@@ -61,6 +97,16 @@ public class MenuScript : MonoBehaviour {
         {
             VSyncToggle.isOn = true;
         }
+        if (Screen.fullScreen == true)
+        {
+            FSToggle.isOn = true;
+        }
+        else
+        {
+            FSToggle.isOn = false;
+        }
+        DontUpdateRes = false;
+
     }
 
     public void TurnOnVSync()
@@ -71,26 +117,16 @@ public class MenuScript : MonoBehaviour {
     }
 
 
-    public void ChooseResolution()
+    public void ChooseResolution(int resolutionIndex)
     {
-        switch (ScreenResolution.value)
+        if (!DontUpdateRes)
         {
-            case 0:
-                Screen.SetResolution(1366, 768, true);
-                break;
-            case 1:
-                Screen.SetResolution(1600, 900, true);
-                break;
-            case 2:
-                Screen.SetResolution(1920, 1080, true);
-                break;
-            case 3:
-                Screen.SetResolution(2560, 1440, true);
-                break;
-            default:
-                Screen.SetResolution(1920, 1080, true);
-                break;
+            Resolution resolution = resolutions[FakeCount[resolutionIndex]];
+            Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+            ResChecked = true;
+            ResCheckInt = resolutionIndex;
         }
+
     }
 
     void LoadingBarFunc()
@@ -155,14 +191,25 @@ public class MenuScript : MonoBehaviour {
             case 1:
                 Lives = 1;
                 InfiniteLives = true;
+                MonsterDensity = 0.70f;
+                GoldDropChance = 15;
+                BossHealthModifier = 0.7f;
+                GameDifficulty = "Easy Mode";
                 break;
             case 2:
                 Lives = 3;
                 InfiniteLives = false;
+                MonsterDensity = 1;
+                GoldDropChance = 0;
+                GameDifficulty = "Normal Mode";
                 break;
             case 3:
                 Lives = 0;
                 InfiniteLives = false;
+                MonsterDensity = 1.3f;
+                GoldDropChance = -15;
+                BossHealthModifier = 1.3f;
+                GameDifficulty = "Hard Mode";
                 break;
         }
         LoadingBarFunc();

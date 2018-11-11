@@ -13,19 +13,19 @@ public class SpiderBall : MonoBehaviour
     {
         if (other.tag == "Ground")
         {
-            //for (int i = 0; i < 2; i++)
-            //{
+            for (int i = 0; i < 2; i++)
+            {
                 GameObject Spider = Instantiate(Spooders, transform.position, transform.rotation);
                 Spider.GetComponent<Monster>().AggroRange = 25;
                 Spider.GetComponent<Monster>().MovementSpeed = 5f;
-                Spider.GetComponent<Monster>().health = 3;
-                Spider.GetComponent<Monster>().health2 = 3;
+                Spider.GetComponent<Monster>().health = 1.7f;
+                Spider.GetComponent<Monster>().health2 = 1.7f;
                 Spider.GetComponent<Monster>().MonsterTypeSubLayer = 2;
                 Spider.transform.parent = GameObject.FindGameObjectWithTag("SpiderBossRoom").transform;
                 Spider.GetComponent<Monster>().BossRoom = Spider.transform.parent.GetComponent<Room>();
                 Spider.GetComponent<Monster>().AddToRoomMonsterList(Spider);
 
-            //}
+            }
 
             transform.GetChild(0).GetComponent<SpiderPoison>().Daddy = Daddy;
             transform.GetChild(0).GetComponent<SpiderPoison>().NahAH = true;

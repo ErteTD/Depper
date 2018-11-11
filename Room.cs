@@ -106,19 +106,19 @@ public class Room : MonoBehaviour
                 break;
             case 1:
                 SwarmSize = 30;
-                CasterSize = 8;
+                CasterSize = 6;
                 BlobSize = 30;
                 SkeletonSize = 3;
                 break;
             case 2:
                 SwarmSize = 50;
-                CasterSize = 7;
+                CasterSize = 5;
                 BlobSize = 10;
                 SkeletonSize = 5;
                 break;
             case 3:
                 SwarmSize = 10;
-                CasterSize = 11;
+                CasterSize = 8;
                 BlobSize = 20;
                 SkeletonSize = 7;
                 break;
@@ -195,6 +195,7 @@ public class Room : MonoBehaviour
         Skel.EventSkeleton = true;
         Skel.MovementSpeed = 6;
         Skel.RoomIAmIn = gameObject;
+        Skel.EventSkeletonCD = 2;
         if (count > 0)
         {
             StartCoroutine(NextSkeletonInEvent(count - 1, 0.25f));
@@ -280,7 +281,7 @@ public class Room : MonoBehaviour
             //  private List<GameObject> Monsters = new List<GameObject>();
             if (skeleton != null)
             {
-                if (skeleton.GetComponent<Monster>().EventSkeleton && skeleton.tag == "Monster")
+                if (skeleton.GetComponent<Monster>().EventSkeleton && skeleton.tag == "Monster" && skeleton.GetComponent<Monster>().EventSkeletonCD_ <= 0)
                 {
                     tempList.Add(skeleton);
                 }

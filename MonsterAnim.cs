@@ -35,6 +35,11 @@ public class MonsterAnim : MonoBehaviour
     {
         anim.Play("Idle");
     }
+    public void IdleAnimation4()
+    {
+        anim.Play("boss_golem_idle01");
+    }
+
     public void Spawn()//for bigboyboss.
     {
         anim.Play("creature1Spawn", -1);
@@ -75,6 +80,11 @@ public class MonsterAnim : MonoBehaviour
         {
             anim.Play("Walk");
         }
+    }
+    public void RunAnim4()
+    {
+        anim.Play("boss_golem_walk01");
+        anim.speed = 2.5f;
     }
 
     public void AttackAnim()
@@ -118,8 +128,12 @@ public class MonsterAnim : MonoBehaviour
     }
     public void AttackAnimation3()
     {
-
         anim.Play("Attack");
+    }
+    public void AttackAnimation4()
+    {
+        anim.Play("boss_golem_skill01", -1, 0);
+        anim.speed = 2f;
     }
 
     public void DieAnim()
@@ -161,6 +175,18 @@ public class MonsterAnim : MonoBehaviour
         anim.Play("StandUp02");
         gameObject.transform.position = new Vector3(transform.position.x, 0.1f, transform.position.z);
         Invoke("Die", 2.1f);
+    }
+    public void DieAnimation7()
+    {
+        anim.speed = 0.5f;
+        anim.Play("boss_golem_skill04");
+        Invoke("Die", 2.1f);
+    }
+
+    public void StoneGolemTurnToStone()
+    {
+        anim.speed = 0.5f;
+        anim.Play("boss_golem_skill04"); // stop at frame 80.
     }
     public void OldKingSpecialAttack1()
     {

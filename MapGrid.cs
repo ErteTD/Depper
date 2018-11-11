@@ -58,6 +58,7 @@ public class MapGrid : MonoBehaviour
     public List<GameObject> BossesLevel3;
     public List<GameObject> BossesLevel4;
     public List<GameObject> BossesLevel5;
+    public List<GameObject> BossesLevel6;
 
     List<Vector2Int> GridList = new List<Vector2Int>();
     List<Vector2Int> MiniMapList = new List<Vector2Int>();
@@ -246,7 +247,7 @@ public class MapGrid : MonoBehaviour
 
                 if (!Base_.MonsterEvent || NumberOfEvents == 0)
                 {
-                    while (MIN < LevelCR[CurrentLevel])
+                    while (MIN < (LevelCR[CurrentLevel] * MenuScript.MonsterDensity))
                     {
                         var RandomMonster = Random.Range(0, MonsterType_.Count);
                         int SpawnMulti = 1;
@@ -362,6 +363,9 @@ public class MapGrid : MonoBehaviour
                     break;
                 case 4:
                     GenerateBoss = BossesLevel5[Random.Range(0, (BossesLevel5.Count))];
+                    break;
+                case 5:
+                    GenerateBoss = BossesLevel6[Random.Range(0, (BossesLevel6.Count))];
                     break;
                 // for testing.
                 default:
@@ -622,7 +626,7 @@ public class MapGrid : MonoBehaviour
                 Monster.MonsterCanDropGold = true;
                 Monster.MonsterGold = Gold;
                 Monster.GoldAmount = Mathf.RoundToInt(Monster.MonsterCR+((CurrentLevel+1)*2));
-                Monster.GoldDropChance = 30;
+                Monster.GoldDropChance = 30 + MenuScript.GoldDropChance;
             }
         }
     }

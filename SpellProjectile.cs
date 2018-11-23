@@ -44,7 +44,10 @@ public class SpellProjectile : MonoBehaviour
     public GameObject Unmodified;
 
     public Quaternion ConeRote;
-
+    [HideInInspector] public bool MageBossMeteor;
+    [HideInInspector] public bool MageBossMeteorReal;
+    [HideInInspector] public GameObject MageBossCircle;
+    [HideInInspector] public Monster MageBoss;
     [HideInInspector] public bool BoostCrit;
     [HideInInspector] public float CritChance, CritDamage;
     public GameObject CritVis;
@@ -313,7 +316,7 @@ public class SpellProjectile : MonoBehaviour
     {
         if (aoeSizeMeteor >= 1 && !channeling)
         {
-            if (other.tag == "Floor" || other.tag == "Wall")
+            if (other.tag == "Floor" || other.tag == "Wall" || other.tag == "MageBossDeadGolem")
             {
                 Meteorattack();
             }
@@ -344,7 +347,7 @@ public class SpellProjectile : MonoBehaviour
                 }
             }
         }
-        if (other.tag == "Wall" && tag == "ChaosOrb")
+        if ((other.tag == "Wall" || other.tag == "MageBossDeadGolem") && tag == "ChaosOrb")
         {
             Stop();
         }
@@ -357,8 +360,9 @@ public class SpellProjectile : MonoBehaviour
     {
         Collider[] cols = Physics.OverlapSphere(transform.position, aoeSizeMeteor);
         foreach (Collider c in cols)
-        {
-            if (!enemyCastingspell)
+        { 
+
+            if (!enemyCastingspell || MageBossMeteor)
             {
                 Monster e = c.GetComponent<Monster>();
                 if (e != null && e.tag == "Monster")
@@ -367,15 +371,26 @@ public class SpellProjectile : MonoBehaviour
                     DealDamageOnce(enemy);                 
                 }
             }
-            else
+            if (enemyCastingspell || MageBossMeteor)
             {
                 Player e = c.GetComponent<Player>();
-                if (e != null)
+                if (e != null && e.tag == "Player")
                 {
                     e.GetComponent<Player>().Slow(FrostBoltSlow, SlowDuration, SlowPercent);
                     e.GetComponent<Player>().TakeDamage(damage);
                 }
             }
+
+            if (MageBossMeteor && c.tag == "MageBossDeadGolem")
+            {
+                if (c.gameObject.transform.GetChild(0).gameObject.GetComponent<MonsterAnim>() != null)
+                {
+                    c.gameObject.transform.GetChild(0).gameObject.GetComponent<MonsterAnim>().StoneGolemCrumble();
+                }
+                MageBoss.Rocks.Remove(c.gameObject);
+                Destroy(c.gameObject, 2f);
+            }
+
         }
         if (enemyCastingspell)//only for bigboy atm
         {
@@ -412,6 +427,7 @@ public class SpellProjectile : MonoBehaviour
             {
                 directionF = (enemy.transform.position - transform.position).normalized;
             }
+            enemy.CancelInvoke("StopPush");
             enemy.pushDir = directionF;
             enemy.pushed = true;
         }
@@ -824,6 +840,9 @@ public class SpellProjectile : MonoBehaviour
                         case "Wall":
                             chanLoc = hit2.point;
                             break;
+                        case "MageBossDeadGolem":
+                            chanLoc = hit2.point;
+                            break;
                         case "Monster":
                             if (!CompChanCollider)
                             {
@@ -881,6 +900,9 @@ public class SpellProjectile : MonoBehaviour
                     switch (hit.transform.gameObject.tag)
                     {
                         case "Wall":
+                            chanLoc = hit.point;
+                            break;
+                        case "MageBossDeadGolem":
                             chanLoc = hit.point;
                             break;
                         case "Monster":
@@ -1123,7 +1145,15 @@ public class SpellProjectile : MonoBehaviour
         Vector3 spellCastLocation_ = spellCastLocation;
         if (!channeling || spellName == "Lightningbolt")
         {
-            spellCastLocation_.y += 15f;
+            if (!MageBossMeteor)
+            {
+                spellCastLocation_.y += 15f;
+            }
+            else
+            {
+                spellCastLocation_.y += 40f;
+            }
+
         }
         else
         {
@@ -1212,6 +1242,10 @@ public class SpellProjectile : MonoBehaviour
             effectOne.SetActive(true);
             effectOne.transform.parent = null;
             Destroy(effectOne, VisualEffectDuration);
+            if (MageBossMeteor && MageBossMeteorReal)
+            {
+                Destroy(MageBossCircle, 0.5f);
+            }
         }
         if (SecondaryVisualEffect != null) // currently just frostbolt trail
         {

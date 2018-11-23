@@ -18,8 +18,8 @@ public class SpiderBall : MonoBehaviour
                 GameObject Spider = Instantiate(Spooders, transform.position, transform.rotation);
                 Spider.GetComponent<Monster>().AggroRange = 25;
                 Spider.GetComponent<Monster>().MovementSpeed = 5f;
-                Spider.GetComponent<Monster>().health = 1.7f;
-                Spider.GetComponent<Monster>().health2 = 1.7f;
+                Spider.GetComponent<Monster>().health = 1.5f;
+                Spider.GetComponent<Monster>().health2 = 1.5f;
                 Spider.GetComponent<Monster>().MonsterTypeSubLayer = 2;
                 Spider.transform.parent = GameObject.FindGameObjectWithTag("SpiderBossRoom").transform;
                 Spider.GetComponent<Monster>().BossRoom = Spider.transform.parent.GetComponent<Room>();

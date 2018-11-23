@@ -79,6 +79,7 @@ public class Player : MonoBehaviour, IDamageable
     private AudioScript AS;
     public AudioSource DeathSound;
     public AudioSource DeathSoundLaugh;
+    [HideInInspector] public int ChannelingCount;
 
     void Start()
     {
@@ -108,6 +109,7 @@ public class Player : MonoBehaviour, IDamageable
 
     void Update()
     {
+
         if (!DieOnce)
         {
             AmIBurning();
@@ -129,7 +131,7 @@ public class Player : MonoBehaviour, IDamageable
                 agent.stoppingDistance = 0f;
             }
 
-            if (channelingNow == true)
+            if (ChannelingCount > 0)  //channelingNow == true)
             {
                 anim.PlayerAttack();
                 if (Input.GetMouseButtonDown(1) && curSpellProjectile.Count > 0)
@@ -148,7 +150,7 @@ public class Player : MonoBehaviour, IDamageable
                     }
                 }
             }
-            if ((Input.GetMouseButtonDown(0) || ((inputX != 0 || inputY != 0) && !BlobArmorBool)) && channelingNow == true && curSpellProjectile.Count > 0)
+            if ((Input.GetMouseButtonDown(0) || ((inputX != 0 || inputY != 0) && !BlobArmorBool)) && ChannelingCount > 0 && curSpellProjectile.Count > 0)
             {
                 foreach (var item in curSpellProjectile)
                 {
@@ -164,7 +166,7 @@ public class Player : MonoBehaviour, IDamageable
                 }
             }
 
-            if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject() && channelingNow == false)
+            if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject() && ChannelingCount == 0)
             {
                 rightclick = false;
                 BlobArmorAttackOnceBool = false;
@@ -174,7 +176,7 @@ public class Player : MonoBehaviour, IDamageable
                 {
                     Vector3 HitGroundlevel = new Vector3(hit.point.x, 1, hit.point.z);
                     float dist = Vector3.Distance(HitGroundlevel, transform.position); // distance between click point and PC
-                    if (Input.GetMouseButtonDown(0) && (hit.collider.tag == "Floor" || hit.collider.tag == "Door" || hit.collider.tag == "Wall" || hit.collider.tag == "Shop" || hit.collider.tag == "Chest"))
+                    if (Input.GetMouseButtonDown(0) && (hit.collider.tag == "Floor" || hit.collider.tag == "Door" || hit.collider.tag == "Wall" || hit.collider.tag == "MageBossDeadGolem" || hit.collider.tag == "Shop" || hit.collider.tag == "Chest"))
                     {
                         Vector3 DaPoint = new Vector3(hit.point.x, hit.point.y + 0.1f, hit.point.z);
                         Instantiate(MousePing, DaPoint, Quaternion.Euler(0, 0, 0));
@@ -269,12 +271,12 @@ public class Player : MonoBehaviour, IDamageable
 
                         Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));    // flattens the vector3             
                         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 999f);
-                        if (channelingNow == false)
+                        if (ChannelingCount == 0)
                         {
                             SendSpellCast();
                         }
                     }
-                    else if (channelingNow == false)
+                    else if (ChannelingCount == 0)
                     {
                         agent.destination = targetPosition;
                     }
@@ -304,7 +306,7 @@ public class Player : MonoBehaviour, IDamageable
             {
                 if (attackingDuration <= 0f)
                 {
-                    if (!channelingNow)
+                    if (ChannelingCount == 0)
                     {
                         attackingRightNow = false;
                     }
@@ -398,11 +400,11 @@ public class Player : MonoBehaviour, IDamageable
 
     public void Channeling()
     {
-        channelingNow = true;
+        ChannelingCount++;
     }
     public void StopChanneling()
     {
-        channelingNow = false;
+        ChannelingCount--;
     }
 
     public void TakeDamage(float damage)

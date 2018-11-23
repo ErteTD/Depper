@@ -102,37 +102,37 @@ public class Room : MonoBehaviour
                 SwarmSize = 15;
                 CasterSize = 4;
                 BlobSize = 15;
-                SkeletonSize = 1;
+                SkeletonSize = 2;
                 break;
             case 1:
                 SwarmSize = 30;
                 CasterSize = 6;
                 BlobSize = 30;
-                SkeletonSize = 3;
+                SkeletonSize = 4;
                 break;
             case 2:
                 SwarmSize = 50;
                 CasterSize = 5;
                 BlobSize = 10;
-                SkeletonSize = 5;
+                SkeletonSize = 6;
                 break;
             case 3:
                 SwarmSize = 10;
                 CasterSize = 8;
                 BlobSize = 20;
-                SkeletonSize = 7;
+                SkeletonSize = 8;
                 break;
             case 4:
                 SwarmSize = 20;
                 CasterSize = 5;
                 BlobSize = 4;
-                SkeletonSize = 9;
+                SkeletonSize = 10;
                 break;
             case 5:
                 SwarmSize = 30;
                 CasterSize = 8;
                 BlobSize = 8;
-                SkeletonSize = 11;
+                SkeletonSize = 12;
                 break;
             default:
                 SwarmSize = 1;

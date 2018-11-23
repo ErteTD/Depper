@@ -18,6 +18,7 @@ public class ExplodeScript : MonoBehaviour
     public bool ArmorProc;
     public float Area;
     public bool GolemExplosion;
+    public bool MageBossDieEffect;
     public float DestoryDur = 2f;
     public void Start()
     {
@@ -27,11 +28,16 @@ public class ExplodeScript : MonoBehaviour
             Area = 5;
             Invoke("ExplodeNow", RandomDur);
         }
-        else
+        else if (!MageBossDieEffect)
         {
             Area = 8;
             ExplodeNow();
         }
+        if (MageBossDieEffect)
+        {
+            Invoke("MageBossBoom", 0.9f);
+        }
+      
         Destroy(gameObject, DestoryDur);
     }
 
@@ -68,6 +74,36 @@ public class ExplodeScript : MonoBehaviour
                             e.StopAgent();
                         }
                     }
+                }
+            }
+        }
+    }
+
+    void MageBossBoom()
+    {
+        Explosion.SetActive(true);
+        Collider[] cols2 = Physics.OverlapSphere(transform.position, 50);
+        foreach (Collider c in cols2)
+        {
+            Monster e = c.GetComponent<Monster>();
+            if (e != null)
+            {
+                if (e.MonsterType == 8)
+                {
+                    e.MageBossDieFromBigExplosion();
+                }
+                if (e.MonsterType == 5)
+                {
+                    e.TakeDamage(1000);
+                }
+
+            }
+            if (c.tag == "MageBossDeadGolem")
+            {
+                if (c.gameObject.transform.GetChild(0).gameObject.GetComponent<MonsterAnim>() != null)
+                {
+                    c.gameObject.transform.GetChild(0).gameObject.GetComponent<MonsterAnim>().StoneGolemCrumble();
+                    Destroy(c.gameObject, 2f);
                 }
             }
         }

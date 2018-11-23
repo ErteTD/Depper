@@ -15,7 +15,7 @@ public class MenuScript : MonoBehaviour {
     public static string GameDifficulty = "Normal";
 
 
-
+    public Text ModeText;
 
     public List<Monster> Mlist;
     private bool BarBool;
@@ -79,7 +79,7 @@ public class MenuScript : MonoBehaviour {
             ScreenResolution.value = currentResolutionIndex;
         }
         ScreenResolution.RefreshShownValue();
-        
+        SetModeText(0);
     }
 
     public void SetFullScreen (bool isFullscreen)
@@ -106,8 +106,32 @@ public class MenuScript : MonoBehaviour {
             FSToggle.isOn = false;
         }
         DontUpdateRes = false;
-
     }
+
+    public void SetModeText(int mode)
+    {
+        switch (mode)
+        {
+            case 1:
+                ModeText.text = "- Infinite lives \n- Lower monster density \n- Bosses have less health";
+                break;
+            case 2:
+                ModeText.text = "- 3 extra lives \n- Normal monster density \n- Bosses have normal health";
+                break;
+            case 3:
+                ModeText.text = "- 0 extra lives \n- Higher monster density \n- Bosses have more health";
+                break;
+            case 0:
+                ModeText.text = "";
+                break;
+        }
+    }
+    //            Lives = 0;
+    //            InfiniteLives = false;
+    //            MonsterDensity = 1.3f;
+    //            GoldDropChance = -15;
+    //            BossHealthModifier = 1.3f;
+
 
     public void TurnOnVSync()
     {
@@ -194,14 +218,14 @@ public class MenuScript : MonoBehaviour {
                 MonsterDensity = 0.70f;
                 GoldDropChance = 15;
                 BossHealthModifier = 0.7f;
-                GameDifficulty = "Easy Mode";
+                GameDifficulty = "Casual";
                 break;
             case 2:
                 Lives = 3;
                 InfiniteLives = false;
                 MonsterDensity = 1;
                 GoldDropChance = 0;
-                GameDifficulty = "Normal Mode";
+                GameDifficulty = "Normal";
                 break;
             case 3:
                 Lives = 0;
@@ -209,7 +233,7 @@ public class MenuScript : MonoBehaviour {
                 MonsterDensity = 1.3f;
                 GoldDropChance = -15;
                 BossHealthModifier = 1.3f;
-                GameDifficulty = "Hard Mode";
+                GameDifficulty = "Challenge";
                 break;
         }
         LoadingBarFunc();

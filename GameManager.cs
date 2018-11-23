@@ -348,55 +348,61 @@ public class GameManager : MonoBehaviour
             case 1:
                 minRoom_ = 0;
                 maxRoom_ = 0;
-                CurrentLevel_ = 5;
+                CurrentLevel_ = 6;
                 GiveLoot_ = true;
                 break;
             case 2:
                 minRoom_ = 0;
                 maxRoom_ = 0;
-                CurrentLevel_ = 6;
+                CurrentLevel_ = 7;
                 GiveLoot_ = true;
                 break;
             case 3:
                 minRoom_ = 0;
                 maxRoom_ = 0;
-                CurrentLevel_ = 7;
+                CurrentLevel_ = 8;
                 GiveLoot_ = true;
                 break;
             case 4:
                 minRoom_ = 0;
                 maxRoom_ = 0;
-                CurrentLevel_ = 8;
+                CurrentLevel_ = 9;
                 GiveLoot_ = true;
                 break;
             case 5:
                 minRoom_ = 0;
                 maxRoom_ = 0;
-                CurrentLevel_ = 9;
+                CurrentLevel_ = 10;
                 GiveLoot_ = true;
                 break;
             case 6:
                 minRoom_ = 0;
                 maxRoom_ = 0;
-                CurrentLevel_ = 10;
+                CurrentLevel_ = 11;
                 GiveLoot_ = true;
                 break;
             case 7:
                 minRoom_ = 0;
                 maxRoom_ = 0;
-                CurrentLevel_ = 11;
+                CurrentLevel_ = 12;
                 GiveLoot_ = true;
                 break;
             case 8:
                 minRoom_ = 0;
                 maxRoom_ = 0;
-                CurrentLevel_ = 12;
+                CurrentLevel_ = 13;
+                GiveLoot_ = true;
+                break;
+            case 9:
+                minRoom_ = 0;
+                maxRoom_ = 0;
+                CurrentLevel_ = 14;
                 GiveLoot_ = true;
                 break;
             case 20:
                 minRoom_ = 20;
                 maxRoom_ = 20;
-                CurrentLevel_ = 10;
+                CurrentLevel_ = 5;
                 GiveLoot_ = true;
                 break;
 

@@ -41,6 +41,7 @@ public class Monster : MonoBehaviour, IDamageable {
     private float RefreshNavMeshTargetPosition;
     private float hardCodeDansGame = 0;
     public float attackAnimCD; // how prevents other animations from overriding attack animation.
+    private bool DontAttackJustMove;
 
     [Header("HealthbarStuff")]
     public Image Healthbar;
@@ -122,6 +123,10 @@ public class Monster : MonoBehaviour, IDamageable {
     public float LeaveFireTrailCD;
     private float LeaveFireTrailCD_;
     public bool StartMenuFakeScene;
+    [HideInInspector]
+    public bool ShowDecimalHealth;
+    [HideInInspector]
+    public string MaxHealthAsString;
 
     [Header("Special abilities")]
     public bool Resurrect;
@@ -143,7 +148,8 @@ public class Monster : MonoBehaviour, IDamageable {
     public bool Boss;
     public bool SpiderBoss;
     public bool BigBoy;
-    public bool FrostTrail;
+    public bool FireTrailBoss;
+    public bool FrostTrailBoss;
     public bool TimeKeeper;
     public bool OldKing;
     public bool TheBlob;
@@ -209,6 +215,8 @@ public class Monster : MonoBehaviour, IDamageable {
     [Header("Frosttrail")]
     public float FrostTrailAttack1;
     private float FrostTrailAttack1_;
+    public GameObject Door1;
+    public GameObject Door2;
 
     [Header("Old King")]
     public GameObject Skill1Projectile;
@@ -323,7 +331,6 @@ public class Monster : MonoBehaviour, IDamageable {
         Ratatatata_ = Ratatatata;
         BlobAttackCD_ = BlobAttackCD/2;
         BlobAttackCD_2 = 1; // change to 15
-
         if (Order)
         {
             BlobAttackCD_ = 1;
@@ -362,13 +369,15 @@ public class Monster : MonoBehaviour, IDamageable {
 
         if (HealthBarCanvas != null)
         {
-            if (health2 < 1)
+            if (health2 < 1 || ShowDecimalHealth)
             {
-                HBtext.text = "(" + health.ToString("F1") + " / " + health2.ToString("F1") + ")";
+                MaxHealthAsString = health2.ToString("F1");
+                HBtext.text = "(" + health.ToString("F1") + " / " + MaxHealthAsString + ")";
             }
             else
             {
-                HBtext.text = "(" + health.ToString("F0") + " / " + health2.ToString("F0") + ")";
+                MaxHealthAsString = health2.ToString("F0");
+                HBtext.text = "(" + health.ToString("F0") + " / " + MaxHealthAsString + ")";
             }
         }
 
@@ -817,9 +826,33 @@ public class Monster : MonoBehaviour, IDamageable {
                     PC = PC2;
                 }
             }
-            else // not startscene and no illus
+            else if (!FireTrailBoss && !FrostTrailBoss) // not startscene and no illus
             {
                 PC = PC_;
+            }
+            else
+            {
+                float DistToPlayer = Vector3.Distance(transform.position, PC_.transform.position);
+                float DistToDoor1 = Vector3.Distance(transform.position, Door1.transform.position);
+                float DistToDoor2 = Vector3.Distance(transform.position, Door2.transform.position);
+
+                if (DistToPlayer > 80f)
+                {
+                    if (DistToDoor1 > DistToDoor2)
+                    {
+                        PC = Door2;
+                    }
+                    else
+                    {
+                        PC = Door1;
+                    }
+                    DontAttackJustMove = true;
+                }
+                else
+                {
+                    PC = PC_;
+                    DontAttackJustMove = false;
+                }
             }
         }
     }
@@ -845,7 +878,7 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             OrderAttack();
         }
-        if (FrostTrail && InCombat)
+        if (FrostTrailBoss && InCombat)
         {
             FrostTrailAttack();
         }
@@ -984,7 +1017,7 @@ public class Monster : MonoBehaviour, IDamageable {
            if (dist <= meleeRange+0.5f && DisengageDistanceRemoveAfterAttack) { DisengageDistanceRemoveAfterAttack = false; }
            else if (DisengageDistanceRemoveAfterAttack) { canAttack = false; }
 
-            if (canAttack && !BBStill && !DisengageDistanceRemoveAfterAttack)
+            if (canAttack && !BBStill && !DisengageDistanceRemoveAfterAttack && !DontAttackJustMove)
             {
                 if (!SpiderBoss && !TimeKSpin && !TKSpawning)
                 {
@@ -1674,11 +1707,11 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             if (health > 0.1f)
             {
-                HBtext.text = "(" + health.ToString("F1") + " / " + health2.ToString("F0") + ")";
+                HBtext.text = "(" + health.ToString("F1") + " / " + MaxHealthAsString + ")";
             }
             else if (health > 0)
             {
-                HBtext.text = "(0.1 / " + health2.ToString("F0") + ")";
+                HBtext.text = "(0.1 / " + MaxHealthAsString + ")";
             }
         }
 
@@ -1721,7 +1754,7 @@ public class Monster : MonoBehaviour, IDamageable {
             BossHealthAct.transform.GetChild(3).gameObject.SetActive(false);
         }
 
-        if (Boss && (FireTrail || FrostTrail))
+        if (Boss && FireTrail)
         {
             PC_.GetComponent<Player>().StartCoroutine(PC_.GetComponent<Player>().TeleportPlayerToStartAreaOnTrailBosses(1f, LootLoc, RoomIAmIn));
             PC_.GetComponent<Player>().RoomChangeDestroyPreviousRoomSpells();
@@ -2312,11 +2345,13 @@ public class Monster : MonoBehaviour, IDamageable {
                         GameObject BossLoot = Instantiate(Chest, transform.position, Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z), BossRoom.transform);
                         BossLoot.transform.localPosition = LootLoc;
                         BossLoot.GetComponent<AmazingChestHead>().CurrentLoot = BossWeapon;
+                    BossLoot.GetComponent<AmazingChestHead>().BossChest = true;
                     break;
                 case 1:
                         GameObject BossLoot2 = Instantiate(Chest, transform.position, Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z), BossRoom.transform);
                         BossLoot2.transform.localPosition = LootLoc;
                         BossLoot2.GetComponent<AmazingChestHead>().CurrentLoot = BossArmor;
+                    BossLoot2.GetComponent<AmazingChestHead>().BossChest = true;
                     break;
             }
         }
@@ -3364,6 +3399,10 @@ public class Monster : MonoBehaviour, IDamageable {
         BiGHelp.GetComponent<Monster>().SummonHelp = true;
         BiGHelp.GetComponent<Monster>().Boss = false;
         BiGHelp.GetComponent<Monster>().ChangeColor = false;
+        BiGHelp.GetComponent<Monster>().MonsterIsBurning = true;
+        BiGHelp.GetComponent<Monster>().MonsterIsSlowed = true;
+        BiGHelp.GetComponent<Monster>().slowedDur = 0f;
+        BiGHelp.GetComponent<Monster>().BurnDur = 0f;
         BiGHelp.GetComponent<Monster>().health = health;
         BiGHelp.GetComponent<Monster>().health2 = health2;
         SummonHelp = true;

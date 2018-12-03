@@ -12,6 +12,7 @@ public class SpiderPoison : MonoBehaviour
     public float PoisonDur;
     public bool NahAH;
     public GameObject Daddy;
+    public AudioSource DamageSound;
 
     public void Start()
     {
@@ -25,8 +26,9 @@ public class SpiderPoison : MonoBehaviour
             Player player = other.GetComponent<Player>();
             player.TakeDamage((damage));
             TickRate = TickRate_;
+            DamageSound.Play();
         }
-        TickRate -= Time.deltaTime;
+
     }
     public void Update()
     {
@@ -38,6 +40,7 @@ public class SpiderPoison : MonoBehaviour
                 KillMe();
             }
         }
+        TickRate -= Time.deltaTime;
     }
 
     public void KillMe()

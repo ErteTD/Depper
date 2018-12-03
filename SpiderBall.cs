@@ -20,6 +20,7 @@ public class SpiderBall : MonoBehaviour
                 Spider.GetComponent<Monster>().MovementSpeed = 5f;
                 Spider.GetComponent<Monster>().health = 1.5f;
                 Spider.GetComponent<Monster>().health2 = 1.5f;
+                Spider.GetComponent<Monster>().ShowDecimalHealth = true;
                 Spider.GetComponent<Monster>().MonsterTypeSubLayer = 2;
                 Spider.transform.parent = GameObject.FindGameObjectWithTag("SpiderBossRoom").transform;
                 Spider.GetComponent<Monster>().BossRoom = Spider.transform.parent.GetComponent<Room>();

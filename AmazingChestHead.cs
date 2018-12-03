@@ -14,6 +14,10 @@ public class AmazingChestHead : MonoBehaviour
     public AudioSource SpawnSound;
     public AudioSource OpenSound;
     public AudioSource OpenSound2;
+    public bool BossChest;
+
+    public GameObject BossChestHealingPotion;
+
     void Start()
     {
         Player_ = GameObject.Find("Player");
@@ -38,12 +42,12 @@ public class AmazingChestHead : MonoBehaviour
         animation.Play("ChestAnim");
         OpenSound2.Play();
         OpenSound.PlayDelayed(1f);
-        StartCoroutine(SpawnLoot(CurrentLoot, 2f, GoldAmount));
+        StartCoroutine(SpawnLoot(CurrentLoot, 2f, GoldAmount, BossChest));
     }
 
 
 
-    IEnumerator SpawnLoot(GameObject loot, float delay, int gold)
+    IEnumerator SpawnLoot(GameObject loot, float delay, int gold, bool bossloot)
     {
         yield return new WaitForSeconds(delay);
         GameObject Loot_ = Instantiate(CurrentLoot, transform.position, transform.rotation, transform.parent);
@@ -51,7 +55,17 @@ public class AmazingChestHead : MonoBehaviour
         {
             Loot_.GetComponent<GoldPickUpScript>().GoldAmount = GoldAmount;
         }
+        if (bossloot)
+        {
+
+            GameObject Loot_2 = Instantiate(BossChestHealingPotion, transform.position, transform.rotation, transform.parent);
+            Loot_2.transform.localPosition = new Vector3(Loot_2.transform.localPosition.x + 3, Loot_2.transform.localPosition.y, Loot_2.transform.localPosition.z);
+            Loot_.transform.localPosition = new Vector3(Loot_.transform.localPosition.x- 3, Loot_.transform.localPosition.y, Loot_.transform.localPosition.z);
+        }
+
         transform.parent.GetComponent<Room>().KeepDoorsClosedUntillChestIsOpened = false;
+
+
     }
 
 

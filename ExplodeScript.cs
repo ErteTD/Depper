@@ -53,25 +53,28 @@ public class ExplodeScript : MonoBehaviour
                 Monster e = c.GetComponent<Monster>();
                 if (e != null && e.gameObject != gameObject)
                 {
-                    if (FireTrueFrostFalse == true)
+                    if (e.BlobWeapon == false)
                     {
-                        e.Burn(true, BoostBurnDur, BoostBurnPer, BurnDamage * BoostBurnPer);
-                        e.TakeDamage(BoostTotalBurn * BoostBurnPer);
-                    }
-                    else if (!IlluExplosion)
-                    {
-                        if (e.MonsterType != 5)
+                        if (FireTrueFrostFalse == true)
                         {
-                            if (!ArmorProc)
-                            {
-                                e.Slow(true, BoostBurnDur, BoostBurnPer);
-                            }
-                            e.StopAgent();
+                            e.Burn(true, BoostBurnDur, BoostBurnPer, BurnDamage * BoostBurnPer);
+                            e.TakeDamage(BoostTotalBurn * BoostBurnPer);
                         }
-                        else
+                        else if (!IlluExplosion)
                         {
-                            e.Slow(true, 2, 9999);
-                            e.StopAgent();
+                            if (e.MonsterType != 5)
+                            {
+                                if (!ArmorProc)
+                                {
+                                    e.Slow(true, BoostBurnDur, BoostBurnPer);
+                                }
+                                e.StopAgent();
+                            }
+                            else
+                            {
+                                e.Slow(true, 2, 9999);
+                                e.StopAgent();
+                            }
                         }
                     }
                 }

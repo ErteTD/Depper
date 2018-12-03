@@ -337,7 +337,7 @@ public class Player : MonoBehaviour, IDamageable
         ParticleSystem TelePortEffect = CastSpell.GetComponent<CastWeapon>().TelePortEffect;
         ParticleSystem Tele1Effect = Instantiate(TelePortEffect, transform.position, transform.rotation);
         Tele1Effect.transform.parent = transform;
-        Loc += new Vector3(BossRoom.transform.position.x - 9, BossRoom.transform.position.y, BossRoom.transform.position.z);
+        Loc += new Vector3(BossRoom.transform.position.x, BossRoom.transform.position.y, BossRoom.transform.position.z-5f);
         ParticleSystem Tele1Effect2 = Instantiate(TelePortEffect, Loc, transform.rotation);
         Destroy(Tele1Effect.transform.gameObject, 3.1f);
         Destroy(Tele1Effect2.transform.gameObject, 3.1f);

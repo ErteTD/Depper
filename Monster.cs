@@ -19,7 +19,7 @@ public class Monster : MonoBehaviour, IDamageable {
     private float CasterVariationASRat;
     public float MovementSpeed;
     private float MovementSpeed_;
-    private float slowedDur;
+    public float slowedDur;
     public float AggroRange;
     [HideInInspector] public float AggroRange_;
     public float turnRate;
@@ -59,8 +59,8 @@ public class Monster : MonoBehaviour, IDamageable {
     public float PushResistance;
     public bool CurrentlyInBlackHole;
     private float BurnDamage;
-    private float BurnDur;
-    private float TotalBurnDamage;
+    public float BurnDur;
+    public float TotalBurnDamage;
     private bool noBounce;
     private float ChannelTimer = 0.5f;
     public float BounceDistance = 1.5f;
@@ -68,8 +68,8 @@ public class Monster : MonoBehaviour, IDamageable {
     private bool CheckIfFrostBoosted;
     private bool OnlyOnce = false;
     private bool CurrentlyFrozen;
-    private bool MonsterIsSlowed;
-    private bool MonsterIsBurning;
+    public bool MonsterIsSlowed;
+    public bool MonsterIsBurning;
     [Header("Event Specific Interaction")]
     public bool EventSkeleton;
     public float EventSkeletonCD;
@@ -150,6 +150,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public bool BigBoy;
     public bool FireTrailBoss;
     public bool FrostTrailBoss;
+    public bool Illusionist;
     public bool TimeKeeper;
     public bool OldKing;
     public bool TheBlob;
@@ -166,6 +167,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public GameObject SpiderSwarm;
     public float SwarmCD;
     private float SwarmCD_;
+
     [Header("TimeKeeper")]
     //TimeKeperstuff.
     public List<GameObject> TimeKeeperPoints;
@@ -177,7 +179,30 @@ public class Monster : MonoBehaviour, IDamageable {
     private int TeleLoc;
     public bool IamIllu;
     private bool IlluHit;
+    private float IlluDamageAmount;
     public ParticleSystem OuterRing;
+    //Lvl2 boss
+    public GameObject Platforms;
+    private float ASD;
+    public Transform ParentPlatform;
+    private float ClockAttackCD_;
+    private int ClockPlatCount;
+    public GameObject TimeOrbFrost;
+    public GameObject TimeOrbFire;
+    public float TimeOrbCD;
+    private float TimeOrbCD_;
+    public ParticleSystem WaveColor;
+    public Color colorRed;
+    public Color colorBlue;
+    private bool ChangeCol;
+    public float ChangeColorTimer;
+    private float ChangeColorTimer_;
+    public float TimeRandomOrbAttack;
+    private float TimeRandomOrbAttack_;
+    private bool TimeRandomOrbBool;
+    private float TImeRandomGottaGoFast;
+    private bool TimeStartBlastingBool;
+
 
     [Header("BigBoy")]
     public GameObject BigBoyGlow;
@@ -301,6 +326,8 @@ public class Monster : MonoBehaviour, IDamageable {
     public AudioSource BossSound2;
     public AudioSource BossSound3;
 
+    GameManager manag;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -327,8 +354,14 @@ public class Monster : MonoBehaviour, IDamageable {
         PC_ = PC;
         SwarmCD_ = SwarmCD / 2;
         meleeRange_ = meleeRange;
-        MirrorImageCD_ = MirrorImageCD;
-        Ratatatata_ = Ratatatata;
+
+        //MirrorImageCD_ = MirrorImageCD;
+        //TimeRandomOrbAttack_ = TimeRandomOrbAttack * 1.5f; 
+        //Ratatatata_ = Ratatatata/2;
+        MirrorImageCD_ = 30;
+        TimeRandomOrbAttack_ = 45f;
+        Ratatatata_ = 15f;
+
         BlobAttackCD_ = BlobAttackCD/2;
         BlobAttackCD_2 = 1; // change to 15
         if (Order)
@@ -349,7 +382,7 @@ public class Monster : MonoBehaviour, IDamageable {
             agent.speed = MovementSpeed;
             agent.stoppingDistance = meleeRange;
         }
-        if (!SpiderBoss)
+        if (!SpiderBoss && !IamIllu)
         {
             attackCountdown = AttackSpeed/2;
             if (StartScene)
@@ -408,8 +441,9 @@ public class Monster : MonoBehaviour, IDamageable {
             MageStart = transform.position;
             MageAttackCD_ = 5f;
         }
-        if (TimeKeeper && !IamIllu)
+        if ((Illusionist || TimeKeeper) && !IamIllu)
         {
+            TimeOrbCD_ = TimeOrbCD/2;
             agent.isStopped = true;
             AggroRange = 999f;
             attackCountdown = 9;
@@ -421,8 +455,16 @@ public class Monster : MonoBehaviour, IDamageable {
             anim.SpawnTK(-0.01f);
             MirrorImageCD_ += 6;
             Ratatatata_ += 6;
+            TimeRandomOrbAttack_ += 6;
             TKSpawning = true;
+
+            if (TimeKeeper)
+            {
+                Platforms.transform.parent = null;
+                ChangeColorTimer_ = ChangeColorTimer;
+            }
         }
+        manag = GameObject.FindObjectOfType<GameManager>();
 
         if (BigBoy) // Starting anim for BigBoyBoss.
         {
@@ -826,7 +868,7 @@ public class Monster : MonoBehaviour, IDamageable {
                     PC = PC2;
                 }
             }
-            else if (!FireTrailBoss && !FrostTrailBoss) // not startscene and no illus
+            else if (!FireTrailBoss) // not startscene and no illus
             {
                 PC = PC_;
             }
@@ -857,6 +899,141 @@ public class Monster : MonoBehaviour, IDamageable {
         }
     }
 
+
+    private void TimeKeeperOrb()
+    {
+        TimeOrbCD_ -= Time.deltaTime;
+
+        if (TimeOrbCD_ < 0)
+        {
+            int OrbCount = 1;
+            if (health <= health2 * 0.88f)
+            {
+                OrbCount++;
+            }
+            if (health <= health2 * 0.77f)
+            {
+                OrbCount++;
+            }
+            if (health <= health2 * 0.66f)
+            {
+                OrbCount++;
+            }
+            if (health <= health2 * 0.55f)
+            {
+                OrbCount++;
+            }
+            if (health <= health2 * 0.44f)
+            {
+                OrbCount++;
+            }
+            if (health <= health2 * 0.33f)
+            {
+                OrbCount++;
+            }
+            if (health <= health2 * 0.22f)
+            {
+                OrbCount++;
+            }
+
+            int randPlat = Random.Range(0, TimeKeeperPoints.Count);
+            if (ChangeCol)
+            {
+                StartCoroutine(TimeKeeper2(0f, TimeOrbFrost, randPlat, OrbCount));
+            }
+            else
+            {
+                StartCoroutine(TimeKeeper2(0f, TimeOrbFire, randPlat, OrbCount));
+            }                 
+        TimeOrbCD_ = TimeOrbCD;
+        }
+    }
+
+
+    IEnumerator TimeKeeper2(float delay, GameObject FireOrFrost, int randPlat, int count)
+    {
+
+        yield return new WaitForSeconds(delay);
+        GameObject TimeKOrb = Instantiate(FireOrFrost, TimeKeeperPoints[randPlat].transform);
+
+        TimeKOrb.transform.parent = null;
+        TimeKOrb.transform.localScale = new Vector3(1, 1, 1);
+        TimeKOrb.transform.position = TimeKeeperPoints[randPlat].transform.position;
+        TKOrbScript orb = TimeKOrb.GetComponent<TKOrbScript>();
+        orb.TargetBool = true;
+        switch (randPlat)
+        {
+            case 0:
+                orb.Target1 = TimeKeeperPoints[0].transform;
+                orb.Target2 = TimeKeeperPoints[3].transform;
+                break;
+            case 1:
+                orb.Target1 = TimeKeeperPoints[1].transform;
+                orb.Target2 = TimeKeeperPoints[4].transform;
+                break;
+            case 2:
+                orb.Target1 = TimeKeeperPoints[2].transform;
+                orb.Target2 = TimeKeeperPoints[5].transform;
+                break;
+            case 3:
+                orb.Target1 = TimeKeeperPoints[3].transform;
+                orb.Target2 = TimeKeeperPoints[6].transform;
+                break;
+            case 4:
+                orb.Target1 = TimeKeeperPoints[4].transform;
+                orb.Target2 = TimeKeeperPoints[7].transform;
+                break;
+            case 5:
+                orb.Target1 = TimeKeeperPoints[5].transform;
+                orb.Target2 = TimeKeeperPoints[0].transform;
+                break;
+            case 6:
+                orb.Target1 = TimeKeeperPoints[6].transform;
+                orb.Target2 = TimeKeeperPoints[1].transform;
+                break;
+            case 7:
+                orb.Target1 = TimeKeeperPoints[7].transform;
+                orb.Target2 = TimeKeeperPoints[2].transform;
+                break;
+        }
+        count--;
+        if (count > 0)
+        {
+            if (randPlat == 7)
+            {
+                randPlat = 0;
+            }
+            else
+            {
+                randPlat++;
+            }
+            StartCoroutine(TimeKeeper2(0.3f, FireOrFrost, randPlat, count));
+        }
+    }
+
+    void TimeKeeperChangeColor()
+    {
+        if (ChangeColorTimer_ <= 0)
+        {
+            var main = WaveColor.main;
+            if (!ChangeCol)
+            {
+                main.startColor = colorBlue;
+                ChangeCol = true;
+                WaveColor.gameObject.GetComponent<TimeKeeperWaveDamage>().DamageType = true;
+            }
+            else
+            {
+                main.startColor = colorRed;
+                ChangeCol = false;
+                WaveColor.gameObject.GetComponent<TimeKeeperWaveDamage>().DamageType = false;
+            }
+            float randomT = Random.Range(-5, 6);
+        ChangeColorTimer_ = ChangeColorTimer+ randomT;
+        }
+       ChangeColorTimer_ -= Time.deltaTime;
+    }
+
         // Update is called once per frame
     void Update()
     {
@@ -885,6 +1062,22 @@ public class Monster : MonoBehaviour, IDamageable {
         if (MageBoss && InCombat)
         {
             MageBossAttack();
+        }
+
+        if (Boss && TimeKeeper && !TKSpawning && manag.Illus.Count == 0 && !TimeKSpin && !TimeRandomOrbBool)
+        {
+            TimeKeeperOrb();
+        }
+
+        if (Boss && TimeKeeper)
+        {
+            TimeKeeperChangeColor();
+        }
+
+        if (TimeKeeper && !IamIllu) //Here is the cause for strange illu behaviour. take away && IAmIllu for it.
+        {
+            ASD += Time.deltaTime * 4;
+            Platforms.transform.rotation = Quaternion.Euler(new Vector3(0, ASD, 0));
         }
 
         AmISlowed();
@@ -1004,10 +1197,54 @@ public class Monster : MonoBehaviour, IDamageable {
                     anim.RunAnimation2();
                 }
             }
-            if (TimeKSpin) // Timekeeper special attack, chaning destination.
+            if (TimeKSpin && Illusionist) // Illusionist special attack, chaning destination.
             {
                 transform.Rotate(Vector3.up * Time.deltaTime * 130f, Space.World);
                 agent.destination = transform.position + (transform.forward * 4);
+            }
+            if (TimeKSpin && TimeKeeper) {
+
+                if (ClockAttackCD_ <= 0)
+                {
+                    ClockPlatCount++;
+                    agent.Warp(TimeKeeperPoints[ClockPlatCount].transform.position);
+                    ParentPlatform = TimeKeeperPoints[ClockPlatCount].transform;
+
+                    if (ClockPlatCount == TimeKeeperPoints.Count-1)
+                    {
+                        ClockPlatCount = -1;
+                    }
+
+                    ClockAttackCD_ = 0.35f;
+                }
+                ClockAttackCD_ -= Time.deltaTime;                 
+            }
+
+            if (TimeRandomOrbBool && TimeKeeper)
+            {
+
+                if (ClockAttackCD_ <= 0)
+                {
+                    ClockPlatCount++;
+                    agent.Warp(TimeKeeperPoints[ClockPlatCount].transform.position);
+                    ParentPlatform = TimeKeeperPoints[ClockPlatCount].transform;
+
+                    if (ClockPlatCount == TimeKeeperPoints.Count - 1)
+                    {
+                        ClockPlatCount = -1;
+                    }
+                    if (TImeRandomGottaGoFast >= 0.075f)
+                    {
+                        TImeRandomGottaGoFast -= 0.05f;
+                        ClockAttackCD_ = TImeRandomGottaGoFast;
+                    }
+                    else
+                    {
+                        ClockAttackCD_ = 0.075f;
+                    }
+
+                }
+                ClockAttackCD_ -= Time.deltaTime;
             }
 
             //Attack code
@@ -1019,7 +1256,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
             if (canAttack && !BBStill && !DisengageDistanceRemoveAfterAttack && !DontAttackJustMove)
             {
-                if (!SpiderBoss && !TimeKSpin && !TKSpawning)
+                if (!SpiderBoss && (!TimeKSpin || TimeKeeper) && !TKSpawning)
                 {
                     RotateTowards(PC.transform); // if in melee range, rotate towards player }
                 }
@@ -1089,10 +1326,14 @@ public class Monster : MonoBehaviour, IDamageable {
                 hardCodeDansGame -= Time.deltaTime;
             }
 
-            if (TimeKeeper)
+            if (Illusionist || TimeKeeper)
             {
-                MirrorImageCD_ -= Time.deltaTime;
-                Ratatatata_ -= Time.deltaTime;
+                if (manag.Illus.Count <= 0 && !TimeKSpin && !TimeRandomOrbBool)
+                {
+                    MirrorImageCD_ -= Time.deltaTime;
+                    Ratatatata_ -= Time.deltaTime;
+                    TimeRandomOrbAttack_ -= Time.deltaTime;
+                }
             }
             if (SpiderBoss)
             {
@@ -1107,7 +1348,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
             if (IlluHit)
             {
-                TakeDamage(Time.deltaTime / 2);
+                TakeDamage(Time.deltaTime / IlluDamageAmount);
             }
 
             if (StopMovingAfterAttacking)
@@ -1263,12 +1504,18 @@ public class Monster : MonoBehaviour, IDamageable {
         attackCountdown = 0.5f;
     }
 
+    public void StopRandomOrb()
+    {
+        TimeRandomOrbBool = false;
+        attackCountdown = 0.5f;
+        TimeStartBlastingBool = false;
+    }
     public void StopSpin()
     {
-        var RandomTime = Random.Range(10, 15);
-        MirrorImageCD_ = RandomTime;
+     //   var RandomTime = Random.Range(10, 15);
+      //  MirrorImageCD_ = RandomTime;
         TimeKSpin = false;
-        Ratatatata_ = RandomTime * 2.5f;
+      //  Ratatatata_ = RandomTime * 2.5f;
     }
 
     void StartMovingAfterAttackLands()
@@ -1348,7 +1595,7 @@ public class Monster : MonoBehaviour, IDamageable {
             if (MonsterType == 4)
             {
                 Invoke("TimeKeeperAttacks", 0.1f);
-                var RandomSpell = Random.Range(0, 7);
+                var RandomSpell = Random.Range(0, 9);
                 switch (RandomSpell)
                 {                   
                     case 0:
@@ -1382,6 +1629,16 @@ public class Monster : MonoBehaviour, IDamageable {
                         MonsterTypeSubLayer = 2;
                         break;
                     case 6:
+                        currentspellObject = currentspellObject2;
+                        currentSpell = currentSpell2;
+                        MonsterTypeSubLayer = 1;
+                        break;
+                    case 7:
+                        currentspellObject = currentspellObject3;
+                        currentSpell = currentSpell3;
+                        MonsterTypeSubLayer = 2;
+                        break;
+                    case 8:
                         currentspellObject = currentspellObject2;
                         currentSpell = currentSpell2;
                         MonsterTypeSubLayer = 1;
@@ -1447,6 +1704,13 @@ public class Monster : MonoBehaviour, IDamageable {
                     {
                         RandomSpeed = RandomSpeed / 1.5f;
                     }
+                    
+
+                    if (TimeKeeper && (manag.Illus.Count > 0 || TimeKSpin))
+                    {
+                        RandomSpeed = RandomSpeed / 1.5f;
+                    }
+
                     spell.projectilespeed = RandomSpeed;
                 }
 
@@ -1551,40 +1815,48 @@ public class Monster : MonoBehaviour, IDamageable {
         SineWaveAttack = false;
         if (MonsterType == 4 && IamIllu == false) // TimeKeeper
         {
-            GameManager manag = GameObject.FindObjectOfType<GameManager>();
 
             if (manag.Illus.Count == 0 && Ratatatata_ <= 0)
             {
-                agent.Warp(TimeKeeperPoints[0].transform.position);
                 TimeKSpin = true;
-                AttackSpeed = 0.1f;
-                CasterVariationAS = 0.1f;
                 Invoke("StopSpinHC", 7.4f);
                 Invoke("StopSpin", 8f);
                 Ratatatata_ = Ratatatata;
-
+                agent.Warp(TimeKeeperPoints[0].transform.position);
+                ParentPlatform = TimeKeeperPoints[0].transform;
+                if (Illusionist)
+                {
+                    AttackSpeed = 0.1f;
+                    CasterVariationAS = 0.1f;
+                }
+                if (TimeKeeper)
+                {
+                    AttackSpeed = 0.35f;
+                    CasterVariationAS = 0.35f;
+                    attackCountdown = 0f;
+                    ClockPlatCount = -1;
+                }                
             }
-
 
             if (manag.Illus.Count == 0 && !TimeKSpin)
             {
                 TeleLoc = Random.Range(0, TimeKeeperPoints.Count);
                 agent.Warp(TimeKeeperPoints[TeleLoc].transform.position);
-
                 var RandSind = Random.Range(0, 2);
                 if (RandSind == 0)
                 {
                     SineWaveAttack = true;
                 }
+                ParentPlatform = TimeKeeperPoints[TeleLoc].transform;
             }
 
 
             if (MirrorImageCD_ <= 0 && manag.Illus.Count == 0 && !TimeKSpin)
             {
-                //float randomAS2 = Random.Range(3, 6);
-
                 TimeKeeperLaugh();
-                for (int i = 0; i < 5; i++)
+                SineWaveAttack = false;
+
+                for (int i = 0; i < TimeKeeperPoints.Count; i++)
                 {
                     if (i != TeleLoc)
                     {
@@ -1593,40 +1865,184 @@ public class Monster : MonoBehaviour, IDamageable {
                         AddToRoomMonsterList(MMI);
                         Monster Illu = MMI.GetComponent<Monster>();
 
-                        //   var FakeMaxHealth = health / health2;
-                        Illu.health = 5;
-                        Illu.health2 = 5;
+                        if (!TimeKeeper)
+                        {
+                            Illu.attackCountdown += Random.Range(2, 4f);
+                            Illu.health = 5;
+                            Illu.health2 = 5;
+                            Illu.Invoke("IlluMaxTime", 15);
+                            Illu.ParentPlatform = TimeKeeperPoints[i].transform;
+                            Illu.IlluDamageAmount = 2;
+                            float randomAS = Random.Range(3, 6);
+                            Illu.CasterVariationAS = randomAS;
+                        }
+                        else
+                        {
+                            Illu.attackCountdown += Random.Range(6, 9f);
+                            Illu.health = 50;
+                            Illu.health2 = 50;
+                            Illu.Invoke("IlluMaxTime", 15);
+                            Illu.IlluDamageAmount = 0.5f;
+                            float randomAS = Random.Range(4, 8);
+                            Illu.CasterVariationAS = randomAS;
+                            switch (i)
+                            {
+                                case 0:
+                                    Illu.ParentPlatform = TimeKeeperPoints[3].transform;
+                                    break;
+                                case 1:
+                                    Illu.ParentPlatform = TimeKeeperPoints[4].transform;
+                                    break;
+                                case 2:
+                                    Illu.ParentPlatform = TimeKeeperPoints[5].transform;
+                                    break;
+                                case 3:
+                                    Illu.ParentPlatform = TimeKeeperPoints[6].transform;
+                                    break;
+                                case 4:
+                                    Illu.ParentPlatform = TimeKeeperPoints[7].transform;
+                                    break;
+                                case 5:
+                                    Illu.ParentPlatform = TimeKeeperPoints[0].transform;
+                                    break;
+                                case 6:
+                                    Illu.ParentPlatform = TimeKeeperPoints[1].transform;
+                                    break;
+                                case 7:
+                                    Illu.ParentPlatform = TimeKeeperPoints[2].transform;
+                                    break;
+                            }
+
+
+                        }
+                        Illu.TotalBurnDamage = 0;
                         Illu.Healthbar.fillAmount = health / health2;
                         Illu.MirrorImageCD = 100000;
                         Illu.MirrorImageCD_ = 100000;
                         Illu.IamIllu = true;
                         Illu.Boss = false;
-                        float randomAS = Random.Range(3, 6);
                         Illu.AttackSpeed = 2;
 
+
                         // Illu.attackCountdown = randomAS-3;
-                        Illu.CasterVariationAS = randomAS;
+
                         Illu.Healthbar.transform.parent.gameObject.transform.parent.gameObject.SetActive(false);
-                        Illu.Invoke("IlluMaxTime", 15);
+
                         manag.Illus.Add(MMI);
                     }
+                    else if (TimeKeeper)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                ParentPlatform = TimeKeeperPoints[3].transform;
+                                break;
+                            case 1:
+                                ParentPlatform = TimeKeeperPoints[4].transform;
+                                break;
+                            case 2:
+                                ParentPlatform = TimeKeeperPoints[5].transform;
+                                break;
+                            case 3:
+                                ParentPlatform = TimeKeeperPoints[6].transform;
+                                break;
+                            case 4:
+                                ParentPlatform = TimeKeeperPoints[7].transform;
+                                break;
+                            case 5:
+                                ParentPlatform = TimeKeeperPoints[0].transform;
+                                break;
+                            case 6:
+                                ParentPlatform = TimeKeeperPoints[1].transform;
+                                break;
+                            case 7:
+                                ParentPlatform = TimeKeeperPoints[2].transform;
+                                break;
+                        }
+                    }
+                }
+                if (!TimeKeeper)
+                {
+                    attackCountdown += Random.Range(2, 4f);
+                }
+                else
+                {
+                    attackCountdown += Random.Range(5.5f, 8f);
                 }
                 ParticleSystem ps = OuterRing.GetComponent<ParticleSystem>();
                 var main = ps.main;
                 main.startDelay = 0;
-                //  OuterRing.startDelay = 0f;
-
                 OuterRing.Play(true);
                 MirrorImageCD_ = MirrorImageCD;
-
-
             }
 
+            if (TimeRandomOrbAttack_ <= 0 && manag.Illus.Count == 0 && !TimeKSpin && TimeKeeper)
+            {
+                TimeRandomOrbBool = true;
+                TimeRandomOrbAttack_ = TimeRandomOrbAttack;
+                Invoke("StopRandomOrb", 15f);
+                TImeRandomGottaGoFast = 0.6f;
+                Invoke("TKStartblast", 4f);
+                // AttackSpeed = 0.05f;
+                // CasterVariationAS = 0.05f;
+                attackCountdown = 20f;
+                ClockPlatCount = -1;
+
+            }
         }
     }
 
+    void TKStartblast()
+    {
+        TimeStartBlastingBool = true;
+        StartCoroutine(TimeKeeper3(0.1f));
 
-    public Vector3 BallisticVel(Transform target, float angle)
+    }
+
+    IEnumerator TimeKeeper3(float delay)
+    {
+
+        yield return new WaitForSeconds(delay);
+        GameObject FireOrFrost = TimeOrbFire;
+
+        if (ChangeCol)
+        {
+            FireOrFrost = TimeOrbFrost;
+        }
+
+       int randPlat = Random.Range(0, TimeKeeperPoints.Count);
+       int randPlat2 = Random.Range(0, TimeKeeperPoints.Count);
+
+        GameObject TimeKOrb = Instantiate(FireOrFrost, TimeKeeperPoints[randPlat].transform);
+
+        TimeKOrb.transform.parent = null;
+        TimeKOrb.transform.localScale = new Vector3(1, 1, 1);
+        TimeKOrb.transform.position = TimeKeeperPoints[randPlat].transform.position;
+        TKOrbScript orb = TimeKOrb.GetComponent<TKOrbScript>();
+        orb.TargetBool = true;
+
+        orb.Target1 = TimeKeeperPoints[randPlat].transform;
+        
+        if (randPlat != randPlat2)
+        {
+            orb.Target2 = TimeKeeperPoints[randPlat2].transform;
+        }
+        else if (randPlat < 7)
+        {
+            orb.Target2 = TimeKeeperPoints[7].transform;
+        }
+        else
+        {
+            orb.Target2 = TimeKeeperPoints[0].transform;
+        }
+
+        if (TimeStartBlastingBool)
+        {
+            StartCoroutine(TimeKeeper3(0.5f));
+        }
+    }
+
+        public Vector3 BallisticVel(Transform target, float angle)
     {//SpiderBossAttack
         var dir = target.position - new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z - 4f);  // get target direction
         var h = dir.y;  // get height difference
@@ -1715,12 +2131,12 @@ public class Monster : MonoBehaviour, IDamageable {
             }
         }
 
-        if (!TimeKeeper && !StartScene)
+        if (!StartScene)
         {
             AggroRange = 999;
         }
 
-        if (IamIllu)
+        if (IamIllu && damage > 0)
         {
             Healthbar.color = Color.blue;
             Healthbar.transform.parent.gameObject.transform.parent.gameObject.SetActive(true);
@@ -1836,8 +2252,11 @@ public class Monster : MonoBehaviour, IDamageable {
 
         if (IamIllu)
         {
-            GameManager manag = GameObject.FindObjectOfType<GameManager>();
             manag.Illus.Remove(gameObject);
+        }
+        if (TimeKeeper && !IamIllu)
+        {
+            Platforms.transform.parent = transform.parent;
         }
 
         if (animChild != null && !Resurrect && !StoneGolem)
@@ -2049,6 +2468,21 @@ public class Monster : MonoBehaviour, IDamageable {
 
             rb.position = new Vector3(transform.position.x, 2.5f, transform.position.z);
             rb.position += transform.forward * Time.deltaTime * MovementSpeed;
+        }
+
+        if (TimeKeeper && ParentPlatform != null)
+        {
+
+            if (!TKSpawning)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, ParentPlatform.position, 5 * Time.deltaTime);
+            }
+            else
+            {
+                transform.position = Vector3.MoveTowards(transform.position, ParentPlatform.position, 2.5f * Time.deltaTime);
+            }
+
+
 
         }
 

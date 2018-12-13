@@ -80,6 +80,11 @@ public class CastWeapon : MonoBehaviour
         if (ID != 4 && Player1.GetComponent<Player>().fullhealth == 15) // armor 4 non frost explosion stuff.
         {
             Player1.GetComponent<Player>().fullhealth = 10;
+            if (Player1.GetComponent<Player>().health > 10)
+            {
+                Player1.GetComponent<Player>().health = 10;
+            }
+
             Player1.GetComponent<Player>().HealthText.text = Player1.GetComponent<Player>().health.ToString("F1");
             Player1.GetComponent<Player>().HealthBar.fillAmount = Player1.GetComponent<Player>().health / Player1.GetComponent<Player>().fullhealth;
 

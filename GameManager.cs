@@ -399,6 +399,12 @@ public class GameManager : MonoBehaviour
                 CurrentLevel_ = 14;
                 GiveLoot_ = true;
                 break;
+            case 10:
+                minRoom_ = 0;
+                maxRoom_ = 0;
+                CurrentLevel_ = 15;
+                GiveLoot_ = true;
+                break;
             case 20:
                 minRoom_ = 20;
                 maxRoom_ = 20;

@@ -324,6 +324,7 @@ public class Room : MonoBehaviour
             ASD += Time.deltaTime * 5;
             OuterRing.transform.rotation = Quaternion.Euler(new Vector3(90, ASD, 0));
             InnerRing.transform.rotation = Quaternion.Euler(new Vector3(90, -ASD, 0));
+
         }
     }
 

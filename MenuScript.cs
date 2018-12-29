@@ -26,6 +26,7 @@ public class MenuScript : MonoBehaviour {
     public Toggle VSyncToggle;
     public Toggle FSToggle;
     public Dropdown ScreenResolution;
+    public Dropdown AASettings;
     internal static int VsyncIni;
     internal static bool ResChecked;
     internal static int ResCheckInt;
@@ -33,6 +34,7 @@ public class MenuScript : MonoBehaviour {
     internal static Resolution[] resolutions;
     List<int> FakeCount = new List<int>();
     private bool DontUpdateRes;
+    internal static int AASetting = 1;
 
 
     public void Start()
@@ -106,6 +108,8 @@ public class MenuScript : MonoBehaviour {
             FSToggle.isOn = false;
         }
         DontUpdateRes = false;
+        AASettings.value = AASetting;
+        ChooseAA(AASetting);
     }
 
     public void SetModeText(int mode)
@@ -126,12 +130,6 @@ public class MenuScript : MonoBehaviour {
                 break;
         }
     }
-    //            Lives = 0;
-    //            InfiniteLives = false;
-    //            MonsterDensity = 1.3f;
-    //            GoldDropChance = -15;
-    //            BossHealthModifier = 1.3f;
-
 
     public void TurnOnVSync()
     {
@@ -150,7 +148,28 @@ public class MenuScript : MonoBehaviour {
             ResChecked = true;
             ResCheckInt = resolutionIndex;
         }
+    }
 
+    public void ChooseAA(int aaIndex)
+    {
+        AASetting = aaIndex;
+        int CurAA = 0;
+        switch (aaIndex)
+        {
+            case 0:
+                CurAA = 0;
+                break;
+                case 1:
+                CurAA = 2;
+                break;
+            case 2:
+                CurAA = 4;
+                break;
+            case 3:
+                CurAA = 8;
+                break;
+        }
+        QualitySettings.antiAliasing = CurAA;
     }
 
     void LoadingBarFunc()

@@ -69,7 +69,7 @@ public class MonsterAnim : MonoBehaviour
     }
     public void RunAnimation()
     {
-        animation.Play("walk");
+        animation.Play("run");
     }
     public void RunAnimation2()
     {

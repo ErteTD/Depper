@@ -582,6 +582,7 @@ public class ToolTipScript : MonoBehaviour
     }
     public void OpenWeaponSelect()
     {
+        gm.EnableItem(true, false);
         SelectArmor.SetActive(false);
         showArmorSelect = false;
         ForceCloseArmorPanels.SetActive(false);
@@ -596,6 +597,7 @@ public class ToolTipScript : MonoBehaviour
     }
     public void OpenArmorSelect()
     {
+        gm.EnableItem(false, false);
         SelectWeapon.SetActive(false);
         showWeaponSelect = false;
         ForceCloseWeaponPanels.SetActive(false);

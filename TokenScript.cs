@@ -118,6 +118,7 @@ public class TokenScript : MonoBehaviour
         switch (ItemType)
         {
             case 1:
+                manager.EnableSpellSlotEffect();
                 switch (TokenType)
                 {
                     case 1:
@@ -177,6 +178,7 @@ public class TokenScript : MonoBehaviour
                 }
                 break;
             case 3:
+                manager.EnableItem(true, true);
                 switch (ItemID)
                 {
                     case 1:
@@ -197,8 +199,10 @@ public class TokenScript : MonoBehaviour
                 }
                 break;
             case 4:
+                manager.EnableItem(false, true);
                 switch (ItemID)
                 {
+
                     case 1:
                         manager.SpiderArmorToken++;
                         break;

@@ -1215,7 +1215,7 @@ public class Monster : MonoBehaviour, IDamageable {
                         ClockPlatCount = -1;
                     }
 
-                    ClockAttackCD_ = 0.35f;
+                    ClockAttackCD_ = 0.4f;
                 }
                 ClockAttackCD_ -= Time.deltaTime;                 
             }
@@ -1507,7 +1507,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public void StopRandomOrb()
     {
         TimeRandomOrbBool = false;
-        attackCountdown = 0.5f;
+        attackCountdown = 3f;
         TimeStartBlastingBool = false;
     }
     public void StopSpin()
@@ -1732,26 +1732,29 @@ public class Monster : MonoBehaviour, IDamageable {
                 Swarm = true;
                 attackCountdown = 8f;
                 SwarmCD_ = SwarmCD;
-
+                BossSound1.Play();
                 Invoke("StartSwarm", 1.5f);
-                Invoke("StopSwarm", 5f);
+                Invoke("StopSwarm", 4f);
             }
             else
             {
                 GameObject ball = Instantiate(SBAttack, new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z - 4f), Quaternion.identity);
                 ball.GetComponent<Rigidbody>().velocity = BallisticVel(PC.transform, 30f);
                 ball.GetComponent<SpiderBall>().Daddy = gameObject;
+                BossSound2.Play();
             }
         }
     }
     void StartSwarm() // so animation can start before spiders spawn.
     {
         SummonSwarm(20);
+
     }
 
     void StopSwarm()
     {
         Swarm = false;
+        BossSound1.Stop();
     }
     public void ReturnType5MovementSpeed(float time) // never called?
     {
@@ -1831,8 +1834,8 @@ public class Monster : MonoBehaviour, IDamageable {
                 }
                 if (TimeKeeper)
                 {
-                    AttackSpeed = 0.35f;
-                    CasterVariationAS = 0.35f;
+                    AttackSpeed = 0.4f;
+                    CasterVariationAS = 0.4f;
                     attackCountdown = 0f;
                     ClockPlatCount = -1;
                 }                
@@ -1870,7 +1873,7 @@ public class Monster : MonoBehaviour, IDamageable {
                             Illu.attackCountdown += Random.Range(2, 4f);
                             Illu.health = 5;
                             Illu.health2 = 5;
-                            Illu.Invoke("IlluMaxTime", 15);
+                            Illu.Invoke("IlluMaxTime", 10);
                             Illu.ParentPlatform = TimeKeeperPoints[i].transform;
                             Illu.IlluDamageAmount = 2;
                             float randomAS = Random.Range(3, 6);
@@ -2378,8 +2381,8 @@ public class Monster : MonoBehaviour, IDamageable {
             var main4 = ps4.main;
             main3.startColor = main.startColor;
             main4.startColor = main.startColor;
-            CurBlob_.health = 2;
-            CurBlob_.health2 = 2;
+            CurBlob_.health = 0.7f;
+            CurBlob_.health2 = 0.7f;
             CurBlob_.Healboss = false;
             CurBlob_.MovementSpeed = 8;
             CurBlob_.MovementSpeed_ = 8;

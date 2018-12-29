@@ -13,6 +13,9 @@ public class GameManager : MonoBehaviour
     public static int minRoom_, maxRoom_, CurrentLevel_;
     public static bool StartLevel_, GiveLoot_;
     public GameObject BossHealth;
+    public List<GameObject> SelectSpellsEffect;
+    public GameObject SelectWeaponEffect;
+    public GameObject SelectArmorEffect;
     [Header("ShopStuff")]
     public int RandomSpellBuyCost;
     public int RandomItemBuyCost;
@@ -32,6 +35,10 @@ public class GameManager : MonoBehaviour
     public List<GameObject> Items;
     public bool ForceHideAllOtherWindows;
     public Transform ShopRoom;
+
+    [Header("Music")]
+    public AudioSource NormalTheme;
+    public AudioSource BossBattle;
 
     [Header("Currency")]
     public int Money;
@@ -212,12 +219,13 @@ public class GameManager : MonoBehaviour
     private Player Player_;
     private MapGrid MG;
     private GameObject MainCamera;
+    public GameObject NextLevelAnim;
 
+    
 
     void Start()
     {
         Lives = MenuScript.Lives;
-
 
         MainCamera = GameObject.Find("MainCamera");
         MG = FindObjectOfType<MapGrid>();
@@ -243,6 +251,36 @@ public class GameManager : MonoBehaviour
     }
 
 
+    public void EnableSpellSlotEffect()
+    {
+        foreach (var item in SelectSpellsEffect)
+        {
+            item.SetActive(true);
+        }
+    }
+    public void DisableSpellSlotEffect()
+    {
+        foreach (var item in SelectSpellsEffect)
+        {
+            item.SetActive(false);
+        }
+    }
+
+    public void EnableItem(bool ItemType, bool ActiveOrInactive)
+    {
+        if (ItemType)
+        {
+            SelectWeaponEffect.SetActive(ActiveOrInactive);
+        }
+        else
+        {
+            SelectArmorEffect.SetActive(ActiveOrInactive);
+        }
+
+    }
+
+
+
     public void SetCurrentRoom(GameObject room) // not used currently
     {
         CurrentRoom = room;
@@ -253,7 +291,18 @@ public class GameManager : MonoBehaviour
     }
     public void CurrentLevel(int lvl)
     {
-        CurrentLevelText.text = "Level " + (lvl + 1).ToString();
+
+
+        if (lvl < 5)
+        {
+            CurrentLevelText.text = "Level " + (lvl + 1).ToString();
+            NextLevelAnim.GetComponent<LoadScreen>().NewLevelText("Level: " + (lvl + 1).ToString(), lvl);
+        }
+        else
+        {
+            CurrentLevelText.text = "Final level";
+            NextLevelAnim.GetComponent<LoadScreen>().NewLevelText("Final level", lvl);
+        }
     }
 
     public void GainGold(int amount)
@@ -433,8 +482,7 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.H))
         {
-            ShowHide2 = ShowHide2 ? false : true;
-            ControlMenu.SetActive(ShowHide2);
+            ToggleControls();
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -446,6 +494,12 @@ public class GameManager : MonoBehaviour
         {
             ShowEscMenu();
         }
+    }
+
+    public void ToggleControls()
+    {
+        ShowHide2 = ShowHide2 ? false : true;
+        ControlMenu.SetActive(ShowHide2);
     }
 
     public void PickedUpItem()

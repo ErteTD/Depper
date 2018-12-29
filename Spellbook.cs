@@ -842,6 +842,7 @@ public class Spellbook : MonoBehaviour
 
             gameObject.GetComponent<ToolTipScript>().ForceCloseWeaponPanels.SetActive(false);
 
+        manager.DisableSpellSlotEffect();
         if (toggleSpells)
         {
             PreviouslySelectedSlot = slotNumber;

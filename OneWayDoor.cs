@@ -31,6 +31,7 @@ public class OneWayDoor : MonoBehaviour
     public GameObject RingTwo;
     private bool CantClickDoorDuringLoad;
     public GameObject LoadSceneManager;
+    public bool StartBossMusic;
 
     public void Start()
     {
@@ -113,6 +114,12 @@ public class OneWayDoor : MonoBehaviour
         {
             ConRoom.SetActive(true);
         }
+        if (StartBossMusic)
+        {
+            GameManager.FindObjectOfType<GameManager>().NormalTheme.Stop();
+            GameManager.FindObjectOfType<GameManager>().BossBattle.Play();
+        }
+        
 
         ResetCamera();
         FindObjectOfType<CastWeapon>().TelePortDoor = true;
@@ -137,6 +144,8 @@ public class OneWayDoor : MonoBehaviour
                 Destroy(RingTwo);
             }
             FindObjectOfType<MapGrid>().NextLevel();
+            GameManager.FindObjectOfType<GameManager>().NormalTheme.Play();
+            GameManager.FindObjectOfType<GameManager>().BossBattle.Stop();
         }
 
     }

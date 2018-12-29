@@ -12,6 +12,7 @@ public class MapGrid : MonoBehaviour
     private int TotalRooms;
     public List<GameObject> RoomTypes;
     public GameObject Door;
+    public GameObject BossDoor;
     public int RoomMapLocationX;
     public int RoomMapLocationY;
     [HideInInspector] public int XGrid;
@@ -93,15 +94,15 @@ public class MapGrid : MonoBehaviour
     {
         GiveStuff.GetComponent<GameManager>().CurrentLevel(CurrentLevel);
         TotalRooms = Random.Range(minRoom, maxRoom + 1);
-        AmountOfLoot = (int)Mathf.Floor(TotalRooms / 6);
-        AmountOfPotions = (int)Mathf.Floor(TotalRooms / 6);
-        NumberOfMiniBosses = (int)Mathf.Floor(TotalRooms / 6);
-        NumberOfEvents = (int)Mathf.Floor(TotalRooms / 6);
-        if (TotalRooms < 6)
-        {
+        AmountOfLoot = (int)Mathf.Floor(TotalRooms / 5);
+        AmountOfPotions = (int)Mathf.Floor(TotalRooms / 5);
+        //NumberOfMiniBosses = (int)Mathf.Floor(TotalRooms / );
+        //NumberOfEvents = (int)Mathf.Floor(TotalRooms / );
+        //if (TotalRooms < 6)
+        //{
             NumberOfMiniBosses = 1;
             NumberOfEvents = 1;
-        }
+        //}
         GameObject Base = Instantiate(RoomTypes[0], transform.position, transform.rotation, transform);
         Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material = FloorType[CurrentLevel];
         GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().CurrentRoom = Base;
@@ -235,8 +236,8 @@ public class MapGrid : MonoBehaviour
                     Monst.transform.localPosition = Base_.MiniBossLocation;
                     if (MiniBosses[1]) { Monst.transform.localPosition = new Vector3(Base_.MiniBossLocation.x, 3, Base_.MiniBossLocation.z); } // Move Blob up from beneth the ground
                     Monst.GetComponent<Monster>().RoomIAmIn = Base;
-                    Monst.GetComponent<Monster>().health += CurrentLevel * 5;
-                    Monst.GetComponent<Monster>().health2 += CurrentLevel * 5;
+                    Monst.GetComponent<Monster>().health = 10+ (CurrentLevel * 5);
+                    Monst.GetComponent<Monster>().health2 = 10 + (CurrentLevel * 5);
                     Monst.GetComponent<Monster>().HBtext.color = Color.green;
                     Base_.AddMonster(Monst);
                     MiniBossLoot(Monst.GetComponent<Monster>());
@@ -342,7 +343,16 @@ public class MapGrid : MonoBehaviour
             }
 
             int Indeex = GridList.IndexOf(FinalFinalX);
-            GameObject Doors = Instantiate(Door, RoomList[Indeex].transform);
+
+            GameObject BRdoor = BossDoor;
+
+            if (RoomList[Indeex].GetComponent<Room>().NormalRoom == false)
+            {
+                BRdoor = Door;
+            }
+
+
+            GameObject Doors = Instantiate(BRdoor, RoomList[Indeex].transform);
 
             Doors.transform.localPosition = RoomList[Indeex].GetComponent<Room>().DoorLocations[4];
             Doors.transform.localRotation = Quaternion.Euler(RoomList[Indeex].GetComponent<Room>().DoorRotation[4]);
@@ -379,6 +389,7 @@ public class MapGrid : MonoBehaviour
             BossRoom.transform.position = new Vector3(0f, 0f, (FinalY + 2) * RoomMapLocationY);
 
             Doors.transform.GetChild(0).GetComponent<OneWayDoor>().ConRoom = BossRoom;
+            Doors.transform.GetChild(0).GetComponent<OneWayDoor>().StartBossMusic = true;
 
             BRoom.Floor.GetComponent<MeshRenderer>().material = FloorType[CurrentLevel];
             BRoom.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(BRoom.GetComponent<Room>().Floor.transform.localScale.x * 0.75f, BRoom.GetComponent<Room>().Floor.transform.localScale.z * 0.75f);
@@ -571,7 +582,9 @@ public class MapGrid : MonoBehaviour
 
         }
         CurrentLevel++;
-        maxRoom++;
+        maxRoom = Random.Range(5+CurrentLevel, 7+ CurrentLevel);
+        minRoom = Random.Range(5+ CurrentLevel, 7+ CurrentLevel);
+
         MonstersThatCanDropLoot.Clear();
         GridList.Clear();
         MiniMapList.Clear();

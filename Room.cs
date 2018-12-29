@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class Room : MonoBehaviour
 {
     public GameObject Floor;
+    public bool NormalRoom;
     public NavMeshSurface NavGen;
     public bool ThisRoomHasShop;
     public bool ThisRoomHasEvent;
@@ -57,6 +58,7 @@ public class Room : MonoBehaviour
     public bool HasLoot;
     public int CurrentLevel;
     private List<GameObject> Monsters = new List<GameObject>();
+    private GameManager gm;
 
     void Start()
     {

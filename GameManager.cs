@@ -235,6 +235,7 @@ public class GameManager : MonoBehaviour
       Vector2 asd = new Vector2(0, 0);
         MiniCamera = GameObject.Find("MiniMapCamera");
         Cursor.SetCursor(DefCursor, asd, CursorMode.Auto);
+        Time.timeScale = 1.1f;
         SetTime = Time.timeScale;
         CurrentGoldText.text = "Gold: " + Money.ToString();
         CurrentGameModeText.text = MenuScript.GameDifficulty;
@@ -452,6 +453,12 @@ public class GameManager : MonoBehaviour
                 minRoom_ = 0;
                 maxRoom_ = 0;
                 CurrentLevel_ = 15;
+                GiveLoot_ = true;
+                break;
+            case 11:
+                minRoom_ = 0;
+                maxRoom_ = 0;
+                CurrentLevel_ = 16;
                 GiveLoot_ = true;
                 break;
             case 20:

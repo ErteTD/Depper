@@ -58,7 +58,13 @@ public class Room : MonoBehaviour
     public bool HasLoot;
     public int CurrentLevel;
     private List<GameObject> Monsters = new List<GameObject>();
+    GameObject[] Rocks;
     private GameManager gm;
+
+    [Header("GolemBossStuff")]
+    public bool GolemBossRoom;
+    public GameObject BossWeapon;
+    public GameObject BossArmor;
 
     void Start()
     {
@@ -126,13 +132,13 @@ public class Room : MonoBehaviour
                 break;
             case 4:
                 SwarmSize = 20;
-                CasterSize = 5;
+                CasterSize = 4;
                 BlobSize = 4;
                 SkeletonSize = 10;
                 break;
             case 5:
                 SwarmSize = 30;
-                CasterSize = 8;
+                CasterSize = 6;
                 BlobSize = 8;
                 SkeletonSize = 12;
                 break;
@@ -328,6 +334,11 @@ public class Room : MonoBehaviour
             InnerRing.transform.rotation = Quaternion.Euler(new Vector3(90, -ASD, 0));
 
         }
+
+        if (GolemBossRoom)
+        {
+            GolemBossRoomOpenDoorsCheck();
+        }
     }
 
     public void GetDoors()
@@ -396,6 +407,51 @@ public class Room : MonoBehaviour
                 }
             }
         }
+    }
+
+    void GolemBossRoomOpenDoorsCheck()
+    {
+        if (Monsters.Count == 0)
+        {
+            GolemBossRoom = false;
+            Invoke("GBCheck2", 2);
+        }
+    }
+
+    void GBCheck2()
+    {
+        if (Monsters.Count == 0)
+        {
+
+           Rocks = GameObject.FindGameObjectsWithTag("GolemRock");
+
+            foreach (GameObject rock in Rocks)
+            {
+                rock.GetComponent<GolemThrownRock>().BossDeadDestroyRocks();
+            }
+
+                var RandomLoot = Random.Range(0, 2);
+            switch (RandomLoot)
+            {
+                case 0:
+                    GameObject BossLoot = Instantiate(Chest, transform.position, Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z), transform);
+                    BossLoot.transform.localPosition = new Vector3(0,0.9f,-10f);
+                    BossLoot.GetComponent<AmazingChestHead>().CurrentLoot = BossWeapon;
+                    BossLoot.GetComponent<AmazingChestHead>().BossChest = true;
+                    break;
+                case 1:
+                    GameObject BossLoot2 = Instantiate(Chest, transform.position, Quaternion.Euler(transform.rotation.x, 90f, transform.rotation.z), transform);
+                    BossLoot2.transform.localPosition = new Vector3(0, 0.9f, -10f);
+                    BossLoot2.GetComponent<AmazingChestHead>().CurrentLoot = BossArmor;
+                    BossLoot2.GetComponent<AmazingChestHead>().BossChest = true;
+                    break;
+            }
+        }
+        else
+        {
+            GolemBossRoom = true;
+        }
+
     }
 
 

@@ -156,6 +156,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public bool TheBlob;
     public bool Order;
     public bool MageBoss;
+    public bool Golemboss;
     public Vector3 LootLoc;
     public GameObject BossHealthAct;
     public Room BossRoom;
@@ -202,6 +203,7 @@ public class Monster : MonoBehaviour, IDamageable {
     private bool TimeRandomOrbBool;
     private float TImeRandomGottaGoFast;
     private bool TimeStartBlastingBool;
+    private int TimeKeeperCounter;
 
 
     [Header("BigBoy")]
@@ -316,6 +318,24 @@ public class Monster : MonoBehaviour, IDamageable {
     private int Zaps;
     public GameObject MageBossFire1;
     public GameObject MageBossFire2;
+
+    [Header("GolemBoss")]
+    //Charge attack (small load, then runs in a straight line untill it hits the wall, stunned for a few seconds.
+    //Rock Toss, tosses a rock towards player/smthing, aoe and then spawns obstacles
+    //Boss can walk over obstacles and destory them.
+    public GameObject GolemBRock;
+    public GameObject GolemRockTossObject;
+    public GameObject BossCopyObj;
+    public float GolemRockTossCD;
+    private float GolemRockTossCD_;
+    private bool TossingRock;
+    public bool BossCopy;
+    public int NumberOfBlocks;
+    public int BossLayer;
+    public int NumberOfGolems;
+    public Color RockColor;
+    //   List<GameObject> Golems = new List<GameObject>();
+
     [Header("Sounds")]
     public AudioSource MeleeAttackStart;
     public float AttacStartDelay;
@@ -425,6 +445,17 @@ public class Monster : MonoBehaviour, IDamageable {
 
         }
 
+        if (Golemboss)
+        {
+            if (!BossCopy)
+            {
+                Invoke("StoneGolemHardCode2", 0.1f);
+            }
+            BossRoom.AddMonster(gameObject);
+            float RandCd = Random.Range(-6, 0);
+            GolemRockTossCD_ = GolemRockTossCD + RandCd;
+        }
+
         if (Boss) //Boss health bar
         {
             AddToRoomMonsterList(gameObject);
@@ -443,6 +474,7 @@ public class Monster : MonoBehaviour, IDamageable {
         }
         if ((Illusionist || TimeKeeper) && !IamIllu)
         {
+            TimeKeeperCounter = 2;
             TimeOrbCD_ = TimeOrbCD/2;
             agent.isStopped = true;
             AggroRange = 999f;
@@ -501,6 +533,21 @@ public class Monster : MonoBehaviour, IDamageable {
         foreach (var item in Rocks)
         {
             item.SetActive(true);
+        }
+    }
+    void StoneGolemHardCode2()
+    {
+        for (int i = 0; i < 50; i++)
+        {
+            GameObject GRock = Instantiate(GolemBRock, transform);
+            GRock.transform.localPosition = Random.insideUnitSphere * 30;
+            GRock.transform.localPosition = new Vector3(GRock.transform.localPosition.x, 0f, GRock.transform.localPosition.z);
+            float x = Random.Range(0, 365);
+            GRock.transform.localRotation = Quaternion.Euler(new Vector3(0, x, 0));
+            GRock.transform.parent = transform.parent;
+         //   MonsterAnim asdasd2 = GRock.gameObject.transform.GetChild(0).gameObject.GetComponent<MonsterAnim>();
+         //   asdasd2.StoneGolemStartDead();
+
         }
     }
     public void StoneGolemRandomHardCode()
@@ -1034,6 +1081,109 @@ public class Monster : MonoBehaviour, IDamageable {
        ChangeColorTimer_ -= Time.deltaTime;
     }
 
+
+
+    void GolemBossAttack()
+    {
+        GolemRockTossCD_ -= Time.deltaTime;
+        if (GolemRockTossCD_ < 0)
+        {
+            //if (MageBossSkillOrder.Count == 0)
+            //{
+            //    MageBossSkillOrder.Add(0);
+            //    MageBossSkillOrder.Add(1);
+            //    MageBossSkillOrder.Add(2);
+            //}
+
+            //var RandAttack = Random.Range(0, MageBossSkillOrder.Count);
+            GolemBossRockToss();
+            //switch (MageBossSkillOrder[RandAttack])
+            //{
+            //    case 0:
+            //        if (Rocks.Count > 0)
+            //        {
+            //            Zaps = 2;
+            //            MageBossSkill1();
+            //        }
+            //        else
+            //        {
+            //            MageBigBadBomb();
+            //        }
+            //        break;
+            //    case 1:
+            //        MageSplitCastWithAim();
+            //        break;
+            //    case 2:
+            //        MageBigBadBomb();
+            //        break;
+            //}
+            //MageBossSkillOrder.RemoveAt(RandAttack);
+            float RandCd = Random.Range(-3, 0);
+            GolemRockTossCD_ = GolemRockTossCD + RandCd;
+        }
+    }
+
+    void GolemBossRockToss()
+    {
+        agent.isStopped = true;
+        BBStill = true;
+        TossingRock = true;
+        anim.RockTossAnim();
+        CancelInvoke("StartMovingAfterAttackLands");
+        attackCountdown = AttackSpeed;
+        hardCodeDansGame = attackAnimCD;
+        GameObject RockInHand = Instantiate(GolemRockTossObject, castPoint.transform.position, castPoint.transform.rotation, castPoint.transform);
+        // RockInHand.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        BossSound2.PlayDelayed(2f);
+        Invoke("OldKingAttackEnd", 4.5f);
+
+        StartCoroutine(RockTossed(2.9f, RockInHand));
+    }
+
+    IEnumerator RockTossed(float delay, GameObject Rock)
+    {
+        yield return new WaitForSeconds(delay);
+        Rock.transform.parent = transform.parent;
+        Rock.GetComponent<Rigidbody>().isKinematic = false;
+        Rock.GetComponent<Rigidbody>().useGravity = true;
+        TossingRock = false;
+        Rock.GetComponent<GolemThrownRock>().realRock = true;
+        Rock.GetComponent<GolemThrownRock>().NumberOfBlocks = NumberOfBlocks;
+        Rock.GetComponent<Rigidbody>().velocity = BallisticVel2(PC.transform, 60f, Rock.transform);
+        Rock.GetComponent<Rigidbody>().angularVelocity = new Vector3(20, 20, 20);
+    }
+
+    void RockTossedOnDeath()
+    {
+        for (int i = 0; i < NumberOfGolems; i++)
+        {
+            if (BossLayer != 3)
+            {
+                GameObject DeathRocks = Instantiate(GolemRockTossObject, castPoint.transform.position, castPoint.transform.rotation, castPoint.transform);
+                DeathRocks.transform.position += new Vector3(0, 3, 0);
+                DeathRocks.transform.parent = transform.parent;
+                DeathRocks.GetComponent<Rigidbody>().isKinematic = false;
+                DeathRocks.GetComponent<Rigidbody>().useGravity = true;
+                DeathRocks.GetComponent<GolemThrownRock>().realRock = true;
+                DeathRocks.GetComponent<GolemThrownRock>().BossDeathRocks = true;
+                DeathRocks.GetComponent<GolemThrownRock>().BossCopy = BossCopyObj;
+                DeathRocks.GetComponent<Renderer>().material.color = RockColor;
+                BossRoom.AddMonster(DeathRocks);
+                float xPos = Random.Range(-10, 10);
+                float zPos = Random.Range(-10, 10);
+                Vector3 asd = new Vector3(DeathRocks.transform.localPosition.x + xPos, 0, DeathRocks.transform.localPosition.z + zPos);
+                DeathRocks.GetComponent<Rigidbody>().velocity = BallisticVel3(asd, 80f, DeathRocks.transform);
+                int xx = Random.Range(-20, 20);
+                int yy = Random.Range(-20, 20);
+                int zz = Random.Range(-20, 20);
+                DeathRocks.GetComponent<Rigidbody>().angularVelocity = new Vector3(xx, yy, zz);
+            }
+        }
+
+    }
+
+
+
         // Update is called once per frame
     void Update()
     {
@@ -1072,6 +1222,11 @@ public class Monster : MonoBehaviour, IDamageable {
         if (Boss && TimeKeeper)
         {
             TimeKeeperChangeColor();
+        }
+
+        if (Golemboss && InCombat)
+        {
+            GolemBossAttack();
         }
 
         if (TimeKeeper && !IamIllu) //Here is the cause for strange illu behaviour. take away && IAmIllu for it.
@@ -1206,9 +1361,12 @@ public class Monster : MonoBehaviour, IDamageable {
 
                 if (ClockAttackCD_ <= 0)
                 {
-                    ClockPlatCount++;
-                    agent.Warp(TimeKeeperPoints[ClockPlatCount].transform.position);
-                    ParentPlatform = TimeKeeperPoints[ClockPlatCount].transform;
+                    if (!CurrentlyInBlackHole)
+                    {
+                        ClockPlatCount++;
+                        agent.Warp(TimeKeeperPoints[ClockPlatCount].transform.position);
+                        ParentPlatform = TimeKeeperPoints[ClockPlatCount].transform;
+                    }
 
                     if (ClockPlatCount == TimeKeeperPoints.Count-1)
                     {
@@ -1478,6 +1636,22 @@ public class Monster : MonoBehaviour, IDamageable {
             }
 
         }
+
+        if (Golemboss && other.tag == "GolemRock")
+        {
+            // MonsterAnim asdasd = other.gameObject.transform.GetChild(0).gameObject.GetComponent<MonsterAnim>();
+            // Destroy(other.gameObject.transform.GetChild(0).gameObject, 2f);
+            // other.gameObject.transform.GetChild(0).gameObject.transform.parent = null;
+
+            //  asdasd.StoneGolemCrumble();
+            other.GetComponent<GolemThrownRock>().DestoryRock();
+
+            Destroy(other.gameObject);
+
+            BossSound1.Play();
+        }
+
+
     }
 
 
@@ -1825,6 +1999,7 @@ public class Monster : MonoBehaviour, IDamageable {
                 Invoke("StopSpinHC", 7.4f);
                 Invoke("StopSpin", 8f);
                 Ratatatata_ = Ratatatata;
+
                 agent.Warp(TimeKeeperPoints[0].transform.position);
                 ParentPlatform = TimeKeeperPoints[0].transform;
                 if (Illusionist)
@@ -1838,18 +2013,32 @@ public class Monster : MonoBehaviour, IDamageable {
                     CasterVariationAS = 0.4f;
                     attackCountdown = 0f;
                     ClockPlatCount = -1;
-                }                
+                }
+                TimeKeeperCounter = 4;
             }
 
             if (manag.Illus.Count == 0 && !TimeKSpin)
             {
                 TeleLoc = Random.Range(0, TimeKeeperPoints.Count);
-                agent.Warp(TimeKeeperPoints[TeleLoc].transform.position);
-                var RandSind = Random.Range(0, 2);
-                if (RandSind == 0)
+                if (TimeKeeperCounter % 99 == 1 && TimeKeeper)
                 {
-                    SineWaveAttack = true;
+                    agent.Warp(TimeKeeperPoints[TeleLoc].transform.position);
+                    var RandSind = Random.Range(0, 2);
+                    if (RandSind == 0)
+                    {
+                        SineWaveAttack = true;
+                    }
                 }
+                else if (!TimeKeeper || MirrorImageCD_ <=0)
+                {
+                    agent.Warp(TimeKeeperPoints[TeleLoc].transform.position);
+                    var RandSind = Random.Range(0, 2);
+                    if (RandSind == 0)
+                    {
+                        SineWaveAttack = true;
+                    }
+                }
+
                 ParentPlatform = TimeKeeperPoints[TeleLoc].transform;
             }
 
@@ -1858,7 +2047,7 @@ public class Monster : MonoBehaviour, IDamageable {
             {
                 TimeKeeperLaugh();
                 SineWaveAttack = false;
-
+                CurrentlyInBlackHole = false;
                 for (int i = 0; i < TimeKeeperPoints.Count; i++)
                 {
                     if (i != TeleLoc)
@@ -1932,6 +2121,7 @@ public class Monster : MonoBehaviour, IDamageable {
                         Illu.Healthbar.transform.parent.gameObject.transform.parent.gameObject.SetActive(false);
 
                         manag.Illus.Add(MMI);
+                        TimeKeeperCounter = 4;
                     }
                     else if (TimeKeeper)
                     {
@@ -1990,8 +2180,10 @@ public class Monster : MonoBehaviour, IDamageable {
                 // CasterVariationAS = 0.05f;
                 attackCountdown = 20f;
                 ClockPlatCount = -1;
+                TimeKeeperCounter = 4;
 
             }
+            TimeKeeperCounter++;
         }
     }
 
@@ -2063,6 +2255,46 @@ public class Monster : MonoBehaviour, IDamageable {
 
         return vel * dir.normalized;
     }
+
+    public Vector3 BallisticVel2(Transform target, float angle, Transform Rock)
+    {//SpiderBossAttack
+        var dir = target.position - Rock.transform.position;  // get target direction
+        var h = dir.y;  // get height difference
+        dir.y = 0;  // retain only the horizontal direction
+        var dist = dir.magnitude;  // get horizontal distance
+        var a = angle * Mathf.Deg2Rad;  // convert angle to radians
+        dir.y = dist * Mathf.Tan(a);  // set dir to the elevation angle
+        dist += h / Mathf.Tan(a);  // correct for small height differences
+                                   // calculate the velocity magnitude
+        var vel = Mathf.Sqrt(dist * Physics.gravity.magnitude / Mathf.Sin(2 * a));
+        if (float.IsNaN(vel))
+        {
+            vel = 1;
+        }
+
+        return vel * dir.normalized;
+    }
+    public Vector3 BallisticVel3(Vector3 target, float angle, Transform Rock)
+    {//SpiderBossAttack
+        var dir = target - Rock.transform.localPosition;  // get target direction
+        var h = dir.y;  // get height difference
+        dir.y = 0;  // retain only the horizontal direction
+        var dist = dir.magnitude;  // get horizontal distance
+        var a = angle * Mathf.Deg2Rad;  // convert angle to radians
+        dir.y = dist * Mathf.Tan(a);  // set dir to the elevation angle
+        dist += h / Mathf.Tan(a);  // correct for small height differences
+                                   // calculate the velocity magnitude
+        var vel = Mathf.Sqrt(dist * Physics.gravity.magnitude / Mathf.Sin(2 * a));
+        if (float.IsNaN(vel))
+        {
+            vel = 1;
+        }
+
+        return vel * dir.normalized;
+    }
+
+
+
     void FakeFight(float damage)
     {
         health -= damage;
@@ -2270,7 +2502,14 @@ public class Monster : MonoBehaviour, IDamageable {
         SpiderBoss = false;
         if (!Resurrect)
         {
-            Loot();
+            if (Golemboss)
+            {
+                RockTossedOnDeath();
+            }
+            else
+            {
+                Loot();
+            }
 
             if (Order)
             {
@@ -2439,6 +2678,10 @@ public class Monster : MonoBehaviour, IDamageable {
             PushMonster();
         }
 
+           if (TossingRock)
+        {
+            RotateTowards(PC.transform);
+        }
 
         if (BlobAttackNoTarget && !OrderPhase2Orb)
         {
@@ -2473,7 +2716,7 @@ public class Monster : MonoBehaviour, IDamageable {
             rb.position += transform.forward * Time.deltaTime * MovementSpeed;
         }
 
-        if (TimeKeeper && ParentPlatform != null)
+        if (TimeKeeper && ParentPlatform != null && !CurrentlyInBlackHole)
         {
 
             if (!TKSpawning)

@@ -789,7 +789,7 @@ public class SpellProjectile : MonoBehaviour
         }
         else
         {
-            transform.Translate((dir.normalized) * (projectilespeed / 3f * Time.deltaTime), Space.World);
+            transform.Translate((dir.normalized) * (projectilespeed / 2.7f * Time.deltaTime), Space.World);
         }
     }
 

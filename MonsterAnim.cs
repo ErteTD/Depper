@@ -145,6 +145,11 @@ public class MonsterAnim : MonoBehaviour
         anim.Play("boss_golem_skill01", -1, 0);
         anim.speed = 2f;
     }
+    public void RockTossAnim()
+    {
+        anim.Play("boss_golem_skill01", -1, 0);
+        anim.speed = 0.75f;
+    }
     public void AttackAnimation5()
     {
         anim.speed = 1f;
@@ -204,8 +209,16 @@ public class MonsterAnim : MonoBehaviour
 
     public void StoneGolemTurnToStone()
     {
+
         anim.speed = 0.5f;
         anim.Play("boss_golem_skill04"); // stop at frame 80.
+    }
+
+    public void StoneGolemStartDead()
+    {
+
+        anim.speed = 0f;
+        anim.Play("boss_golem_born01", 0, 0); // stop at frame 80.
     }
 
     public void StoneGolemCrumble()

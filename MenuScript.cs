@@ -11,6 +11,7 @@ public class MenuScript : MonoBehaviour {
     public static bool InfiniteLives;
     public static float MonsterDensity = 1;
     public static float GoldDropChance = 0;
+    public static float PlayerModeArmor = 1;
     public static float BossHealthModifier = 1;
     public static string GameDifficulty = "Normal";
 
@@ -27,14 +28,14 @@ public class MenuScript : MonoBehaviour {
     public Toggle FSToggle;
     public Dropdown ScreenResolution;
     public Dropdown AASettings;
-    internal static int VsyncIni;
+    //internal static int VsyncIni;
     internal static bool ResChecked;
     internal static int ResCheckInt;
 
     internal static Resolution[] resolutions;
     List<int> FakeCount = new List<int>();
     private bool DontUpdateRes;
-    internal static int AASetting = 1;
+    internal static int AASetting;
 
 
     public void Start()
@@ -50,10 +51,8 @@ public class MenuScript : MonoBehaviour {
 
         for (int i = 0; i < resolutions.Length; i++)
         {
-            string option = resolutions[i].width + " x " + resolutions[i].height;
-            
+            string option = resolutions[i].width + " x " + resolutions[i].height;           
             checkDuplicate = false;
-
             foreach (var item in options)
             {
                 if (item == option)
@@ -82,6 +81,11 @@ public class MenuScript : MonoBehaviour {
         }
         ScreenResolution.RefreshShownValue();
         SetModeText(0);
+
+        AASetting = PlayerPrefs.GetInt("PP_AASettings", 1);
+        AASettings.value = AASetting;
+        ChooseAA(AASetting);
+        QualitySettings.vSyncCount = PlayerPrefs.GetInt("PP_VsyncSettings", 0);
     }
 
     public void SetFullScreen (bool isFullscreen)
@@ -117,13 +121,13 @@ public class MenuScript : MonoBehaviour {
         switch (mode)
         {
             case 1:
-                ModeText.text = "- Infinite lives \n- Lower monster density \n- Bosses have less health";
+                ModeText.text = "- Infinite lives \n- Lower monster density \n- Monsters deal less damage \n- Bosses have less health";
                 break;
             case 2:
-                ModeText.text = "- 3 extra lives \n- Normal monster density \n- Bosses have normal health";
+                ModeText.text = "- 3 extra lives \n- Normal monster density \n- Monsters deal normal damage \n- Bosses have normal health";
                 break;
             case 3:
-                ModeText.text = "- 0 extra lives \n- Higher monster density \n- Bosses have more health";
+                ModeText.text = "- 0 extra lives \n- Higher monster density \n- Monsters deal more damage \n- Bosses have more health";
                 break;
             case 0:
                 ModeText.text = "";
@@ -134,8 +138,9 @@ public class MenuScript : MonoBehaviour {
     public void TurnOnVSync()
     {
         bool testB = VSyncToggle.isOn;
-        VsyncIni = QualitySettings.vSyncCount;
         QualitySettings.vSyncCount = testB ? 1 : 0;
+        PlayerPrefs.SetInt("PP_VsyncSettings", QualitySettings.vSyncCount);
+        PlayerPrefs.Save();
     }
 
 
@@ -170,13 +175,15 @@ public class MenuScript : MonoBehaviour {
                 break;
         }
         QualitySettings.antiAliasing = CurAA;
+        PlayerPrefs.SetInt("PP_AASettings", aaIndex);
+        PlayerPrefs.Save();
     }
 
     void LoadingBarFunc()
     {
         BarBool = true;
         LoadingBar.SetActive(true);
-        async = SceneManager.LoadSceneAsync("Level One 1");
+        async = SceneManager.LoadSceneAsync("Level One 1", LoadSceneMode.Single);
         async.allowSceneActivation = false;
     }
 
@@ -236,6 +243,7 @@ public class MenuScript : MonoBehaviour {
                 InfiniteLives = true;
                 MonsterDensity = 0.70f;
                 GoldDropChance = 15;
+                PlayerModeArmor = 0.7f;
                 BossHealthModifier = 0.7f;
                 GameDifficulty = "Casual";
                 break;
@@ -243,14 +251,16 @@ public class MenuScript : MonoBehaviour {
                 Lives = 3;
                 InfiniteLives = false;
                 MonsterDensity = 1;
+                PlayerModeArmor = 1f;
                 GoldDropChance = 0;
                 GameDifficulty = "Normal";
                 break;
             case 3:
                 Lives = 0;
                 InfiniteLives = false;
-                MonsterDensity = 1.3f;
+                MonsterDensity = 1.35f;
                 GoldDropChance = -15;
+                PlayerModeArmor = 1.2f;
                 BossHealthModifier = 1.3f;
                 GameDifficulty = "Challenge";
                 break;

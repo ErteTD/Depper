@@ -32,7 +32,9 @@ public class Player : MonoBehaviour, IDamageable
     // Hide both
     [HideInInspector]
     public float spellrange;
-
+    private float PlayerModeArmor;
+    [HideInInspector]
+    public bool Immortal;
     public bool channelingNow;
     [Header("Health&Mana")]
     public Text HealthText;
@@ -80,9 +82,11 @@ public class Player : MonoBehaviour, IDamageable
     public AudioSource DeathSound;
     public AudioSource DeathSoundLaugh;
     [HideInInspector] public int ChannelingCount;
+    private bool StartAgentBool = false;
 
     void Start()
     {
+        PlayerModeArmor = MenuScript.PlayerModeArmor;
         AS = FindObjectOfType<AudioScript>();
         DeathScreen = GameObject.Find("DeathScreenTrigger").GetComponent<LoadScreen>();
         CS = CastSpell.GetComponent<CastSpell>();
@@ -90,11 +94,20 @@ public class Player : MonoBehaviour, IDamageable
         anim = animChild.GetComponent<MonsterAnim>();
         CritObj.SetActive(false);
         targetPosition = transform.position;
-        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         fullhealth = health;
         HealthText.text = health.ToString("F0");
         MovementSpeed_ = MovementSpeed;
         InvokeRepeating("IlluArmor", 1, 0.5f);
+        Immortal = false;
+        Invoke("StartAgent", 0.05f);
+    }
+
+    void StartAgent()
+    {
+
+        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        agent.enabled = true;
+        StartAgentBool = true;
     }
 
     public void RoomChangeDestroyPreviousRoomSpells()
@@ -110,7 +123,7 @@ public class Player : MonoBehaviour, IDamageable
     void Update()
     {
 
-        if (!DieOnce)
+        if (!DieOnce && StartAgentBool)
         {
             AmIBurning();
             AmISlowed();
@@ -321,6 +334,10 @@ public class Player : MonoBehaviour, IDamageable
         {
             DieSoundOff(Time.deltaTime * 10);
         }
+        if (Immortal)
+        {
+            DieSoundOff(Time.deltaTime * 4);
+        }
     }
 
     protected void LateUpdate()
@@ -409,31 +426,34 @@ public class Player : MonoBehaviour, IDamageable
 
     public void TakeDamage(float damage)
     {
-
-        if (CastSpell.GetComponent<CastWeapon>().spellSlot2rdy == true && CastSpell.GetComponent<CastWeapon>().CurrentArmor == 1)
+        if (!Immortal)
         {
-            CastSpell.GetComponent<CastWeapon>().ArmorTrigger(); //currentarmor instead of 0.. TODO
-            BurnDur = 0f;
-        }
-        else
-        {
-
-            health -= damage;
-
-            if (DieOnce == false)
+            if (CastSpell.GetComponent<CastWeapon>().spellSlot2rdy == true && CastSpell.GetComponent<CastWeapon>().CurrentArmor == 1)
             {
-                HealthText.text = health.ToString("F1");
-                HealthBar.fillAmount = health / fullhealth;
+                CastSpell.GetComponent<CastWeapon>().ArmorTrigger(); //currentarmor instead of 0.. TODO
+                BurnDur = 0f;
             }
-            if (health <= 0 && DieOnce == false)
+            else
             {
-                DieOnce = true;
-                Die();
-            }
 
-            if (CastSpell.GetComponent<CastWeapon>().spellSlot2rdy == true && CastSpell.GetComponent<CastWeapon>().CurrentArmor == 4)
-            {
-                CastSpell.GetComponent<CastWeapon>().ArmorTrigger();
+                health -= damage * PlayerModeArmor;
+
+
+                if (DieOnce == false)
+                {
+                    HealthText.text = health.ToString("F1");
+                    HealthBar.fillAmount = health / fullhealth;
+                }
+                if (health <= 0 && DieOnce == false)
+                {
+                    DieOnce = true;
+                    Die();
+                }
+
+                if (CastSpell.GetComponent<CastWeapon>().spellSlot2rdy == true && CastSpell.GetComponent<CastWeapon>().CurrentArmor == 4)
+                {
+                    CastSpell.GetComponent<CastWeapon>().ArmorTrigger();
+                }
             }
         }
     }
@@ -444,8 +464,13 @@ public class Player : MonoBehaviour, IDamageable
         if (health > fullhealth)
         {
             health = fullhealth;
+            HealthText.text = health.ToString("F0");
         }
-        HealthText.text = health.ToString("F0");
+        else
+        {
+            HealthText.text = health.ToString("F1");
+        }
+
         HealthBar.fillAmount = health / fullhealth;
     }
 
@@ -516,12 +541,16 @@ public class Player : MonoBehaviour, IDamageable
 
     public void Die()
     {
-        anim.PlayerDie();
+        Invoke("HCDeathAnimDueToFireDamageBug", 0.05f);
         agent.destination = transform.position;
         DeathScreen.FadeToDeath();
         DeathSound.PlayDelayed(1);
         DeathSoundLaugh.PlayDelayed(3);
+    }
 
+    void HCDeathAnimDueToFireDamageBug()
+    {
+        anim.PlayerDie();
     }
 
     public void Continue()

@@ -285,7 +285,6 @@ public class MonsterAnim : MonoBehaviour
     public void PlayerDie()
     {
         animation.Play("dead");
-      //  Invoke("Die", 2f);
     }
     public void PlayerAttack()
     {

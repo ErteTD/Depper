@@ -49,7 +49,8 @@ public class OneWayDoor : MonoBehaviour
 
     void Update()
     {
-        float dist = Vector3.Distance(Player_.transform.position, transform.position);
+            float dist = Vector3.Distance(Player_.transform.position, transform.position);
+        
         if (dist < 6 && clicked == true && !CantClickDoorDuringLoad)
         {
             clicked = false;
@@ -124,17 +125,14 @@ public class OneWayDoor : MonoBehaviour
         ResetCamera();
         FindObjectOfType<CastWeapon>().TelePortDoor = true;
         FindObjectOfType<GameManager>().SetCurrentRoom(ConRoom);
-        Player_.GetComponent<Player>().agent.Warp(DoorPortal);
+
         MainCamera.GetComponent<CamController>().zLevel = doorHeight;
         MainCamera.GetComponent<CamController>().zLevel2 = doorHeight2;
         MainCamera.GetComponent<CamController>().xLimit1 = leftEdge;
         MainCamera.GetComponent<CamController>().xLimit2 = rightEdge;
         MainCamera.GetComponent<CamController>().zTest = CamCenter;
-        Player_.GetComponent<Player>().targetPosition = Player_.transform.position;
-        Player_.GetComponent<Player>().CurrentRoom = ConRoom;
-        Player_.GetComponent<Player>().RoomChangeDestroyPreviousRoomSpells();
+        Invoke("WarpPlayerAfterNavMeshIsCreated", 0.05f);
         Invoke("TrustMe", 1f);
-
 
         if (BossNextLevel) // starts the next level.
         {
@@ -149,6 +147,14 @@ public class OneWayDoor : MonoBehaviour
         }
 
     }
+    void WarpPlayerAfterNavMeshIsCreated()
+    {
+        Player_.GetComponent<Player>().agent.Warp(DoorPortal);
+        Player_.GetComponent<Player>().targetPosition = Player_.transform.position;
+        Player_.GetComponent<Player>().CurrentRoom = ConRoom;
+        Player_.GetComponent<Player>().RoomChangeDestroyPreviousRoomSpells();
+    }
+
     private void TrustMe()
     {
         clicked = false;

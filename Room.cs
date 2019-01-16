@@ -60,11 +60,24 @@ public class Room : MonoBehaviour
     private List<GameObject> Monsters = new List<GameObject>();
     GameObject[] Rocks;
     private GameManager gm;
+    public Player DaPlayer;
+    public AudioSource LastBossDeathSound;
+    public AudioSource LastBossDeathSound2;
+    public ParticleSystem LastBossPart;
+    public AudioSource LastBossPartAudio;
+    private bool LastBoss;
+    public GameObject Credits;
+    public bool startmenu;
+    public List<GameObject> StartMonsters;
 
     [Header("GolemBossStuff")]
     public bool GolemBossRoom;
     public GameObject BossWeapon;
     public GameObject BossArmor;
+    [HideInInspector]
+    public bool FirstRoom;
+    [HideInInspector]
+    public GameObject ppplayer;
 
     void Start()
     {
@@ -74,6 +87,20 @@ public class Room : MonoBehaviour
         if (!BossRoom)
         {
             BuildRoomNavMesh();
+            if (!startmenu)
+            {
+                foreach (var monster in Monsters)
+                {
+                    monster.SetActive(true);
+                }
+            }
+            else
+            {
+                foreach (var m in StartMonsters)
+                {
+                    m.SetActive(true);
+                }
+            }
         }
 
         if (TIMEK)
@@ -89,7 +116,6 @@ public class Room : MonoBehaviour
         //        MonsterPos.Add(new Vector3(i, 0, i2));
         //    }
         //}
-
     }
 
 
@@ -374,7 +400,39 @@ public class Room : MonoBehaviour
         }
     }
 
-    void ActivateBoss()
+    public void LastBossDoor()
+    {
+        StartCoroutine(LastBossSkipLoot(6));
+        foreach (var monster in Monsters)
+        {
+            if (monster.GetComponent<Monster>() != null)
+            {
+                monster.GetComponent<Monster>().TakeDamage(9999);
+            }
+        }
+        DaPlayer.Immortal = true;
+        Invoke("LastBossPauseParticleEffectAndStartCredits", 27);
+        LastBossDeathSound.Play();
+    }
+
+    void LastBossPauseParticleEffectAndStartCredits()
+    {
+        LastBossPart.Pause();
+        GameManager.FindObjectOfType<GameManager>().GameOverEsc = true;
+        LastBossPartAudio.Stop();
+        LastBossDeathSound2.Play();
+        Credits.SetActive(true);
+    }
+
+    IEnumerator LastBossSkipLoot(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        LastBoss = true;
+
+        KeepDoorsClosedUntillChestIsOpened = false;
+    }
+
+        void ActivateBoss()
     {
         if (Boss != null)
         {
@@ -390,6 +448,12 @@ public class Room : MonoBehaviour
             if (KeepDoorsClosedUntillChestIsOpened == false)
             {
                 OpenDoors();
+
+
+                if (LastBoss)
+                {
+                    CancelInvoke("OpenDoorsIfNoMonsters");
+                }
             }
             else if (EventStarted)
             {

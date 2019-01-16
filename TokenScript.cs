@@ -241,7 +241,7 @@ public class TokenScript : MonoBehaviour
     private void OnMouseExit()
     {
         ShowName.SetActive(false);
-        GetComponent<Renderer>().material.SetFloat("_Metallic", 1f);
+        GetComponent<Renderer>().material.SetFloat("_Metallic", 0.5f);
     }
 
 }

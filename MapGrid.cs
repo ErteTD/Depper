@@ -95,7 +95,7 @@ public class MapGrid : MonoBehaviour
         GiveStuff.GetComponent<GameManager>().CurrentLevel(CurrentLevel);
         TotalRooms = Random.Range(minRoom, maxRoom + 1);
         AmountOfLoot = (int)Mathf.Floor(TotalRooms / 5);
-        AmountOfPotions = (int)Mathf.Floor(TotalRooms / 5);
+        AmountOfPotions = (int)Mathf.Floor(TotalRooms / 3);
         //NumberOfMiniBosses = (int)Mathf.Floor(TotalRooms / );
         //NumberOfEvents = (int)Mathf.Floor(TotalRooms / );
         //if (TotalRooms < 6)
@@ -239,6 +239,7 @@ public class MapGrid : MonoBehaviour
                     Monst.GetComponent<Monster>().health = 10+ (CurrentLevel * 5);
                     Monst.GetComponent<Monster>().health2 = 10 + (CurrentLevel * 5);
                     Monst.GetComponent<Monster>().HBtext.color = Color.green;
+                    Monst.SetActive(false);
                     Base_.AddMonster(Monst);
                     MiniBossLoot(Monst.GetComponent<Monster>());
                     NumberOfMiniBosses--;
@@ -266,6 +267,7 @@ public class MapGrid : MonoBehaviour
                             Base_.MonsterPos.RemoveAt(RandomPos);
                             MonstersThatCanDropLoot.Add(Monst.GetComponent<Monster>());
                             Monst.GetComponent<Monster>().RoomIAmIn = Base;
+                            Monst.SetActive(false);
                             Base_.AddMonster(Monst);
                             if (Monst.GetComponent<Monster>().MonsterType == 5)
                             {
@@ -638,7 +640,7 @@ public class MapGrid : MonoBehaviour
             {
                 Monster.MonsterCanDropGold = true;
                 Monster.MonsterGold = Gold;
-                Monster.GoldAmount = Mathf.RoundToInt(Monster.MonsterCR+((CurrentLevel+1)*2));
+                Monster.GoldAmount = Mathf.RoundToInt((Monster.MonsterCR/(Monster.SpawnMultiNumber+1))+((CurrentLevel+2)*1.5f));
                 Monster.GoldDropChance = 30 + MenuScript.GoldDropChance;
             }
         }

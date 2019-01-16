@@ -236,7 +236,7 @@ public class CastWeapon : MonoBehaviour
                     spellSlotCD2 = spell2.cooldown;
                     GameObject Illu = Instantiate(spell2.ItemObject, transform.position, transform.rotation, transform);
                     Illu.transform.parent = null;
-                    Illu.transform.localPosition = new Vector3(Illu.transform.position.x, 0, Illu.transform.position.z);
+                    Illu.transform.localPosition = new Vector3(Illu.transform.position.x, 3, Illu.transform.position.z);
                     break;
 
                 case 3:

@@ -220,6 +220,7 @@ public class GameManager : MonoBehaviour
     private MapGrid MG;
     private GameObject MainCamera;
     public GameObject NextLevelAnim;
+    public bool GameOverEsc = false;
 
     
 
@@ -235,7 +236,7 @@ public class GameManager : MonoBehaviour
       Vector2 asd = new Vector2(0, 0);
         MiniCamera = GameObject.Find("MiniMapCamera");
         Cursor.SetCursor(DefCursor, asd, CursorMode.Auto);
-        Time.timeScale = 1.1f;
+     //   Time.timeScale = 1.1f;
         SetTime = Time.timeScale;
         CurrentGoldText.text = "Gold: " + Money.ToString();
         CurrentGameModeText.text = MenuScript.GameDifficulty;
@@ -499,7 +500,14 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            ShowEscMenu();
+            if (!GameOverEsc)
+            {
+                ShowEscMenu();
+            }
+            else
+            {
+                EscButton();
+            }
         }
     }
 
@@ -721,8 +729,8 @@ public class GameManager : MonoBehaviour
 
     public void EscButton()
     {
-            Time.timeScale = 1;
-            SceneManager.LoadScene("Menu");
+        Time.timeScale = 1;
+        SceneManager.LoadScene("Menu", LoadSceneMode.Single);
     }
 
 
@@ -757,7 +765,8 @@ public void RestartButton()
                 CurrentLivesText.text = "Lives:  ∞";
                 DeathScreenLivesText.text = "Continue ∞";
             }
-
+            NormalTheme.Play();
+            BossBattle.Stop();
 
             BossHealth.transform.GetChild(0).gameObject.SetActive(false);
             BossHealth.transform.GetChild(1).gameObject.SetActive(false);

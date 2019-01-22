@@ -196,6 +196,18 @@ public class TokenScript : MonoBehaviour
                     case 5:
                         manager.BlobWeaponToken++;
                         break;
+                    case 6:
+                        manager.TimeWeaponToken++;
+                        break;
+                    case 7:
+                        manager.FrostWeaponToken++;
+                        break;
+                    case 8:
+                        manager.StrenghtWeaponToken++;
+                        break;
+                    case 9:
+                        manager.MadnessWeaponToken++;
+                        break;
                 }
                 break;
             case 4:
@@ -217,6 +229,18 @@ public class TokenScript : MonoBehaviour
                         break;
                     case 5:
                         manager.BlobArmorToken++;
+                        break;
+                    case 6:
+                        manager.FireArmorToken++;
+                        break;
+                    case 7:
+                        manager.FrostArmorToken++;
+                        break;
+                    case 8:
+                        manager.StoneArmorToken++;
+                        break;
+                    case 9:
+                        manager.ThunderArmorToken++;
                         break;
                 }
                 break;

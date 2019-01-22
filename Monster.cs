@@ -1120,10 +1120,12 @@ public class Monster : MonoBehaviour, IDamageable {
 
     void GolemBossRockToss()
     {
+        CancelInvoke("Attack");
         agent.isStopped = true;
         BBStill = true;
         TossingRock = true;
         anim.RockTossAnim();
+        StopMovingAfterAttacking = false;
         CancelInvoke("StartMovingAfterAttackLands");
         attackCountdown = AttackSpeed;
         hardCodeDansGame = attackAnimCD;
@@ -1235,7 +1237,6 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             LeaveFireTrailFunc();
         }
-
         if (!CurrentlyRessing && !BlobAttackNoTarget && !TheBlob && PC != null && StartAgentBool)
         {
             float dist = Vector3.Distance(transform.position, PC.transform.position);
@@ -1425,6 +1426,19 @@ public class Monster : MonoBehaviour, IDamageable {
                     if (MonsterType == 7) { anim.CastSpell(); }
                     if (MonsterType == 8) { anim.AttackAnimation4(); }
                     if (MonsterType == 9) { anim.AttackAnimation5(); }
+
+                   if (Golemboss)
+                    {
+                        GolemRockTossCD_ += 1.5f;
+                    }
+                   if (BigBoy)
+                    {
+                        BigBoySpecial1_ += 1.5f;
+                    }
+                   if (OldKing)
+                    {
+                        OldKingSpecialAttack_1 += 1;
+                    }
 
                     Invoke("Attack", AttackDelay);
 
@@ -1649,7 +1663,7 @@ public class Monster : MonoBehaviour, IDamageable {
 
     private void RotateTowards(Transform target) // if in melee range, rotate towards player
     {
-        Vector3 direction = (target.position - transform.position).normalized;
+        Vector3 direction = (new Vector3(target.position.x, 4, target.position.z) - transform.position).normalized;
         Quaternion lookRotation = Quaternion.LookRotation(direction);
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * turnRate);
     }
@@ -2936,7 +2950,7 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             noBounce = false;
         }
-        if (bounce && noBounce == false && !CurrentlyRessing)
+        if (bounce && noBounce == false && !CurrentlyRessing && bolt != null)
         {
             List<GameObject> MonsterList = new List<GameObject>();
 

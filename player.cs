@@ -55,13 +55,37 @@ public class Player : MonoBehaviour, IDamageable
 
     public float MovementSpeed, MovementSpeed_, slowedDur;
     public GameObject[] Monsters;
+    [Header("Player Visuals")]
     public Text CritText;
     public GameObject CritObj;
     public GameObject HastenVisual;
     public GameObject MultiCastVisual;
     public GameObject CritVisual;
-    public GameObject BigBoyGlow;
     public GameObject ChangeColor;
+    public GameObject BlobArmorVisual;
+    public GameObject BootsOfFire;
+    public GameObject StoneArmorVisPassive;
+    public GameObject StoneArmorVisActive;
+    public GameObject LightningArmor;
+    public GameObject IlluVis;
+    public GameObject SpiderVis;
+
+    [Header("Weapon Visuals")]
+
+    public GameObject W1;
+    public GameObject W2;
+    public GameObject BigBoyGlow;
+    public GameObject W4;
+    public GameObject W5;
+    public GameObject W6;
+    public GameObject W7;
+    public GameObject W8;
+    public GameObject W9;
+    public bool StoneArmor;
+    public bool LeaveFireTrail;
+    public float LeaveFireTrailCD;
+    private float LeaveFireTrailCD_;
+
     [HideInInspector] public GameObject BlobWeaponObject;
     [Header("EnemySpellEffects")]
     [HideInInspector]
@@ -81,6 +105,7 @@ public class Player : MonoBehaviour, IDamageable
     private AudioScript AS;
     public AudioSource DeathSound;
     public AudioSource DeathSoundLaugh;
+    public AudioSource StoneArmorBlock;
     [HideInInspector] public int ChannelingCount;
     private bool StartAgentBool = false;
 
@@ -100,6 +125,7 @@ public class Player : MonoBehaviour, IDamageable
         InvokeRepeating("IlluArmor", 1, 0.5f);
         Immortal = false;
         Invoke("StartAgent", 0.05f);
+
     }
 
     void StartAgent()
@@ -112,6 +138,22 @@ public class Player : MonoBehaviour, IDamageable
 
     public void RoomChangeDestroyPreviousRoomSpells()
     {
+        if (ChannelingCount > 0)
+        {
+            foreach (var item in curSpellProjectile)
+            {
+                if (item != null)
+                {
+                    item.GetComponent<SpellProjectile>().Stop();
+                    curSpellProjectile_.Add(item);
+                }
+            }
+            foreach (var item in curSpellProjectile_)
+            {
+                curSpellProjectile.Remove(item);
+            }
+        }
+
         for (int i = SpellsCastInThisRoom.Count - 1; i >= 0; i--)
         {
             Destroy(SpellsCastInThisRoom[i].gameObject);
@@ -143,6 +185,12 @@ public class Player : MonoBehaviour, IDamageable
                 rightclick = false;
                 agent.stoppingDistance = 0f;
             }
+
+            if (LeaveFireTrail)
+            {
+                LeaveFireTrailFunc();
+            }
+
 
             if (ChannelingCount > 0)  //channelingNow == true)
             {
@@ -428,17 +476,33 @@ public class Player : MonoBehaviour, IDamageable
     {
         if (!Immortal)
         {
+            bool DodgeDamage = false;
+            if (StoneArmor)
+            {
+                var randomInt = Random.Range(0, 100);
+                if (randomInt <= 30)
+                {
+                    DodgeDamage = true;
+
+                    if (damage > 0.2f)
+                    {
+                        StoneArmorBlock.Play();
+                        GameObject StoneSparks = Instantiate(StoneArmorVisActive, transform);
+                        StoneSparks.transform.parent = null;
+                        Destroy(StoneSparks, 0.6f);
+                    }
+                }
+            }
+
             if (CastSpell.GetComponent<CastWeapon>().spellSlot2rdy == true && CastSpell.GetComponent<CastWeapon>().CurrentArmor == 1)
             {
                 CastSpell.GetComponent<CastWeapon>().ArmorTrigger(); //currentarmor instead of 0.. TODO
-                BurnDur = 0f;
+                DodgeDamage = true;
             }
-            else
-            {
 
+            if (!DodgeDamage)
+            {           
                 health -= damage * PlayerModeArmor;
-
-
                 if (DieOnce == false)
                 {
                     HealthText.text = health.ToString("F1");
@@ -474,6 +538,41 @@ public class Player : MonoBehaviour, IDamageable
         HealthBar.fillAmount = health / fullhealth;
     }
 
+    void LeaveFireTrailFunc()
+    {
+        if (agent.velocity.magnitude > 0f && LeaveFireTrailCD_ < 0)
+        {
+            GameObject FireT = Instantiate(BootsOfFire);
+            FireT.transform.position = new Vector3(transform.position.x, 1, transform.position.z);
+            FireT.transform.parent = null;
+            FireT.transform.rotation = BootsOfFire.transform.rotation;
+            LeaveFireTrailCD_ = LeaveFireTrailCD;
+            SpellsCastInThisRoom.Add(FireT);
+
+        }
+        else if (agent.velocity.magnitude == 0f && LeaveFireTrailCD_ < 0)
+        {
+            GameObject FireT = Instantiate(BootsOfFire);
+            FireT.transform.position = new Vector3(transform.position.x, 1, transform.position.z);
+            FireT.transform.parent = null;
+            FireT.transform.rotation = BootsOfFire.transform.rotation;
+            LeaveFireTrailCD_ = 3;
+            SpellsCastInThisRoom.Add(FireT);
+        }
+
+
+        if (LeaveFireTrailCD_ > LeaveFireTrailCD && agent.velocity.magnitude > 0f)
+        {
+            LeaveFireTrailCD_ = 0f;
+        }
+        LeaveFireTrailCD_ -= Time.deltaTime;
+
+    }
+
+
+
+
+
     public void Crit(float damage)
     {
         CritObj.SetActive(true);
@@ -491,6 +590,12 @@ public class Player : MonoBehaviour, IDamageable
         GameObject Haste = Instantiate(HastenVisual, transform);
         Destroy(Haste, 2.5f);
     }
+    public void ResetCDVis(GameObject Vis)
+    {
+        GameObject Hasten = Instantiate(Vis, transform);
+        Destroy(Hasten, 2.5f);
+    }
+
     public void MultiVis(float Position)
     {
         GameObject Multi = Instantiate(MultiCastVisual, transform);
@@ -577,6 +682,11 @@ public class Player : MonoBehaviour, IDamageable
         AS.masterMixer.SetFloat("SFX Volume", AS.DeathSFXSoundLevel);
     }
 
+    public void TimeStaffCDS()
+    {
+        CS.ResetSpellCDOnDeath();
+    }
+
     public void AttackAnim()
     {
         anim.PlayerAttack();
@@ -585,7 +695,7 @@ public class Player : MonoBehaviour, IDamageable
 
     public void Burn(bool burn, float dur, float str, float dmg)
     {
-        if (burn)
+        if (burn && !StoneArmor)
         {
             BurnDamage += dmg;
             TotalBurnDamage = BurnDamage * str;
@@ -602,7 +712,7 @@ public class Player : MonoBehaviour, IDamageable
 
     public void AmIBurning()
     {
-        if (BurnDur <= 0)
+        if (BurnDur <= 0 || StoneArmor)
         {
             BurnDamage = 0;
             Transform result = gameObject.transform.Find("burn");
@@ -652,5 +762,119 @@ public class Player : MonoBehaviour, IDamageable
             slowedDur -= Time.deltaTime;
         }
     }
+
+    void Armor1()
+    {
+        if (CastSpell.GetComponent<CastWeapon>().CurrentArmor == 1 && CastSpell.GetComponent<CastWeapon>().spellSlot2rdy)
+        {
+            SpiderVis.SetActive(true);
+        }
+        else
+        {
+            SpiderVis.SetActive(false);
+        }
+    }
+    void Armor2()
+    {
+        if (CastSpell.GetComponent<CastWeapon>().CurrentArmor == 2 && CastSpell.GetComponent<CastWeapon>().spellSlot2rdy)
+        {
+            IlluVis.SetActive(true);
+        }
+        else
+        {
+            IlluVis.SetActive(false);
+        }
+    }
+
+    void Weapon1()
+    {
+        if (CastSpell.GetComponent<CastWeapon>().CurrentWeapon == 1 && CastSpell.GetComponent<CastWeapon>().spellSlot1rdy)
+        {
+            W1.SetActive(true);
+        }
+        else
+        {
+            W1.SetActive(false);
+        }
+    }
+    void Weapon2()
+    {
+        if (CastSpell.GetComponent<CastWeapon>().CurrentWeapon == 2 && CastSpell.GetComponent<CastWeapon>().spellSlot1rdy)
+        {
+            W2.SetActive(true);
+        }
+        else
+        {
+            W2.SetActive(false);
+        }
+    }
+    void Weapon3()
+    {
+        if (CastSpell.GetComponent<CastWeapon>().CurrentWeapon == 3 && CastSpell.GetComponent<CastWeapon>().spellSlot1rdy)
+        {
+            BigBoyGlow.SetActive(true);
+        }
+        else
+        {
+            BigBoyGlow.SetActive(false);
+        }
+    }
+    void Weapon4()
+    {
+        if (CastSpell.GetComponent<CastWeapon>().CurrentWeapon == 4 && CastSpell.GetComponent<CastWeapon>().spellSlot1rdy)
+        {
+            W4.SetActive(true);
+        }
+        else
+        {
+            W4.SetActive(false);
+        }
+    }
+    void Weapon6()
+    {
+        if (CastSpell.GetComponent<CastWeapon>().CurrentWeapon == 6 && CastSpell.GetComponent<CastWeapon>().spellSlot1rdy)
+        {
+            W6.SetActive(true);
+        }
+        else
+        {
+            W6.SetActive(false);
+        }
+    }
+    void Weapon7()
+    {
+        if (CastSpell.GetComponent<CastWeapon>().CurrentWeapon == 7 && CastSpell.GetComponent<CastWeapon>().spellSlot1rdy)
+        {
+            W7.SetActive(true);
+        }
+        else
+        {
+            W7.SetActive(false);
+        }
+    }
+    void Weapon8()
+    {
+        if (CastSpell.GetComponent<CastWeapon>().CurrentWeapon == 8 && CastSpell.GetComponent<CastWeapon>().spellSlot1rdy)
+        {
+            W8.SetActive(true);
+        }
+        else
+        {
+            W8.SetActive(false);
+        }
+    }
+    void Weapon9()
+    {
+        if (CastSpell.GetComponent<CastWeapon>().CurrentWeapon == 9 && CastSpell.GetComponent<CastWeapon>().spellSlot1rdy)
+        {
+            W9.SetActive(true);
+        }
+        else
+        {
+            W9.SetActive(false);
+        }
+    }
+
+
 
 }

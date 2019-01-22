@@ -1211,6 +1211,18 @@ public class Spellbook : MonoBehaviour
             cast.doubleCast = false;
             cast.splitCast = false;
         }
+        if (lvl3choiceNOW == 4)
+        { // Multicast
+
+            cast.doubleCast = dCast.doubleCast;
+            cast.cd1Per = dCast.cooldownPercent * split.cooldownPercent;
+            cast.splitCast = true;
+            cast.damage1Per = dCast.damagePercent * split.damagePercent;
+            cast.CompOrb = false;
+        }
+
+
+
         if (lvl3choiceNOW == 0)
         {
             cast.damage1Per = 1f;
@@ -1345,7 +1357,7 @@ public class Spellbook : MonoBehaviour
         { //Channel
 
             cast.damage4Per = channel.damagePercent;
-            cast.cd4Pure = channel.cooldownPercent;
+            cast.cd4Pure = channel.cooldownSeconds;
             cast.channel = channel.channeling;
             cast.cd4Per = channel.cooldownPercent;
             cast.chanDur = channel.chanDur;
@@ -1363,6 +1375,30 @@ public class Spellbook : MonoBehaviour
             cast.channel = false;
             cast.ChaosOrb_ = false;
         }
+        if (lvl6choiceNOW == 4)
+        {
+            cast.cd4Per = Aim.cooldownPercent * Chaos.cooldownPercent;
+            cast.damage4Per = Aim.damagePercent;
+            cast.BlessedAim = Aim.BlessedAimBool;
+            cast.cd4Pure = Chaos.cooldownSeconds;
+            cast.channel = false;
+            cast.ChaosOrb_ = Chaos.ChaosOrbBool;
+            cast.ChaosOrbAttackCD = Chaos.ChaosOrbAttackCD;
+            cast.ChaosOrbDuration = Chaos.ChaosOrbDuration;
+        }
+        if (lvl6choiceNOW == 5)
+        {
+            cast.cd4Per = channel.cooldownPercent * Chaos.cooldownPercent;
+            cast.damage4Per = channel.damagePercent;
+            cast.BlessedAim = false;
+            cast.cd4Pure = Chaos.cooldownSeconds;
+            cast.channel = channel.channeling; ;
+            cast.chanDur = channel.chanDur;
+            cast.ChaosOrb_ = Chaos.ChaosOrbBool;
+            cast.ChaosOrbAttackCD = Chaos.ChaosOrbAttackCD;
+            cast.ChaosOrbDuration = Chaos.ChaosOrbDuration;
+        }
+
         if (lvl6choiceNOW == 0)
         {
             cast.cd4Per = 1;

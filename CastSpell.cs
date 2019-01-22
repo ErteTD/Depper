@@ -67,12 +67,12 @@ public class CastSpell : MonoBehaviour
     public float BurnPercent, BurnDuration;
     public bool LBBounce;
     public int LBBounceAmount;
-
     public bool FrostBoltSlow1;
     public float SlowPercent1, SlowDuration1;
     public bool FireBallBurn1;
     public float BurnPercent1, BurnDuration1;
     public bool LBBounce1;
+    public bool MadWeapon1;
     public int LBBounceAmount1;
 
     public bool BoostCrit;
@@ -83,6 +83,7 @@ public class CastSpell : MonoBehaviour
 
     public bool HastenBool;
     public float HastenChance;
+    public bool MadWeapon;
 
     //public float CDmodifier;
     public float BHDuration;
@@ -163,6 +164,12 @@ public class CastSpell : MonoBehaviour
 
         }
 
+        if (MadWeapon)
+        {
+            curSlotcd = true;
+            currentSlot = 4;
+        }
+
         if (curSlotcd)
         {
             player_.AttackAnim();
@@ -232,6 +239,7 @@ public class CastSpell : MonoBehaviour
             spell.cone = cone;
             spell.spellName = spellname;
             spell.channeling = channel;
+            spell.MadnessStaff = MadWeapon;
             // Frostbolt slow effects
             spell.FrostBoltSlow = FrostBoltSlow;
             spell.SlowDuration = SlowDuration;
@@ -304,6 +312,7 @@ public class CastSpell : MonoBehaviour
                 channel1 = channel;
                 FrostBoltSlow1 = FrostBoltSlow;
                 SlowPercent1 = SlowPercent;
+                MadWeapon1 = MadWeapon;
                 SlowDuration1 = SlowDuration;
                 FireBallBurn1 = FireBallBurn;
                 LBBounce1 = LBBounce;
@@ -479,6 +488,7 @@ public class CastSpell : MonoBehaviour
         spell2.ghostCast = ghostCast1;
         spell2.cone = cone1;
         spell2.channeling = channel1;
+        spell2.MadnessStaff = MadWeapon1;
         spell2.chanDur = chanDur1;
         spell2.spellName = spellname1;
         spell2.FrostBoltSlow = FrostBoltSlow1;
@@ -560,6 +570,7 @@ public class CastSpell : MonoBehaviour
         spell.BoostCrit = BoostCrit;
         spell.CritChance = CritChance;
         spell.CritDamage = CritDamage;
+        spell.MadnessStaff = MadWeapon;
         //  spell.ConeRote = splitRot;
         //BlackHole
         spell.BHBool = BHBool;
@@ -586,9 +597,9 @@ public class CastSpell : MonoBehaviour
 
     public void ResetSpellCDOnDeath()
     {
-        CD1 = 0;
+        CD1 = 0f;
         CD1_ = 1;
-        CD2 = 0;
+        CD2 = 0f;
         CD2_ = 1;
         CD3 = 0;
         CD3_ = 1;
@@ -596,7 +607,6 @@ public class CastSpell : MonoBehaviour
         slot2.fillAmount = (CD2 / CD2_);
         slot3.fillAmount = (CD3 / CD3_);
     }
-
 
     void Update()
     {
@@ -714,6 +724,22 @@ public class CastSpell : MonoBehaviour
                 {
                     CD3 = 0.5f;
                     CD3_ = 0.5f;
+                    player_.HastenVis();
+                }
+            }
+        }
+        if (slotnumber == 4)
+        {
+            CastWeapon CW = FindObjectOfType<CastWeapon>();
+            CW.spellSlotCD = spellSlotCD;
+
+            if (HastenBool && !CompOrb)
+            {
+                var randomInt = Random.Range(0, 100);
+
+                if (randomInt <= HastenChance)
+                {
+                    CW.spellSlotCD = 0.5f;
                     player_.HastenVis();
                 }
             }

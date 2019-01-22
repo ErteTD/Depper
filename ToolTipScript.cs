@@ -443,7 +443,7 @@ public class ToolTipScript : MonoBehaviour
             case 62:
                 curSpellname[5] = "-" + channling.spellname;
                 curExtraCD5 = channling.cooldownPercent;
-                curExtraCD5 = channling.cooldownPercent;
+                curExtraCD5_2 = channling.cooldownSeconds;
                 curDamageModifierlvl5 = channling.damagePercent;
                 spellCombTip6 = true;
                 SpellImage6.sprite = channling.GetComponent<Image>().sprite;

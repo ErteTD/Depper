@@ -37,14 +37,15 @@ public class IlluScript : MonoBehaviour
                 Monster e = c.GetComponent<Monster>();
                 if (e != null)
                 {
-                    e.GetComponent<Monster>().TakeDamage(2);
+                    e.GetComponent<Monster>().TakeDamage(1);
                 }
             }
             GameObject Exp = Instantiate(CorpseExplosion, new Vector3(transform.position.x, 2f, transform.position.z), transform.rotation, transform);
             Exp.transform.parent = null;
-            Exp.GetComponent<ExplodeScript>().BurnDamage = 2;
+            Exp.GetComponent<ExplodeScript>().BurnDamage = 1;
             Exp.GetComponent<ExplodeScript>().BoostBurnDur = 2f;
-            Exp.GetComponent<ExplodeScript>().BoostBurnPer = 0.1f;
+            Exp.GetComponent<ExplodeScript>().BoostTotalBurn = 1;
+            Exp.GetComponent<ExplodeScript>().BoostBurnPer = 0.2f;
             Exp.GetComponent<ExplodeScript>().FireTrueFrostFalse = true;
             Destroy(gameObject);
         }

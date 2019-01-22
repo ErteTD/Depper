@@ -128,6 +128,10 @@ public class SpellProjectile : MonoBehaviour
     private float randomFreq;
     private float randomMag;
     public bool FireTrailCone;
+
+    public bool FrostStaff;
+    public bool MadnessStaff;
+
     private void Start()
     {
         if (GameObject.FindGameObjectWithTag("Player") != null)
@@ -140,7 +144,7 @@ public class SpellProjectile : MonoBehaviour
          // Problem with setting all spells to current room. Mostly with comp/channeling/blessed aim.
             ThePlayer = GameObject.FindGameObjectWithTag("Player");
 
-            if (!enemyCastingspell && !ChaosOrb_)
+            if (!enemyCastingspell && !ChaosOrb_ && !MadnessStaff)
             {
                 if (GameObject.FindGameObjectWithTag("Player") != null)
                 {
@@ -316,7 +320,7 @@ public class SpellProjectile : MonoBehaviour
     {
         if (aoeSizeMeteor >= 1 && !channeling)
         {
-            if (other.tag == "Floor" || other.tag == "Wall" || other.tag == "MageBossDeadGolem")
+            if (other.tag == "Floor" || other.tag == "Wall" || other.tag == "MirrorWall" || other.tag == "MageBossDeadGolem")
             {
                 Meteorattack();
             }
@@ -328,7 +332,7 @@ public class SpellProjectile : MonoBehaviour
                 Monster enemy = other.GetComponent<Monster>();
                 DealDamageOnce(enemy);                
             }
-            if (other.tag == "MirrorWall" && !channeling && tag != "ChaosOrb" && tag != "CompOrb")
+            if (other.tag == "MirrorWall" && !channeling && !cone && tag != "ChaosOrb" && tag != "CompOrb")
             {
                 other.GetComponent<MirrorWall>().BoltBounce(LBBounce, channeling, Unmodified, gameObject, enemyCastingspell);
                 if (!ghostCast)
@@ -431,7 +435,7 @@ public class SpellProjectile : MonoBehaviour
             enemy.pushDir = directionF;
             enemy.pushed = true;
         }
-        if (BHBool)
+        if (BHBool && BlackHole != null)
         {
             GameObject blackH = Instantiate(BlackHole, transform.position, transform.rotation, transform);
             ActualPlayer.SpellsCastInThisRoom.Add(blackH);
@@ -442,7 +446,7 @@ public class SpellProjectile : MonoBehaviour
             blackH.GetComponent<GravityBody>().duration = BHDuration;
             BHBool = false;
         }
-        if (pool) //poolscript
+        if (pool && PoolInst != null) //poolscript
         {
             GameObject PoolObj = Instantiate(PoolInst, new Vector3(transform.position.x, 1, transform.position.z), PoolInst.transform.rotation, transform);
             ActualPlayer.SpellsCastInThisRoom.Add(PoolObj);
@@ -486,7 +490,7 @@ public class SpellProjectile : MonoBehaviour
             enemy.pushDir = directionF;
             enemy.ChannelPush(4 * Time.deltaTime);
         }
-        if (BHBool)
+        if (BHBool && BlackHole != null)
         {
             GameObject blackH = Instantiate(BlackHole, enemy.transform.position, transform.rotation, transform);
             ActualPlayer.SpellsCastInThisRoom.Add(blackH);
@@ -497,7 +501,7 @@ public class SpellProjectile : MonoBehaviour
             blackH.GetComponent<GravityBody>().duration = BHDuration;
             BHBool = false;
         }
-        if (pool)
+        if (pool && PoolInst != null)
         {
             GameObject PoolObj = Instantiate(PoolInst, new Vector3(enemy.transform.position.x, 1, enemy.transform.position.z), PoolInst.transform.rotation, transform);
             ActualPlayer.SpellsCastInThisRoom.Add(PoolObj);
@@ -810,11 +814,11 @@ public class SpellProjectile : MonoBehaviour
             }
             if (SplitChanRight)
             {
-                pos_ += (transform.right * 7.5f);
+                pos_ += (transform.right * 6.5f);
             }
             if (SplitChanLeft)
             {
-                pos_ += (transform.right * -7.5f);
+                pos_ += (transform.right * -6.5f);
             }
             chanLoc = pos_;
             spellCastLocation = pos_;
@@ -987,7 +991,7 @@ public class SpellProjectile : MonoBehaviour
         Invoke("Stop", chanDur);
         chanLoc = spellCastLocation;
         chanRange = 25;
-        if (!CompOrbPlayer)
+        if (!CompOrbPlayer && !MadnessStaff)
         {
             ThePlayer.GetComponent<Player>().Channeling();
             pos_.y = 1.5f;
@@ -1159,7 +1163,10 @@ public class SpellProjectile : MonoBehaviour
         {
             spellCastLocation_.y = 3;
         }
-        transform.localPosition = spellCastLocation_;
+        if (!FrostStaff)
+        {
+            transform.localPosition = spellCastLocation_;
+        }
         transform.localPosition += transform.forward * MultiChanPosX;
         if (!channeling || spellName == "Lightningbolt")
         {
@@ -1170,7 +1177,7 @@ public class SpellProjectile : MonoBehaviour
         {
             transform.Rotate(new Vector3(180f, 0f, 0f));
         }
-        if (!channeling)
+        if (!channeling && !FrostStaff)
         {
             Invoke("Meteorattack", 3f); // so blessed aim meteors don't chase forever.
         }
@@ -1254,7 +1261,7 @@ public class SpellProjectile : MonoBehaviour
 
         }
 
-        if (channeling && !CompOrb && !CompOrbPlayer && !ChaosOrb_)
+        if (channeling && !CompOrb && !CompOrbPlayer && !ChaosOrb_ && !MadnessStaff)
         {
             ThePlayer.GetComponent<Player>().StopChanneling();
         }

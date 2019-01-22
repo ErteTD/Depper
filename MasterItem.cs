@@ -2,7 +2,7 @@
 
 public abstract class MasterItem : MonoBehaviour {
 
-    [TextArea]
+    [TextArea(3, 10)]
     public string effect;
     public string itemname;
     public int itemID;

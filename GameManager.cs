@@ -60,6 +60,14 @@ public class GameManager : MonoBehaviour
     public int IKWeaponToken;
     public GameObject BlobWeapon;
     public int BlobWeaponToken;
+    public GameObject TimeWeapon;
+    public int TimeWeaponToken;
+    public GameObject FrostWeapon;
+    public int FrostWeaponToken;
+    public GameObject StrenghtWeapon;
+    public int StrenghtWeaponToken;
+    public GameObject MadnessWeapon;
+    public int MadnessWeaponToken;
     [Header("Inventory Armor")]
     public GameObject SpiderArmor;
     public int SpiderArmorToken;
@@ -71,6 +79,14 @@ public class GameManager : MonoBehaviour
     public int IKArmorToken;
     public GameObject BlobArmor;
     public int BlobArmorToken;
+    public GameObject FireArmor;
+    public int FireArmorToken;
+    public GameObject FrostArmor;
+    public int FrostArmorToken;
+    public GameObject StoneArmor;
+    public int StoneArmorToken;
+    public GameObject ThunderArmor;
+    public int ThunderArmorToken;
 
     [Header("ShopItems")]
     public GameObject SpiderWeapon_;
@@ -78,11 +94,23 @@ public class GameManager : MonoBehaviour
     public GameObject FireWeapon_;
     public GameObject IKWeapon_;
     public GameObject BlobWeapon_;
+    public GameObject TimeWeapon_;
+    public GameObject FrostWeapon_;
+    public GameObject StrenghtWeapon_;
+    public GameObject MadnessWeapon_;
+
     public GameObject SpiderArmor_;
     public GameObject IlluArmor_;
     public GameObject RoidArmor_;
     public GameObject IKArmor_;
     public GameObject BlobArmor_;
+    public GameObject FireArmor_;
+    public GameObject FrostArmor_;
+    public GameObject StoneArmor_;
+    public GameObject ThunderArmor_;
+
+
+
 
     [Header("Resources")]
     public int meteorToken;
@@ -147,6 +175,14 @@ public class GameManager : MonoBehaviour
     public Text Item8;
     public Text Item9;
     public Text Item10;
+    public Text Item11;
+    public Text Item12;
+    public Text Item13;
+    public Text Item14;
+    public Text Item15;
+    public Text Item16;
+    public Text Item17;
+    public Text Item18;
 
 
     [Header("Activly used tokens for each slot")]
@@ -280,8 +316,6 @@ public class GameManager : MonoBehaviour
         }
 
     }
-
-
 
     public void SetCurrentRoom(GameObject room) // not used currently
     {
@@ -516,7 +550,6 @@ public class GameManager : MonoBehaviour
         ShowHide2 = ShowHide2 ? false : true;
         ControlMenu.SetActive(ShowHide2);
     }
-
     public void PickedUpItem()
     {
         CurrentTokens();
@@ -605,6 +638,78 @@ public class GameManager : MonoBehaviour
             BlobWeapon_.SetActive(false);
             BlobWeapon.SetActive(false);
         }
+        if (TimeWeaponToken >= 1)
+        {
+            TimeWeapon.SetActive(true);
+            if (cw.CurrentWeapon != 6 || TimeWeaponToken > 1)
+            {
+                TimeWeapon_.SetActive(true);
+            }
+            else
+            {
+                TimeWeapon_.SetActive(false);
+            }
+        }
+        else
+        {
+            TimeWeapon_.SetActive(false);
+            TimeWeapon.SetActive(false);
+        }
+
+        if (FrostWeaponToken >= 1)
+        {
+            FrostWeapon.SetActive(true);
+            if (cw.CurrentWeapon != 7 || FrostWeaponToken > 1)
+            {
+               FrostWeapon_.SetActive(true);
+            }
+            else
+            {
+                FrostWeapon_.SetActive(false);
+            }
+        }
+        else
+        {
+            FrostWeapon_.SetActive(false);
+            FrostWeapon.SetActive(false);
+        }
+
+        if (StrenghtWeaponToken >= 1)
+        {
+            StrenghtWeapon.SetActive(true);
+            if (cw.CurrentWeapon != 8 || StrenghtWeaponToken > 1)
+            {
+               StrenghtWeapon_.SetActive(true);
+            }
+            else
+            {
+                StrenghtWeapon_.SetActive(false);
+            }
+        }
+        else
+        {
+            StrenghtWeapon_.SetActive(false);
+            StrenghtWeapon.SetActive(false);
+        }
+
+        if (MadnessWeaponToken >= 1)
+        {
+            MadnessWeapon.SetActive(true);
+            if (cw.CurrentWeapon != 9 || MadnessWeaponToken > 1)
+            {
+                MadnessWeapon_.SetActive(true);
+            }
+            else
+            {
+                MadnessWeapon_.SetActive(false);
+            }
+        }
+        else
+        {
+            MadnessWeapon_.SetActive(false);
+            MadnessWeapon.SetActive(false);
+        }
+        //Armors
         if (SpiderArmorToken >= 1)
         {
             SpiderArmor.SetActive(true);
@@ -690,6 +795,79 @@ public class GameManager : MonoBehaviour
             BlobArmor_.SetActive(false);
             BlobArmor.SetActive(false);
         }
+
+        if (FireArmorToken >= 1)
+        {
+            FireArmor.SetActive(true);
+            if (cw.CurrentArmor != 6 || FireArmorToken > 1)
+            {
+                FireArmor_.SetActive(true);
+            }
+            else
+            {
+                FireArmor_.SetActive(false);
+            }
+        }
+        else
+        {
+            FireArmor_.SetActive(false);
+            FireArmor.SetActive(false);
+        }
+
+        if (FrostArmorToken >= 1)
+        {
+            FrostArmor.SetActive(true);
+            if (cw.CurrentArmor != 7 || FrostArmorToken > 1)
+            {
+                FrostArmor_.SetActive(true);
+            }
+            else
+            {
+                FrostArmor_.SetActive(false);
+            }
+        }
+        else
+        {
+            FrostArmor_.SetActive(false);
+            FrostArmor.SetActive(false);
+        }
+
+        if (StoneArmorToken >= 1)
+        {
+            StoneArmor.SetActive(true);
+            if (cw.CurrentArmor != 8 || StoneArmorToken > 1)
+            {
+                StoneArmor_.SetActive(true);
+            }
+            else
+            {
+               StoneArmor_.SetActive(false);
+            }
+        }
+        else
+        {
+            StoneArmor_.SetActive(false);
+            StoneArmor.SetActive(false);
+        }
+
+        if (ThunderArmorToken >= 1)
+        {
+            ThunderArmor.SetActive(true);
+            if (cw.CurrentArmor != 9 || ThunderArmorToken > 1)
+            {
+                ThunderArmor_.SetActive(true);
+            }
+            else
+            {
+                ThunderArmor_.SetActive(false);
+            }
+        }
+        else
+        {
+            ThunderArmor_.SetActive(false);
+            ThunderArmor.SetActive(false);
+        }
+
         Item1.text = SpiderArmorToken.ToString();
         Item2.text = IlluArmorToken.ToString();
         Item3.text = RoidArmorToken.ToString();
@@ -700,8 +878,14 @@ public class GameManager : MonoBehaviour
         Item8.text = FireWeaponToken.ToString();
         Item9.text = IKWeaponToken.ToString();
         Item10.text = BlobWeaponToken.ToString();
-
-
+        Item11.text = FireArmorToken.ToString();
+        Item12.text = FrostArmorToken.ToString();
+        Item13.text = StoneArmorToken.ToString();
+        Item14.text = ThunderArmorToken.ToString();
+        Item15.text = TimeWeaponToken.ToString();
+        Item16.text = FrostWeaponToken.ToString();
+        Item17.text = StrenghtWeaponToken.ToString();
+        Item18.text = MadnessWeaponToken.ToString();
 
     }
 
@@ -1096,6 +1280,78 @@ public void RestartButton()
                 GainGold(SellItemGold);
                 PickedUpItem();
                 if (BlobWeapon_.activeSelf == false)
+                {
+                    tts.CloseWeapon();
+                }
+                break;
+            case 11:
+                FireArmorToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (FireArmor_.activeSelf == false)
+                {
+                    tts.CloseArmor();
+                }
+                break;
+            case 12:
+                FrostArmorToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (FrostArmor_.activeSelf == false)
+                {
+                    tts.CloseArmor();
+                }
+                break;
+            case 13:
+                StoneArmorToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (StoneArmor_.activeSelf == false)
+                {
+                    tts.CloseArmor();
+                }
+                break;
+            case 14:
+                ThunderArmorToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (ThunderArmor_.activeSelf == false)
+                {
+                    tts.CloseArmor();
+                }
+                break;
+            case 15:
+                TimeWeaponToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (TimeWeapon_.activeSelf == false)
+                {
+                    tts.CloseWeapon();
+                }
+                break;
+            case 16:
+                FrostWeaponToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (FrostWeapon_.activeSelf == false)
+                {
+                    tts.CloseWeapon();
+                }
+                break;
+            case 17:
+                StrenghtWeaponToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (StrenghtWeapon_.activeSelf == false)
+                {
+                    tts.CloseWeapon();
+                }
+                break;
+            case 18:
+                MadnessWeaponToken--;
+                GainGold(SellItemGold);
+                PickedUpItem();
+                if (MadnessWeapon_.activeSelf == false)
                 {
                     tts.CloseWeapon();
                 }
@@ -2438,6 +2694,14 @@ public void RestartButton()
         IKArmorToken = 1;
         BlobArmorToken = 1;
         BlobWeaponToken = 1;
+        FireArmorToken = 1;
+        FrostArmorToken = 1;
+        StoneArmorToken = 1;
+        ThunderArmorToken = 1;
+        TimeWeaponToken = 1;
+        FrostWeaponToken = 1;
+        StrenghtWeaponToken = 1;
+        MadnessWeaponToken = 1;
 
         meteorToken = 3;
         coneToken = 3;

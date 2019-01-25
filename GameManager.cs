@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public bool SlotIsInUse2;
     public bool SlotIsInUse3;
     public Texture2D DefCursor;
+    public Texture2D HoverOverObjectCursor;
     public GameObject EscMenu;
     public static int minRoom_, maxRoom_, CurrentLevel_;
     public static bool StartLevel_, GiveLoot_;
@@ -257,13 +258,14 @@ public class GameManager : MonoBehaviour
     private GameObject MainCamera;
     public GameObject NextLevelAnim;
     public bool GameOverEsc = false;
+    private bool ChangeMouse;
 
     
 
     void Start()
     {
         Lives = MenuScript.Lives;
-
+        ChangeMouse = false;
         MainCamera = GameObject.Find("MainCamera");
         MG = FindObjectOfType<MapGrid>();
         Player_ = FindObjectOfType<Player>();
@@ -288,6 +290,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
+
+    public void SelectCursor(bool OverObject)
+    {
+        if (OverObject && !ChangeMouse)
+        {
+            Cursor.SetCursor(HoverOverObjectCursor, new Vector2(0, 0), CursorMode.Auto);
+            ChangeMouse = true;
+        }
+        else if (!OverObject && ChangeMouse)
+        {
+            Cursor.SetCursor(DefCursor, new Vector2(0, 0), CursorMode.Auto);
+            ChangeMouse = false;
+        }
+    }
 
     public void EnableSpellSlotEffect()
     {
@@ -332,7 +349,7 @@ public class GameManager : MonoBehaviour
         if (lvl < 5)
         {
             CurrentLevelText.text = "Level " + (lvl + 1).ToString();
-            NextLevelAnim.GetComponent<LoadScreen>().NewLevelText("Level: " + (lvl + 1).ToString(), lvl);
+            NextLevelAnim.GetComponent<LoadScreen>().NewLevelText("Level " + (lvl + 1).ToString(), lvl);
         }
         else
         {

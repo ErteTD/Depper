@@ -8,8 +8,10 @@ public class EventStart : MonoBehaviour {
     public GameObject FadeEffect;
     public Room Room_;
     private bool clicked;
+    private GameManager manag;
     // Use this for initialization
     void Start () {
+        manag = GameManager.FindObjectOfType<GameManager>();
 
         Player_ = GameObject.Find("Player");
 
@@ -34,6 +36,7 @@ public class EventStart : MonoBehaviour {
 
     private void OnMouseOver()
     {
+        manag.SelectCursor(true);
         EventLight.intensity = 10f;
         EventLight.range = 5f;
         if (Input.GetMouseButton(0))
@@ -49,6 +52,7 @@ public class EventStart : MonoBehaviour {
 
     private void OnMouseExit()
     {
+        manag.SelectCursor(false);
         EventLight.intensity = 5f;
         EventLight.range = 3f;
     }

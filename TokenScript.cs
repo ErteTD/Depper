@@ -19,7 +19,7 @@ public class TokenScript : MonoBehaviour
     public float speed = 10f;
     public GameObject Parent;
     private bool clicked;
-
+    private UnityEngine.AI.NavMeshAgent agent;
     [Header("Healing Potion")]
     public int healing;
     private Quaternion rotation;
@@ -52,11 +52,17 @@ public class TokenScript : MonoBehaviour
                 break;
 
         }
+
+        agent = Parent.GetComponent<UnityEngine.AI.NavMeshAgent>();
+
+
         ObjectType.text = ItemTName;
         //  Invoke("DisableAgent", 0.1f);
-        Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().speed = 1;
-    //    Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().obstacleAvoidanceType = ;
-        Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().stoppingDistance = 5;
+        agent.speed = 1;
+        //    Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().obstacleAvoidanceType = ;
+        agent.stoppingDistance = 5;
+       // Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
+
         if (ItemType == 1 || ItemType == 2)
         {
             transform.localPosition = new Vector3(0, 4f, 0);
@@ -65,6 +71,13 @@ public class TokenScript : MonoBehaviour
         {
             transform.localPosition = new Vector3(0, 2.5f, 0);
         }
+
+
+        if (!agent.isOnNavMesh)
+        {
+            agent.enabled = false;
+        }
+
         rotation = Quaternion.Euler(0, 0, 0);
         
     }
@@ -88,11 +101,19 @@ public class TokenScript : MonoBehaviour
         transform.Rotate(0,speed * Time.deltaTime,0);
         float dist = Vector3.Distance(Player_.transform.position, transform.position);
 
-        if (Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled == true)
+        if (agent.enabled == true)
         {
-            if ((Vector3.Distance(Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().destination, transform.position) > 0.5f))
+            if ((Vector3.Distance(agent.destination, transform.position) > 0.5f))
             {
-                Parent.GetComponent<UnityEngine.AI.NavMeshAgent>().destination = Player_.transform.position;
+                agent.destination = Player_.transform.position;
+            }
+        }
+        else
+        {
+            Vector3 dir = Player_.transform.position - transform.parent.transform.position;
+            if (dir.magnitude > 5)
+            {
+               transform.parent.transform.position = Vector3.MoveTowards(transform.parent.transform.position, Player_.transform.position, Time.deltaTime);
             }
         }
 
@@ -112,6 +133,7 @@ public class TokenScript : MonoBehaviour
         GameObject effect = Instantiate(child_, new Vector3(this.transform.position.x, 2f, this.transform.position.z), this.transform.rotation, this.transform);
         Destroy(effect, 2f);
         effect.transform.parent = null;
+        FindObjectOfType<GameManager>().SelectCursor(false);
 
         GameManager manager = GameManager.FindObjectOfType<GameManager>();
 
@@ -255,6 +277,7 @@ public class TokenScript : MonoBehaviour
     private void OnMouseOver()
     {
         GetComponent<Renderer>().material.SetFloat("_Metallic", 0f);
+        FindObjectOfType<GameManager>().SelectCursor(true);
         ShowName.SetActive(true);
         if (Input.GetMouseButton(0))
         {
@@ -265,6 +288,7 @@ public class TokenScript : MonoBehaviour
     private void OnMouseExit()
     {
         ShowName.SetActive(false);
+        FindObjectOfType<GameManager>().SelectCursor(false);
         GetComponent<Renderer>().material.SetFloat("_Metallic", 0.5f);
     }
 

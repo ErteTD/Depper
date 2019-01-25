@@ -120,8 +120,8 @@ public class OneWayDoor : MonoBehaviour
             GameManager.FindObjectOfType<GameManager>().NormalTheme.Stop();
             GameManager.FindObjectOfType<GameManager>().BossBattle.Play();
         }
-        
 
+        FindObjectOfType<GameManager>().SelectCursor(false);
         ResetCamera();
         FindObjectOfType<CastWeapon>().TelePortDoor = true;
         FindObjectOfType<GameManager>().SetCurrentRoom(ConRoom);
@@ -167,6 +167,7 @@ public class OneWayDoor : MonoBehaviour
 
     private void OnMouseOver()
     {
+        FindObjectOfType<GameManager>().SelectCursor(true);
         GetComponent<Light>().intensity = 1.5f;
         if (Input.GetMouseButtonDown(0))
         {
@@ -181,6 +182,7 @@ public class OneWayDoor : MonoBehaviour
 
     private void OnMouseExit()
     {
+        FindObjectOfType<GameManager>().SelectCursor(false);
         GetComponent<Light>().intensity = 1f;
     }
 

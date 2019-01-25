@@ -1397,6 +1397,8 @@ public class Spellbook : MonoBehaviour
             cast.ChaosOrb_ = Chaos.ChaosOrbBool;
             cast.ChaosOrbAttackCD = Chaos.ChaosOrbAttackCD;
             cast.ChaosOrbDuration = Chaos.ChaosOrbDuration;
+            cast.cone = false;
+            cast.aoeSizeMeteor = 5;
         }
 
         if (lvl6choiceNOW == 0)

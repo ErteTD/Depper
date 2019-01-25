@@ -130,6 +130,7 @@ public class Room : MonoBehaviour
         KeepDoorsClosedUntillChestIsOpened = true;
         EventStarted = true;
         TriggerEvent.SetActive(false);
+        GameManager.FindObjectOfType<GameManager>().SelectCursor(false);
         switch (CurrentLevel)
         {
             case 0:
@@ -230,6 +231,7 @@ public class Room : MonoBehaviour
         Skel.MovementSpeed = 6;
         Skel.RoomIAmIn = gameObject;
         Skel.EventSkeletonCD = 2;
+        //Skeleton.GetComponent<Renderer>().material.color = Color.green;
         if (count > 0)
         {
             StartCoroutine(NextSkeletonInEvent(count - 1, 0.25f));

@@ -77,7 +77,7 @@ public class Monster : MonoBehaviour, IDamageable {
     [Header("Loot")]
     public bool MonsterHasLoot;
     public bool MonsterCanDropGold;
-    [HideInInspector] public GameObject MonsterLoot;
+    public GameObject MonsterLoot;
     [HideInInspector] public GameObject MonsterGold;
     public float GoldDropChance;
     public int GoldAmount;

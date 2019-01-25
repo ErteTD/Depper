@@ -15,11 +15,12 @@ public class AmazingChestHead : MonoBehaviour
     public AudioSource OpenSound;
     public AudioSource OpenSound2;
     public bool BossChest;
-
+    private GameManager manag;
     public GameObject BossChestHealingPotion;
 
     void Start()
     {
+        manag = GameManager.FindObjectOfType<GameManager>();
         Player_ = GameObject.Find("Player");
         animation = GetComponent<Animation>();
         SpawnSound.Play();
@@ -71,6 +72,8 @@ public class AmazingChestHead : MonoBehaviour
 
         private void OnMouseOver()
     {
+
+        manag.SelectCursor(true);
         EventLight.intensity = 7f;
         EventLight.range = 4f;
         if (Input.GetMouseButtonDown(0))
@@ -86,6 +89,7 @@ public class AmazingChestHead : MonoBehaviour
 
     private void OnMouseExit()
     {
+        manag.SelectCursor(false);
         EventLight.intensity = 5f;
         EventLight.range = 3f;
     }

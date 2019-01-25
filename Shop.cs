@@ -64,6 +64,7 @@ public class Shop : MonoBehaviour
 
     private void OnMouseOver()
     {
+        FindObjectOfType<GameManager>().SelectCursor(true);
         EventLight.intensity = 7f;
         EventLight.range = 4f;
         if (Input.GetMouseButtonDown(0))
@@ -80,6 +81,7 @@ public class Shop : MonoBehaviour
 
     private void OnMouseExit()
     {
+        FindObjectOfType<GameManager>().SelectCursor(false);
         EventLight.intensity = 5f;
         EventLight.range = 3f;
     }

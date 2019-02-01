@@ -14,6 +14,7 @@ public class GolemThrownRock : MonoBehaviour
     public bool BossDeathRocks;
     private bool SmallRock;
     public AudioSource RockImpact;
+    public AudioSource RockHitPlayer;
     public int NumberOfBlocks;
     Vector3 asd;
 
@@ -61,8 +62,10 @@ public class GolemThrownRock : MonoBehaviour
             }
 
             RockImpact.Play();
-            Destroy(transform.GetChild(0).transform.gameObject, 3f);
-            transform.GetChild(0).transform.parent = null;
+            Destroy(RockImpact.transform.gameObject, 3f);
+            RockImpact.transform.gameObject.transform.parent = null;
+            //Destroy(transform.GetChild(0).transform.gameObject, 3f);
+            //transform.GetChild(0).transform.parent = null;
 
             Collider[] cols = Physics.OverlapSphere(transform.position, 5);
             foreach (Collider c in cols)
@@ -71,9 +74,12 @@ public class GolemThrownRock : MonoBehaviour
                 if (e != null && e.tag == "Player")
                 {
                     e.GetComponent<Player>().TakeDamage(2);
+                    RockHitPlayer.Play();
+                    Destroy(RockHitPlayer.transform.gameObject, 3f);
+                    RockHitPlayer.transform.gameObject.transform.parent = null;
                 }
-                Destroy(gameObject);
             }
+            Destroy(gameObject);
         }
 
         if (other.tag == "Ground" && SmallRock)
@@ -90,6 +96,10 @@ public class GolemThrownRock : MonoBehaviour
             //   asdasd2.StoneGolemStartDead();
             //  Golems.Add(GRock);
 
+            RockImpact.Play();
+            Destroy(RockImpact.transform.gameObject, 3f);
+            RockImpact.transform.gameObject.transform.parent = null;
+
             Collider[] cols = Physics.OverlapSphere(transform.position, 2);
             foreach (Collider c in cols)
             {
@@ -97,10 +107,12 @@ public class GolemThrownRock : MonoBehaviour
                 if (e != null && e.tag == "Player")
                 {
                     e.GetComponent<Player>().TakeDamage(0.5f);
-                }
-                Destroy(gameObject);
-            }
+                    RockHitPlayer.Play();
+                    Destroy(RockHitPlayer.transform.gameObject, 3f);
+                    RockHitPlayer.transform.gameObject.transform.parent = null;
 
+                }
+            }
             Destroy(gameObject);
         }
     }

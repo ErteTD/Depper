@@ -134,40 +134,40 @@ public class Room : MonoBehaviour
         switch (CurrentLevel)
         {
             case 0:
-                SwarmSize = 15;
+                SwarmSize = 20;
                 CasterSize = 4;
                 BlobSize = 15;
                 SkeletonSize = 2;
                 break;
             case 1:
-                SwarmSize = 30;
+                SwarmSize = 35;
                 CasterSize = 6;
                 BlobSize = 30;
-                SkeletonSize = 4;
+                SkeletonSize = 3;
                 break;
             case 2:
                 SwarmSize = 50;
                 CasterSize = 5;
                 BlobSize = 10;
-                SkeletonSize = 6;
+                SkeletonSize = 4;
                 break;
             case 3:
                 SwarmSize = 10;
                 CasterSize = 8;
                 BlobSize = 20;
-                SkeletonSize = 8;
+                SkeletonSize = 6;
                 break;
             case 4:
                 SwarmSize = 20;
                 CasterSize = 4;
                 BlobSize = 4;
-                SkeletonSize = 10;
+                SkeletonSize = 8;
                 break;
             case 5:
                 SwarmSize = 30;
                 CasterSize = 6;
                 BlobSize = 8;
-                SkeletonSize = 12;
+                SkeletonSize = 10;
                 break;
             default:
                 SwarmSize = 1;
@@ -446,11 +446,10 @@ public class Room : MonoBehaviour
     {
         if (Monsters.Count == 0)
         {
-
             if (KeepDoorsClosedUntillChestIsOpened == false)
             {
                 OpenDoors();
-
+                CancelInvoke("OpenDoorsIfNoMonsters");
 
                 if (LastBoss)
                 {

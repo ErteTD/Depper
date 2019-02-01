@@ -870,6 +870,8 @@ public class Monster : MonoBehaviour, IDamageable {
         StartCoroutine(MageBoom(5f, RedCircle, true));
         Invoke("EndMageMeteor", 5f);
 
+        Destroy(RedCircle, 10f);
+
         if ((health / health2) <= 0.7f)
         {
             StartCoroutine(MageBoom(3f, RedCircle, false));
@@ -1233,7 +1235,7 @@ public class Monster : MonoBehaviour, IDamageable {
         AmIBurning();
         ChooseTarget();
         
-        if (LeaveFireTrail)
+        if (LeaveFireTrail && InCombat)
         {
             LeaveFireTrailFunc();
         }
@@ -1728,13 +1730,14 @@ public class Monster : MonoBehaviour, IDamageable {
             }
         }
 
-        if (MonsterType == 5 && !Boss)
+        if (MonsterType == 5 && !Boss && GameObject.FindWithTag("Illusion") == null)
         {
-            if (GameObject.FindWithTag("Illusion") != null)
-            {
-                PC.GetComponent<IlluScript>().TakeDamage(damage);
-            }
-            else if (!AttackFriend)
+            //if (GameObject.FindWithTag("Illusion") != null)
+            //{
+            //    PC.GetComponent<IlluScript>().TakeDamage(damage);
+            //}
+            //else 
+            if (!AttackFriend)
             {
                 PC.GetComponent<Player>().TakeDamage(damage);
             }
@@ -2680,7 +2683,7 @@ public class Monster : MonoBehaviour, IDamageable {
             PushMonster();
         }
 
-           if (TossingRock)
+           if (TossingRock && PC.transform != null)
         {
             RotateTowards(PC.transform);
         }

@@ -17,6 +17,12 @@ public class GameManager : MonoBehaviour
     public List<GameObject> SelectSpellsEffect;
     public GameObject SelectWeaponEffect;
     public GameObject SelectArmorEffect;
+
+    public GameObject SpellPanelOpen;
+    public GameObject WeaponpanelOpen;
+    public GameObject ArmorPanelOpen;
+
+
     [Header("ShopStuff")]
     public int RandomSpellBuyCost;
     public int RandomItemBuyCost;
@@ -541,25 +547,109 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.H))
         {
-            ToggleControls();
+            if (ToggleBoolLargeCamera)
+            {
+                ToggleLargeMiniMap();
+            }
+
+            if (!show)
+            {
+                ToggleControls();
+
+                ForceCloseShopWhenOtherButtonsAreClicked();
+
+                if (SpellPanelOpen.activeSelf == true)
+                {
+                    Spellbook spellb = Spellbook.FindObjectOfType<Spellbook>();
+                    spellb.ForceCloseSpellBookPanel();
+                }
+
+                if (WeaponpanelOpen.activeSelf == true || ArmorPanelOpen.activeSelf == true)
+                {
+                    ToolTipScript tts = ToolTipScript.FindObjectOfType<ToolTipScript>();
+                    tts.CloseAllItemPanels();
+                    tts.ForceCloseArmorPanels.SetActive(false);
+                    tts.ForceCloseWeaponPanels.SetActive(false);
+                }
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            ToggleLargeMiniMap();
+            if (ShowHide2)
+            {
+                ToggleControls();
+            }
+            if (!show)
+            {
+                ToggleLargeMiniMap();
+                ForceCloseShopWhenOtherButtonsAreClicked();
+                if (SpellPanelOpen.activeSelf == true)
+                {
+                    Spellbook spellb = Spellbook.FindObjectOfType<Spellbook>();
+                    spellb.ForceCloseSpellBookPanel();
+                }
+
+                if (WeaponpanelOpen.activeSelf == true || ArmorPanelOpen.activeSelf == true)
+                {
+                    ToolTipScript tts = ToolTipScript.FindObjectOfType<ToolTipScript>();
+                    tts.CloseAllItemPanels();
+                    tts.ForceCloseArmorPanels.SetActive(false);
+                    tts.ForceCloseWeaponPanels.SetActive(false);
+                }
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (!GameOverEsc)
             {
-                ShowEscMenu();
+                if (!ShowHide2 && !ToggleBoolLargeCamera)
+                {
+                    ShowEscMenu();
+                }
             }
             else
             {
                 EscButton();
             }
+
+            if (ShowHide2)
+            {
+                ToggleControls();
+            }
+            if (ToggleBoolLargeCamera)
+            {
+                ToggleLargeMiniMap();
+            }
+
+            if (SpellPanelOpen.activeSelf == true)
+            {
+                Spellbook spellb = Spellbook.FindObjectOfType<Spellbook>();
+                spellb.ForceCloseSpellBookPanel();
+            }
+            ForceCloseShopWhenOtherButtonsAreClicked();
+            if (WeaponpanelOpen.activeSelf == true || ArmorPanelOpen.activeSelf == true)
+            {
+                ToolTipScript tts = ToolTipScript.FindObjectOfType<ToolTipScript>();
+                tts.CloseAllItemPanels();
+                tts.ForceCloseArmorPanels.SetActive(false);
+                tts.ForceCloseWeaponPanels.SetActive(false);
+            }
         }
+
+        if (SpellPanelOpen.activeSelf == true || WeaponpanelOpen.activeSelf == true || ArmorPanelOpen.activeSelf == true || SellTokenWindow.activeSelf == true ||SellItemWindow.activeSelf == true)
+        {
+            if (ShowHide2)
+            {
+                ToggleControls();
+            }
+            if (ToggleBoolLargeCamera)
+            {
+                ToggleLargeMiniMap();
+            }
+        }
+
     }
 
     public void ToggleControls()
@@ -1025,22 +1115,27 @@ public void RestartButton()
 
     public void OpenSellTokenMenu()
     {
-        ShowSellWindowBool = !ShowSellWindowBool;
-        SellTokenWindow.SetActive(ShowSellWindowBool);
-        //CloseShopWindow.Play();
-
-        ShowSellItemWindowBool = false;
-        SellItemWindow.SetActive(ShowSellItemWindowBool);
+        if (!show)
+        {
+            ShowSellWindowBool = !ShowSellWindowBool;
+            SellTokenWindow.SetActive(ShowSellWindowBool);
+            //CloseShopWindow.Play();
+            ShowSellItemWindowBool = false;
+            SellItemWindow.SetActive(ShowSellItemWindowBool);
+        }
     }
 
     public void OpenSellItemMenu()
     {
-        ShowSellItemWindowBool = !ShowSellItemWindowBool;
-        SellItemWindow.SetActive(ShowSellItemWindowBool);
-       // CloseShopWindow.Play();
-        PickedUpItem();
-        ShowSellWindowBool = false;
-        SellTokenWindow.SetActive(ShowSellWindowBool);
+        if (!show)
+        {
+            ShowSellItemWindowBool = !ShowSellItemWindowBool;
+            SellItemWindow.SetActive(ShowSellItemWindowBool);
+            // CloseShopWindow.Play();
+            PickedUpItem();
+            ShowSellWindowBool = false;
+            SellTokenWindow.SetActive(ShowSellWindowBool);
+        }
     }
 
     public void ForceCloseShopWhenOtherButtonsAreClicked()

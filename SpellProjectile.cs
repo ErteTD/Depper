@@ -144,7 +144,7 @@ public class SpellProjectile : MonoBehaviour
          // Problem with setting all spells to current room. Mostly with comp/channeling/blessed aim.
             ThePlayer = GameObject.FindGameObjectWithTag("Player");
 
-            if (!enemyCastingspell && !ChaosOrb_ && !MadnessStaff)
+            if (!enemyCastingspell && !ChaosOrb_ && !MadnessStaff && !CompOrb)
             {
                 if (GameObject.FindGameObjectWithTag("Player") != null)
                 {
@@ -629,7 +629,7 @@ public class SpellProjectile : MonoBehaviour
     {
         pos_ += Direction * Time.deltaTime * 7;
         transform.position = pos_;
-        if (ChaosOrbCD_ <= 0)
+        if (ChaosOrbCD_ <= 0 && ChaosOrbReseveObject != null)
         {
             var randomRotSpeed = Random.Range(0, 360);
             transform.rotation = Quaternion.Euler(0, randomRotSpeed, 0);
@@ -854,10 +854,6 @@ public class SpellProjectile : MonoBehaviour
                                 DealDamageOverTime(enemy);
                             }
                             break;
-                        case "Illusion":
-                            break;
-                        case "Ressing":
-                            break;
                         case "MirrorWall":
                             MirrorWall enemy2 = hit2.collider.GetComponent<MirrorWall>();
                             enemy2.BoltBounce(LBBounce, channeling, Unmodified, gameObject, enemyCastingspell);
@@ -875,7 +871,10 @@ public class SpellProjectile : MonoBehaviour
             var heading = chanLoc - transform.position;
             var distance = heading.magnitude;
             var direction = heading / distance;
-            if (Physics.Raycast(transform.position, direction, out hit))
+
+            int layerMask = ~( (1 << 19) | ( 1 << 2));
+
+            if (Physics.Raycast(transform.position, direction, out hit, 150, layerMask))
             {
                 float dist = Vector3.Distance(hit.point, transform.position);
                 if (spellName == "Lightningbolt" && aoeSizeMeteor == 0)
@@ -903,12 +902,6 @@ public class SpellProjectile : MonoBehaviour
                 {
                     switch (hit.transform.gameObject.tag)
                     {
-                        case "Wall":
-                            chanLoc = hit.point;
-                            break;
-                        case "MageBossDeadGolem":
-                            chanLoc = hit.point;
-                            break;
                         case "Monster":
                             chanLoc = hit.point;
                             if (aoeSizeMeteor == 0)
@@ -917,15 +910,8 @@ public class SpellProjectile : MonoBehaviour
                                 DealDamageOverTime(enemy);
                             }
                             break;
-                        case "Illusion":
-                            break;
-                        case "Ressing":
-                            break;
                         case "MirrorWall":
-                            if (ghostCast == false)
-                            {
                                 chanLoc = hit.point;
-                            }
                             if (aoeSizeMeteor == 0)
                             {
                                 MirrorWall enemy2 = hit.collider.GetComponent<MirrorWall>();
@@ -933,6 +919,7 @@ public class SpellProjectile : MonoBehaviour
                             }
                             break;
                         default:
+                            chanLoc = hit.point;
                             break;
                     }
                 }

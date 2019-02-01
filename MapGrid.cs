@@ -95,7 +95,7 @@ public class MapGrid : MonoBehaviour
         GiveStuff.GetComponent<GameManager>().CurrentLevel(CurrentLevel);
         TotalRooms = Random.Range(minRoom, maxRoom + 1);
         AmountOfLoot = (int)Mathf.Floor(TotalRooms / 5);
-        AmountOfPotions = (int)Mathf.Floor(TotalRooms / 3);
+        AmountOfPotions = (int)Mathf.Floor(TotalRooms / 4);
         //NumberOfMiniBosses = (int)Mathf.Floor(TotalRooms / );
         //NumberOfEvents = (int)Mathf.Floor(TotalRooms / );
         //if (TotalRooms < 6)
@@ -640,7 +640,7 @@ public class MapGrid : MonoBehaviour
             {
                 Monster.MonsterCanDropGold = true;
                 Monster.MonsterGold = Gold;
-                Monster.GoldAmount = Mathf.RoundToInt((Monster.MonsterCR/(Monster.SpawnMultiNumber+1))+((CurrentLevel+2)*1.5f));
+                Monster.GoldAmount = Mathf.RoundToInt((Monster.MonsterCR/(Monster.SpawnMultiNumber+1))+((CurrentLevel+2)*1.25f));
                 Monster.GoldDropChance = 30 + MenuScript.GoldDropChance;
             }
         }
@@ -650,7 +650,7 @@ public class MapGrid : MonoBehaviour
     {
         Mboss.MonsterCanDropGold = true;
         Mboss.MonsterGold = Gold;
-        Mboss.GoldAmount = (CurrentLevel*5)+25;
+        Mboss.GoldAmount = (CurrentLevel*4)+25;
         Mboss.GoldDropChance = 100;
     }
     private void RoomEventLoot(Room ERoom)

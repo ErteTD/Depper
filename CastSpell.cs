@@ -147,6 +147,24 @@ public class CastSpell : MonoBehaviour
     private int MultiChanCounter;
     public Player player_;
 
+
+    public bool IsCurrentSpellSlotReady()
+    {
+        if (currentSlot == 1 && spellSlot1rdy == true)
+        {
+            return true;
+        }
+        if (currentSlot == 2 && spellSlot2rdy == true)
+        {
+            return true;
+        }
+        if (currentSlot == 3 && spellSlot3rdy == true)
+        {
+            return true;
+        }
+        return false;
+    }
+
     public void CastCurrentSpell()
     {
         if (currentSlot == 1 && spellSlot1rdy == true)
@@ -161,7 +179,6 @@ public class CastSpell : MonoBehaviour
         if (currentSlot == 3 && spellSlot3rdy == true)
         {
             curSlotcd = true;
-
         }
 
         if (MadWeapon)
@@ -173,6 +190,7 @@ public class CastSpell : MonoBehaviour
         if (curSlotcd)
         {
             player_.AttackAnim();
+            player_.StopMoveForSpellCast();
             curSlotcd = false;
 
             if (cone || channel || aoeSizeMeteor > 0)
@@ -731,8 +749,7 @@ public class CastSpell : MonoBehaviour
         if (slotnumber == 4)
         {
             CastWeapon CW = FindObjectOfType<CastWeapon>();
-            CW.spellSlotCD = spellSlotCD;
-
+            CW.spellSlotCD = spellSlotCD; 
             if (HastenBool && !CompOrb)
             {
                 var randomInt = Random.Range(0, 100);

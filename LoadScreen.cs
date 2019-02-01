@@ -43,5 +43,4 @@ public class LoadScreen : MonoBehaviour {
             ShowControlstxt.text = "";
         }
     }
-
 }

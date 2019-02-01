@@ -789,8 +789,6 @@ public class Spellbook : MonoBehaviour
         }
     }
 
-
-
     public void ForceCloseSpellBookPanel()
     {
         if (toggleSpells)

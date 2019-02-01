@@ -29,6 +29,13 @@ public class CastWeapon : MonoBehaviour
     public Image slot2;
     [HideInInspector] public float spellSlotCD2;
     public List<GameObject> Armor;
+    Player player_;
+
+    private void Start()
+    {
+        player_ = Player1.GetComponent<Player>();
+    }
+
 
     public void SelectWeapon(int ID)
     {
@@ -47,83 +54,83 @@ public class CastWeapon : MonoBehaviour
 
         if (ID == 1)
         {
-            Player1.GetComponent<Player>().InvokeRepeating("Weapon1", 0.1f, 0.1f);
+            player_.InvokeRepeating("Weapon1", 0.1f, 0.1f);
         }
         if (ID == 2)
         {
-            Player1.GetComponent<Player>().InvokeRepeating("Weapon2", 0.1f, 0.1f);
+            player_.InvokeRepeating("Weapon2", 0.1f, 0.1f);
         }
         if (ID == 3)
         {
-            Player1.GetComponent<Player>().InvokeRepeating("Weapon3", 0.1f, 0.1f);
+            player_.InvokeRepeating("Weapon3", 0.1f, 0.1f);
         }
         if (ID == 4)
         {
-            Player1.GetComponent<Player>().InvokeRepeating("Weapon4", 0.1f, 0.1f);
+            player_.InvokeRepeating("Weapon4", 0.1f, 0.1f);
         }
         if (ID == 6)
         {
-            Player1.GetComponent<Player>().InvokeRepeating("Weapon6", 0.1f, 0.1f);
+            player_.InvokeRepeating("Weapon6", 0.1f, 0.1f);
         }
         if (ID == 7)
         {
-            Player1.GetComponent<Player>().InvokeRepeating("Weapon7", 0.1f, 0.1f);
+            player_.InvokeRepeating("Weapon7", 0.1f, 0.1f);
         }
         if (ID == 8)
         {
-            Player1.GetComponent<Player>().InvokeRepeating("Weapon8", 0.1f, 0.1f);
+            player_.InvokeRepeating("Weapon8", 0.1f, 0.1f);
         }
         if (ID == 9)
         {
-            Player1.GetComponent<Player>().InvokeRepeating("Weapon9", 0.1f, 0.1f);
+            player_.InvokeRepeating("Weapon9", 0.1f, 0.1f);
         }
 
 
         if (ID != 1)
         {
-            Player1.GetComponent<Player>().W1.SetActive(false);
-            Player1.GetComponent<Player>().CancelInvoke("Weapon1");
+            player_.W1.SetActive(false);
+            player_.CancelInvoke("Weapon1");
         }
         if (ID != 2)
         {
-            Player1.GetComponent<Player>().W2.SetActive(false);
-            Player1.GetComponent<Player>().CancelInvoke("Weapon2");
+            player_.W2.SetActive(false);
+            player_.CancelInvoke("Weapon2");
         }
         if (ID != 3)
         {
-            Player1.GetComponent<Player>().BigBoyGlow.SetActive(false);
-            Player1.GetComponent<Player>().CancelInvoke("Weapon3");
+            player_.BigBoyGlow.SetActive(false);
+            player_.CancelInvoke("Weapon3");
         }
         if (ID != 4)
         {
-            Player1.GetComponent<Player>().W4.SetActive(false);
-            Player1.GetComponent<Player>().CancelInvoke("Weapon4");
+            player_.W4.SetActive(false);
+            player_.CancelInvoke("Weapon4");
         }
         if (ID != 6)
         {
-            Player1.GetComponent<Player>().W6.SetActive(false);
-            Player1.GetComponent<Player>().CancelInvoke("Weapon6");
+            player_.W6.SetActive(false);
+            player_.CancelInvoke("Weapon6");
         }
         if (ID != 7)
         {
-            Player1.GetComponent<Player>().W7.SetActive(false);
-            Player1.GetComponent<Player>().CancelInvoke("Weapon7");
+            player_.W7.SetActive(false);
+            player_.CancelInvoke("Weapon7");
         }
         if (ID != 8)
         {
-            Player1.GetComponent<Player>().W8.SetActive(false);
-            Player1.GetComponent<Player>().CancelInvoke("Weapon8");
+            player_.W8.SetActive(false);
+            player_.CancelInvoke("Weapon8");
         }
         if (ID != 9)
         {
-            Player1.GetComponent<Player>().W9.SetActive(false);
-            Player1.GetComponent<Player>().CancelInvoke("Weapon9");
+            player_.W9.SetActive(false);
+            player_.CancelInvoke("Weapon9");
         }
 
-        if (ID != 5 && Player1.GetComponent<Player>().BlobWeaponEquppied == true)
+        if (ID != 5 && player_.BlobWeaponEquppied == true)
         {
-            Player1.GetComponent<Player>().BlobWeaponEquppied = false;
-            Player1.GetComponent<Player>().W5.SetActive(false);
+            player_.BlobWeaponEquppied = false;
+            player_.W5.SetActive(false);
         }
     }
     public void SelectArmor(int ID)
@@ -141,76 +148,81 @@ public class CastWeapon : MonoBehaviour
 
         if (ID == 1)
         {
-            Player1.GetComponent<Player>().InvokeRepeating("Armor1", 0.1f, 0.1f);
+                        player_.CancelInvoke("Armor1");
+            player_.InvokeRepeating("Armor1", 0.1f, 0.1f);
         }
         if (ID == 2)
         {
-            Player1.GetComponent<Player>().InvokeRepeating("Armor2", 0.1f, 0.1f);
+            player_.CancelInvoke("Armor2");
+            player_.InvokeRepeating("Armor2", 0.1f, 0.1f);
+            player_.CancelInvoke("IlluArmor");
+            player_.InvokeRepeating("IlluArmor", 1, 0.5f);
         }
 
 
         if (ID != 1)
         {
-            Player1.GetComponent<Player>().SpiderVis.SetActive(false);
-            Player1.GetComponent<Player>().CancelInvoke("Armor1");
+            player_.SpiderVis.SetActive(false);
+            player_.CancelInvoke("Armor1");
         }
         if (ID != 2)
         {
-            Player1.GetComponent<Player>().IlluVis.SetActive(false);
-            Player1.GetComponent<Player>().CancelInvoke("Armor2");
+            player_.IlluVis.SetActive(false);
+            player_.CancelInvoke("Armor2");
+            player_.CancelInvoke("IlluArmor");
         }
 
-        if ( ID != 3 && Player1.GetComponent<Player>().ChangeColor.GetComponent<Renderer>().material.color == Color.red)
+        if ( ID != 3 && player_.ChangeColor.GetComponent<Renderer>().material.color == Color.red)
         {
-            Player1.GetComponent<Player>().ChangeColor.GetComponent<Renderer>().material.color = Color.white;
-            Player1.GetComponent<Player>().MovementSpeed = 9;
-            Player1.GetComponent<Player>().MovementSpeed_ = 9;
-            Player1.GetComponent<Player>().agent.speed = 9;
-            Player1.GetComponent<Player>().CantBeSlowed = false;
+            player_.ChangeColor.GetComponent<Renderer>().material.color = Color.white;
+            player_.MovementSpeed = 9;
+            player_.MovementSpeed_ = 9;
+            player_.agent.speed = 9;
+            player_.CantBeSlowed = false;
         }
 
-        if (ID != 4 && Player1.GetComponent<Player>().fullhealth == 15) // armor 4 non frost explosion stuff.
+        if (ID != 4 && player_.fullhealth == 15) // armor 4 non frost explosion stuff.
         {
-            Player1.GetComponent<Player>().fullhealth = 10;
-            if (Player1.GetComponent<Player>().health > 10)
+            player_.fullhealth = 10;
+            if (player_.health > 10)
             {
-                Player1.GetComponent<Player>().health = 10;
-                Player1.GetComponent<Player>().HealthText.text = Player1.GetComponent<Player>().health.ToString("F0");
+                player_.health = 10;
+                player_.HealthText.text = player_.health.ToString("F0");
             }
             else
             {
-                Player1.GetComponent<Player>().HealthText.text = Player1.GetComponent<Player>().health.ToString("F1");
+                player_.HealthText.text = player_.health.ToString("F1");
             }
-            Player1.GetComponent<Player>().HealthBar.fillAmount = Player1.GetComponent<Player>().health / Player1.GetComponent<Player>().fullhealth;
+            player_.HealthBar.fillAmount = player_.health / player_.fullhealth;
 
         }
         else if (ID == 4)
         {
-            Player1.GetComponent<Player>().fullhealth = 15;
-            Player1.GetComponent<Player>().HealthText.text = Player1.GetComponent<Player>().health.ToString("F1");
-            Player1.GetComponent<Player>().HealthBar.fillAmount = Player1.GetComponent<Player>().health / Player1.GetComponent<Player>().fullhealth;
+            player_.fullhealth = 15;
+            player_.HealthText.text = player_.health.ToString("F1");
+            player_.HealthBar.fillAmount = player_.health / player_.fullhealth;
         }
 
-        if (ID != 5 && Player1.GetComponent<Player>().BlobArmorVisual.activeSelf == true)
+        if (ID != 5 && player_.BlobArmorVisual.activeSelf == true)
         {
-            Player1.GetComponent<Player>().BlobArmorVisual.SetActive(false);
-            Player1.GetComponent<Player>().BlobArmorStatus(false);
+            player_.BlobArmorVisual.SetActive(false);
+            player_.BlobArmorStatus(false);
         }
 
-        if ((ID != 6 && ID != 7) && Player1.GetComponent<Player>().LeaveFireTrail == true)
+        if ((ID != 6 && ID != 7) && player_.LeaveFireTrail == true)
         {
-            Player1.GetComponent<Player>().LeaveFireTrail = false;
+            player_.LeaveFireTrail = false;
         }
 
-        if (ID != 8 && Player1.GetComponent<Player>().StoneArmor == true)
+        if (ID != 8 && player_.StoneArmor == true)
         {
-            Player1.GetComponent<Player>().StoneArmor = false;
-            Player1.GetComponent<Player>().StoneArmorVisPassive.SetActive(false);  
+            player_.StoneArmor = false;
+            player_.StoneArmorVisPassive.SetActive(false);  
         }
 
-        if (ID != 9 && Player1.GetComponent<Player>().LightningArmor.activeSelf == true)
+        if (ID != 9 && player_.LightningArmor.activeSelf == true)
         {
-            Player1.GetComponent<Player>().LightningArmor.SetActive(false);
+            player_.LightningArmor.SetActive(false);
         }
 
     }
@@ -218,7 +230,7 @@ public class CastWeapon : MonoBehaviour
 
     public void WeaponAttack()
     {
-        if (spellSlot1rdy == true && Player1.GetComponent<Player>().DieOnce == false)
+        if (spellSlot1rdy == true && player_.DieOnce == false)
         {
             switch (CurrentWeapon)
             {
@@ -295,7 +307,7 @@ public class CastWeapon : MonoBehaviour
                     for (int i = 0; i < 5; i++)
                     {
                         GameObject P1 = Instantiate(spell4.ItemObject, transform);
-                        Player1.GetComponent<Player>().SpellsCastInThisRoom.Add(P1);
+                        player_.SpellsCastInThisRoom.Add(P1);
                         P1.transform.Rotate(0, OrbFacing, 0);
                         P1.transform.position = new Vector3(transform.position.x, 3, transform.position.z) + P1.transform.forward * 1.5f;
                         P1.GetComponent<OldKingAttack3>().FloatUpTimer += attackTimer;
@@ -308,16 +320,16 @@ public class CastWeapon : MonoBehaviour
                     break;
                 case 5:
                     Blink spell5 = Weapons[CurrentWeapon].GetComponent<Blink>();
-                    Player1.GetComponent<Player>().BlobWeaponEquppied = true;
-                    Player1.GetComponent<Player>().W5.SetActive(true);
-                    Player1.GetComponent<Player>().BlobWeaponObject = spell5.ItemObject;
+                    player_.BlobWeaponEquppied = true;
+                    player_.W5.SetActive(true);
+                    player_.BlobWeaponObject = spell5.ItemObject;
                     spellSlotCD = spell5.cooldown;
                     break;
 
                 case 6:
                     Blink spell6 = Weapons[CurrentWeapon].GetComponent<Blink>();
-                    Player1.GetComponent<Player>().TimeStaffCDS();
-                    Player1.GetComponent<Player>().ResetCDVis(spell6.ItemObject);
+                    player_.TimeStaffCDS();
+                    player_.ResetCDVis(spell6.ItemObject);
                     spellSlotCD = spell6.cooldown;
                     break;
                 case 7:
@@ -340,7 +352,7 @@ public class CastWeapon : MonoBehaviour
                             Frostmeteor.FrostStaff = true;
                             Frostmeteor.spellCastLocation = e.transform.position;
                             Frostmeteor.transform.position = new Vector3(transform.position.x, 15, transform.position.z);
-                            Player1.GetComponent<Player>().SpellsCastInThisRoom.Add(test123);
+                            player_.SpellsCastInThisRoom.Add(test123);
                         }
                     }
                     spellSlotCD = spell7.cooldown;
@@ -384,6 +396,9 @@ public class CastWeapon : MonoBehaviour
                     SB_.LevelfourSpell(Random.Range(0, 4));
                     SB_.LevelfiveSpell(Random.Range(0, 4));
                     SB_.LevelsixSpell(Random.Range(0, 6));
+
+
+
                     Ray ray3 = Camera.main.ScreenPointToRay(Input.mousePosition);
                     RaycastHit hit3;
                     if (Physics.Raycast(ray3, out hit3))
@@ -423,15 +438,15 @@ public class CastWeapon : MonoBehaviour
         if (TelePortDoor == false)
         {
             Tele1Effect.transform.parent = null;
-            Player1.GetComponent<Player>().agent.Warp(TeleLoc);
-            Player1.GetComponent<Player>().targetPosition = Player1.transform.position;
-            Player1.GetComponent<Player>().agent.destination = Player1.transform.position;
+            player_.agent.Warp(TeleLoc);
+            player_.targetPosition = Player1.transform.position;
+            player_.agent.destination = Player1.transform.position;
         }
     }
 
     public void ArmorTrigger()
     {
-        if (spellSlot2rdy == true && Player1.GetComponent<Player>().DieOnce == false)
+        if (spellSlot2rdy == true && player_.DieOnce == false)
         {
             switch (CurrentArmor)
             {
@@ -444,7 +459,7 @@ public class CastWeapon : MonoBehaviour
                     spellSlotCD2 = spell.cooldown;
                     GameObject spider1 = Instantiate(spell.ItemObject, transform.position, transform.rotation, transform);
                     spider1.transform.position += spider1.transform.forward * 2;
-                    Player1.GetComponent<Player>().SpiderVis.SetActive(false);
+                    player_.SpiderVis.SetActive(false);
                     spider1.transform.parent = null;
 
                     break;
@@ -453,19 +468,19 @@ public class CastWeapon : MonoBehaviour
                     spellSlotCD2 = spell2.cooldown;
                     GameObject Illu = Instantiate(spell2.ItemObject, transform.position, transform.rotation, transform);
                     Illu.transform.parent = null;
-                    Player1.GetComponent<Player>().IlluVis.SetActive(false);
+                    player_.IlluVis.SetActive(false);
                     Illu.transform.localPosition = new Vector3(Illu.transform.position.x, 2, Illu.transform.position.z);
                     break;
 
                 case 3:
                     ArmorIllusion spell3 = Armor[CurrentArmor].GetComponent<ArmorIllusion>();
                     spellSlotCD2 = spell3.cooldown;
-                    Player1.GetComponent<Player>().ChangeColor.GetComponent<Renderer>().material.color = Color.red;
-                    Player1.GetComponent<Player>().MovementSpeed = 10.8f;
-                    Player1.GetComponent<Player>().MovementSpeed_ = 10.8f;
-                    Player1.GetComponent<Player>().agent.speed = 10.8f;
-                    Player1.GetComponent<Player>().slowedDur = 0;
-                    Player1.GetComponent<Player>().CantBeSlowed = true;
+                    player_.ChangeColor.GetComponent<Renderer>().material.color = Color.red;
+                    player_.MovementSpeed = 10.8f;
+                    player_.MovementSpeed_ = 10.8f;
+                    player_.agent.speed = 10.8f;
+                    player_.slowedDur = 0;
+                    player_.CantBeSlowed = true;
 
                     break;
                 case 4:
@@ -483,33 +498,33 @@ public class CastWeapon : MonoBehaviour
                 case 5:
                     ArmorIllusion spell5 = Armor[CurrentArmor].GetComponent<ArmorIllusion>();
                     spellSlotCD2 = spell5.cooldown;
-                    Player1.GetComponent<Player>().BlobArmorStatus(true);
-                    Player1.GetComponent<Player>().BlobArmorVisual.SetActive(true);
+                    player_.BlobArmorStatus(true);
+                    player_.BlobArmorVisual.SetActive(true);
                     break;
                 case 6:
                     ArmorIllusion spell6 = Armor[CurrentArmor].GetComponent<ArmorIllusion>();
                     spellSlotCD2 = spell6.cooldown;
-                    Player1.GetComponent<Player>().BootsOfFire = spell6.ItemObject;
-                    Player1.GetComponent<Player>().LeaveFireTrailCD = 0.2f;
-                    Player1.GetComponent<Player>().LeaveFireTrail = true;
+                    player_.BootsOfFire = spell6.ItemObject;
+                    player_.LeaveFireTrailCD = 0.2f;
+                    player_.LeaveFireTrail = true;
                     break;
                 case 7:
                     ArmorIllusion spell7 = Armor[CurrentArmor].GetComponent<ArmorIllusion>();
                     spellSlotCD2 = spell7.cooldown;
-                    Player1.GetComponent<Player>().BootsOfFire = spell7.ItemObject;
-                    Player1.GetComponent<Player>().LeaveFireTrailCD = 0.3f;
-                    Player1.GetComponent<Player>().LeaveFireTrail = true;
+                    player_.BootsOfFire = spell7.ItemObject;
+                    player_.LeaveFireTrailCD = 0.3f;
+                    player_.LeaveFireTrail = true;
                     break;
                 case 8:
                     ArmorIllusion spell8 = Armor[CurrentArmor].GetComponent<ArmorIllusion>();
                     spellSlotCD2 = spell8.cooldown;
-                    Player1.GetComponent<Player>().StoneArmor = true;
-                    Player1.GetComponent<Player>().StoneArmorVisPassive.SetActive(true);
+                    player_.StoneArmor = true;
+                    player_.StoneArmorVisPassive.SetActive(true);
                     break;
                 case 9:
                     ArmorIllusion spell9 = Armor[CurrentArmor].GetComponent<ArmorIllusion>();
                     spellSlotCD2 = spell9.cooldown;
-                    Player1.GetComponent<Player>().LightningArmor.SetActive(true);
+                    player_.LightningArmor.SetActive(true);
                     break;
 
             }

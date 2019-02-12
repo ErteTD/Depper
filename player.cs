@@ -15,6 +15,7 @@ public class Player : MonoBehaviour, IDamageable
     public GameObject CastSpell;
     public float MoveCD;
     private float MoveCD_;
+    private GameManager gm;
 
     private CastSpell CS;
     private CastWeapon CW;
@@ -121,6 +122,7 @@ public class Player : MonoBehaviour, IDamageable
         PlayerModeArmor = MenuScript.PlayerModeArmor;
         AS = FindObjectOfType<AudioScript>();
         DeathScreen = GameObject.Find("DeathScreenTrigger").GetComponent<LoadScreen>();
+        gm = GameManager.FindObjectOfType<GameManager>();
         CS = CastSpell.GetComponent<CastSpell>();
         CW = FindObjectOfType<CastWeapon>();
         anim = animChild.GetComponent<MonsterAnim>();
@@ -529,13 +531,9 @@ public class Player : MonoBehaviour, IDamageable
             {           
                 health -= damage * PlayerModeArmor;
 
-                //if (damage >= 0.3f)
-                //{
-                //    TakeDamageSound.Play();
-                //}
-
                 if (DieOnce == false)
                 {
+                    gm.DamageReceived += damage * PlayerModeArmor;
                     HealthText.text = health.ToString("F1");
                     HealthBar.fillAmount = health / fullhealth;
                 }
@@ -691,6 +689,7 @@ public class Player : MonoBehaviour, IDamageable
     public void Die()
     {
         Invoke("HCDeathAnimDueToFireDamageBug", 0.05f);
+        gm.DeathCount++;
         agent.destination = transform.position;
         DeathScreen.FadeToDeath();
         DeathSound.PlayDelayed(1);

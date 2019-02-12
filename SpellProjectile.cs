@@ -144,7 +144,7 @@ public class SpellProjectile : MonoBehaviour
          // Problem with setting all spells to current room. Mostly with comp/channeling/blessed aim.
             ThePlayer = GameObject.FindGameObjectWithTag("Player");
 
-            if (!enemyCastingspell && !ChaosOrb_ && !MadnessStaff && !CompOrb)
+            if (!enemyCastingspell && !ChaosOrb_ && !MadnessStaff && !CompOrb && !MageBossMeteor)
             {
                 if (GameObject.FindGameObjectWithTag("Player") != null)
                 {
@@ -1178,7 +1178,7 @@ public class SpellProjectile : MonoBehaviour
         }
         //else
         //{
-        //    directionF = transform.forward;
+
         //}
 
         if (spellName == "Lightningbolt")
@@ -1199,6 +1199,7 @@ public class SpellProjectile : MonoBehaviour
             Vector3 loc2 = transform.position;
             loc2 += transform.forward * 4f;
             transform.position = loc2;
+
         }
         Invoke("Stop", 1.2f);
     }

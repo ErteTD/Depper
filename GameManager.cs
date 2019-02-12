@@ -5,6 +5,10 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
+
+    public SteamAchievements SteamAch;
+    public bool CheatsEnabled;
+    public GameObject TestMenu;
     public bool SlotIsInUse1;
     public bool SlotIsInUse2;
     public bool SlotIsInUse3;
@@ -21,7 +25,18 @@ public class GameManager : MonoBehaviour
     public GameObject SpellPanelOpen;
     public GameObject WeaponpanelOpen;
     public GameObject ArmorPanelOpen;
+    [Header("GameStats")]
+    public float PlayTime;
+    public float DeathCount;
+    public float DamageReceived;
+    public float GoldSpent;
+    
 
+    [Header("Menu")]
+    public Text PlayTimeText;
+    public Text DeathsText;
+    public Text DamageReceivedText;
+    public Text GoldSpentText;
 
     [Header("ShopStuff")]
     public int RandomSpellBuyCost;
@@ -265,8 +280,9 @@ public class GameManager : MonoBehaviour
     public GameObject NextLevelAnim;
     public bool GameOverEsc = false;
     private bool ChangeMouse;
-
-    
+    private bool PreventDoubleClick;
+    private float ScrollWheelMinTimer = 0.1f;
+    private float ScrollWheelMinTimer_;
 
     void Start()
     {
@@ -284,6 +300,18 @@ public class GameManager : MonoBehaviour
         SetTime = Time.timeScale;
         CurrentGoldText.text = "Gold: " + Money.ToString();
         CurrentGameModeText.text = MenuScript.GameDifficulty;
+        PlayTime = 0;
+        GoldSpent = 0;
+        DamageReceived = 0;
+        DeathCount = 0;
+
+        if (MenuScript.FirstLaunch)
+        {
+            ToggleControls();
+            MenuScript.FirstLaunch = false;
+        }
+
+
         if (!MenuScript.InfiniteLives)
         {
             CurrentLivesText.text = "Lives: " + Lives.ToString();
@@ -296,6 +324,43 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
+    void ActivateCheats()
+    {
+        Player_.health = 9999;
+        SpellsAndItems();
+        TestMenu.SetActive(true);
+    }
+
+
+    public void SteamBossAchievement(string ID)
+    {
+        string genString = " ";
+        ID = ID.Replace(genString, "_");
+        string ID_ = (ID + "_defeated").ToLower(); // Modify here to include difficulty if u want for each mode
+
+        SteamAch.UnlockSteamAchievement(ID_);
+    }
+    public void SteamModeAchievement()
+    {
+        string ID = "game_completed_" + MenuScript.GameDifficulty;
+        string ID_ = ID.ToLower(); 
+        SteamAch.UnlockSteamAchievement(ID_);
+
+        if (MenuScript.GameDifficulty == "Challenge")
+        {
+            string ID2 = ("game_completed_Normal").ToLower();
+            SteamAch.UnlockSteamAchievement(ID2);
+            string ID3 = ("game_completed_Casual").ToLower();
+            SteamAch.UnlockSteamAchievement(ID3);
+        }
+        if (MenuScript.GameDifficulty == "Normal")
+        {
+            string ID4 = ("game_completed_Casual").ToLower();
+            SteamAch.UnlockSteamAchievement(ID4);
+        }
+
+    }
 
 
     public void SelectCursor(bool OverObject)
@@ -384,6 +449,7 @@ public class GameManager : MonoBehaviour
         if (Money >= RandomSpellBuyCost)
         {
             Money -= RandomSpellBuyCost;
+            GoldSpent += RandomSpellBuyCost;
             CurrentGoldText.text = "Gold: " + Money.ToString();
             var randomToken = Random.Range(0, MapGrid.FindObjectOfType<MapGrid>().Tokens.Count);
 
@@ -406,6 +472,7 @@ public class GameManager : MonoBehaviour
         if (Money >= PotionBuyCost)
         {
             Money -= PotionBuyCost;
+            GoldSpent += PotionBuyCost;
             CurrentGoldText.text = "Gold: " + Money.ToString();
             float random1 = Random.Range(0f, 0f);
             float random2 = Random.Range(-5f, -3f);
@@ -425,6 +492,7 @@ public class GameManager : MonoBehaviour
         if (Money >= RandomItemBuyCost)
         {
             Money -= RandomItemBuyCost;
+            GoldSpent += RandomItemBuyCost;
             CurrentGoldText.text = "Gold: " + Money.ToString();
             var randomToken = Random.Range(0, Items.Count);
 
@@ -447,8 +515,8 @@ public class GameManager : MonoBehaviour
         switch (Type)
         {
             case 0:
-                minRoom_ = 6;
-                maxRoom_ = 6;
+                minRoom_ = 5;
+                maxRoom_ = 7;
                 CurrentLevel_ = 0;
                 GiveLoot_ = false;
 
@@ -528,6 +596,10 @@ public class GameManager : MonoBehaviour
 
         }
         StartLevel_ = true;
+        PlayTime = 0;
+        GoldSpent = 0;
+        DamageReceived = 0;
+        DeathCount = 0;
         Time.timeScale = SetTime;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
@@ -543,8 +615,87 @@ public class GameManager : MonoBehaviour
         ShowTokensPanel.SetActive(showTP);
     }
 
+    void MouseScrollSpells(bool DirectionForward)
+    {
+        Spellbook spellb = Spellbook.FindObjectOfType<Spellbook>();
+        int NextSpell = 0;
+        ScrollWheelMinTimer_ = ScrollWheelMinTimer;
+
+        switch (CastSpell.FindObjectOfType<CastSpell>().currentSlot)
+        {
+            case 1:
+                if (DirectionForward)
+                {
+                    NextSpell = 2;
+                }
+                else
+                {
+                    NextSpell = 3;
+                }
+
+                break;
+            case 2:
+                if (DirectionForward)
+                {
+                    NextSpell = 3;
+                }
+                else
+                {
+                    NextSpell = 1;
+                }
+                break;
+            case 3:
+                if (DirectionForward)
+                {
+                    NextSpell = 1;
+                }
+                else
+                {
+                    NextSpell = 2;
+                }
+                break;
+        }
+        
+        switch (NextSpell)
+        {
+            case 1:
+                spellb.SlotOne();
+                break;
+            case 2:
+                spellb.SlotTwo();
+                break;
+            case 3:
+                spellb.SlotThree();
+                break;
+
+        }
+    }
+
     void Update()
     {
+        PlayTime += Time.deltaTime;
+
+
+
+        if (Input.GetAxis("Mouse ScrollWheel") > 0f && ScrollWheelMinTimer_ <=0)
+        {
+            MouseScrollSpells(true);
+        }
+        if (Input.GetAxis("Mouse ScrollWheel") < 0f && ScrollWheelMinTimer_ <=0)
+        {
+            MouseScrollSpells(false);
+        }
+
+        ScrollWheelMinTimer_ -= Time.deltaTime;
+
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            if (CheatsEnabled)
+            {
+                ActivateCheats();
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.H))
         {
             if (ToggleBoolLargeCamera)
@@ -1002,6 +1153,16 @@ public class GameManager : MonoBehaviour
         if (show)
         {
             Time.timeScale = 0;
+            string hours = Mathf.Floor(PlayTime / 3600).ToString("00");
+            string minutes = Mathf.Floor((PlayTime/60) % 60).ToString("00");
+            string seconds = (PlayTime % 60).ToString("00");
+            PlayTimeText.text = (string.Format("{0}:{1}:{2}",hours, minutes, seconds));
+
+            DeathsText.text = DeathCount.ToString();
+            DamageReceivedText.text = DamageReceived.ToString("F1");
+            GoldSpentText.text = GoldSpent.ToString();
+
+
         }
         else
         {
@@ -1035,38 +1196,44 @@ public void RestartButton()
     {
         if (Lives > 0)
         {
-            MG.CurrentLevel--;
-            MG.maxRoom--;
-            MG.NextLevel();
-            Player_.Continue();
-            MainCamera.GetComponent<CamController>().zLevel = -26;
-            MainCamera.GetComponent<CamController>().zLevel2 = -26;
-            MainCamera.GetComponent<CamController>().xLimit1 = 0;
-            MainCamera.GetComponent<CamController>().xLimit2 = 0;
-            MainCamera.GetComponent<CamController>().zTest = -22;
-            MiniCamera.transform.position = new Vector3(-1000, 100, 0);
-            if (!MenuScript.InfiniteLives)
+            if (!PreventDoubleClick)
             {
-                Lives--;
-                CurrentLivesText.text = "Lives: " + Lives.ToString();
-                DeathScreenLivesText.text = "Continue (" + Lives.ToString() + ")";
-            }
-            else
-            {
-                CurrentLivesText.text = "Lives:  ∞";
-                DeathScreenLivesText.text = "Continue ∞";
-            }
-            NormalTheme.Play();
-            BossBattle.Stop();
+                PreventDoubleClick = true;
+                Invoke("WowWhatALeetCoder", 5);
+                MG.CurrentLevel--;
+                MG.maxRoom--;
+                MG.NextLevel();
+                Player_.Continue();
+                MainCamera.GetComponent<CamController>().zLevel = -26;
+                MainCamera.GetComponent<CamController>().zLevel2 = -26;
+                MainCamera.GetComponent<CamController>().xLimit1 = 0;
+                MainCamera.GetComponent<CamController>().xLimit2 = 0;
+                MainCamera.GetComponent<CamController>().zTest = -22;
+                MiniCamera.transform.position = new Vector3(-1000, 100, 0);
+                if (!MenuScript.InfiniteLives)
+                {
+                    Lives--;
+                    CurrentLivesText.text = "Lives: " + Lives.ToString();
+                    DeathScreenLivesText.text = "Continue (" + Lives.ToString() + ")";
+                }
+                else
+                {
+                    CurrentLivesText.text = "Lives:  ∞";
+                    DeathScreenLivesText.text = "Continue ∞";
+                }
+                NormalTheme.Play();
+                BossBattle.Stop();
 
-            BossHealth.transform.GetChild(0).gameObject.SetActive(false);
-            BossHealth.transform.GetChild(1).gameObject.SetActive(false);
-            BossHealth.transform.GetChild(2).gameObject.SetActive(false);
-            BossHealth.transform.GetChild(3).gameObject.SetActive(false);
+                BossHealth.transform.GetChild(0).gameObject.SetActive(false);
+                BossHealth.transform.GetChild(1).gameObject.SetActive(false);
+                BossHealth.transform.GetChild(2).gameObject.SetActive(false);
+                BossHealth.transform.GetChild(3).gameObject.SetActive(false);
 
-            if (Lives == 0)
-            {
-                DeathScreenLivesText.text = "Game Over";
+                if (Lives == 0)
+                {
+                    DeathScreenLivesText.text = "Game Over";
+                }
+                
             }
         }
         else
@@ -1076,6 +1243,10 @@ public void RestartButton()
 
     }
 
+    void WowWhatALeetCoder()
+    {
+        PreventDoubleClick = false;
+    }
 
     public void CurrentTokens()
     {

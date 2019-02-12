@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.AI;
+using UnityEngine.UI;
 public class Room : MonoBehaviour
 {
     public GameObject Floor;
@@ -69,6 +70,15 @@ public class Room : MonoBehaviour
     public GameObject Credits;
     public bool startmenu;
     public List<GameObject> StartMonsters;
+    private float GameEndTime;
+    [Header("CreditStats")]
+    public Text GameEndTimeText;
+    public Text GameEndLivesText;
+    public Text GameEndDeathsText;
+    public Text GameEndGoldSpentText;
+    public Text GameEndDamageTakenText;
+    public Text GameEndModeText;
+
 
     [Header("GolemBossStuff")]
     public bool GolemBossRoom;
@@ -81,6 +91,7 @@ public class Room : MonoBehaviour
 
     void Start()
     {
+        gm = FindObjectOfType<GameManager>();
         InvokeRepeating("OpenDoorsIfNoMonsters", 0.1f, 0.5f);
         Invoke("GetDoors", 0.001f);
         Invoke("ColorMiniMapRed", 0.1f);
@@ -413,12 +424,31 @@ public class Room : MonoBehaviour
             }
         }
         DaPlayer.Immortal = true;
+
         Invoke("LastBossPauseParticleEffectAndStartCredits", 27);
         LastBossDeathSound.Play();
     }
 
     void LastBossPauseParticleEffectAndStartCredits()
     {
+
+
+        string hours = Mathf.Floor(GameEndTime / 3600).ToString("00");
+        string minutes = Mathf.Floor((GameEndTime / 60) % 60).ToString("00");
+        string seconds = (GameEndTime % 60).ToString("00");
+
+        GameEndTimeText.text = string.Format("{0}:{1}:{2}", hours, minutes, seconds);
+
+        GameEndLivesText.text = gm.Lives.ToString();
+        if (MenuScript.InfiniteLives)
+        {
+            GameEndLivesText.text = "∞";
+        }
+        GameEndDeathsText.text = gm.DeathCount.ToString();
+        GameEndGoldSpentText.text = gm.GoldSpent.ToString();
+        GameEndDamageTakenText.text = gm.DamageReceived.ToString("F1");
+        GameEndModeText.text = MenuScript.GameDifficulty;
+
         LastBossPart.Pause();
         GameManager.FindObjectOfType<GameManager>().GameOverEsc = true;
         LastBossPartAudio.Stop();
@@ -431,6 +461,8 @@ public class Room : MonoBehaviour
         yield return new WaitForSeconds(delay);
         LastBoss = true;
 
+        GameEndTime = GameManager.FindObjectOfType<GameManager>().PlayTime;
+        GameManager.FindObjectOfType<GameManager>().SteamModeAchievement();
         KeepDoorsClosedUntillChestIsOpened = false;
     }
 
@@ -487,8 +519,8 @@ public class Room : MonoBehaviour
     {
         if (Monsters.Count == 0)
         {
-
-           Rocks = GameObject.FindGameObjectsWithTag("GolemRock");
+            GameManager.FindObjectOfType<GameManager>().SteamBossAchievement("Jade Golem");
+            Rocks = GameObject.FindGameObjectsWithTag("GolemRock");
 
             foreach (GameObject rock in Rocks)
             {

@@ -72,7 +72,7 @@ public class ExplodeScript : MonoBehaviour
                             }
                             else
                             {
-                                e.Slow(true, 2, 9999);
+                                e.Slow(true, BoostBurnDur, BoostBurnPer);
                                 e.StopAgent();
                             }
                         }

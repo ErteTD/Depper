@@ -112,7 +112,7 @@ public class MapGrid : MonoBehaviour
         Base.GetComponent<Room>().BuildRoomNavMesh();
 
         GameObject Shop_ = Instantiate(Shop, Base.transform);
-        Shop_.transform.localPosition = new Vector3(25, 2.1f, 0f);
+        Shop_.transform.localPosition = new Vector3(25.5f, 2.1f, 1.5f);
         Base.GetComponent<Room>().ThisRoomHasShop = true;
 
         GridList.Add(new Vector2Int(0, 0));

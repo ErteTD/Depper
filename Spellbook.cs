@@ -38,6 +38,8 @@ public class Spellbook : MonoBehaviour
 
     public GameObject GameMang;
     public GameObject ForceClosePanels;
+    public GameObject ForceCloseTokenPanel1;
+    public GameObject ForceCloseTokenPanel2;
 
     private GameManager manager;
     [HideInInspector] public GameObject showSpellBook;
@@ -171,6 +173,7 @@ public class Spellbook : MonoBehaviour
     private int slot3Mem5;
 
     private bool TokenSoundToggle;
+    public int CurSlotForScrollWheel;
 
 
     public void Start()
@@ -601,6 +604,7 @@ public class Spellbook : MonoBehaviour
         slot2.color = Color.white;
         slot3.color = Color.white;
 
+
         if (!finishSpell_)
         {
             LeveloneSpell(spellSlot1Choice1);
@@ -862,6 +866,12 @@ public class Spellbook : MonoBehaviour
         showSpellBook.SetActive(toggleSpells);
         showSpellBookSpells.SetActive(toggleSpells);
         ForceClosePanels.SetActive(toggleSpells);
+
+        if (!toggleSpells)
+        {
+            ForceCloseTokenPanel1.SetActive(toggleSpells);
+            ForceCloseTokenPanel2.SetActive(toggleSpells);
+        }
 
         curSlot = slotNumber;
 

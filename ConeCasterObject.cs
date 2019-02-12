@@ -116,11 +116,11 @@ public class ConeCasterObject : MonoBehaviour {
         SpellProjectile spell = test123.GetComponent<SpellProjectile>();
         if (!Rotating)
         {
-            spell.damage = 1;
+            spell.damage = 0.5f;
         }
         else
         {
-            spell.damage = 0.3f;
+            spell.damage = 0.2f;
         }
         spell.SlowDuration = 2;
         spell.SlowPercent = 1.25f;

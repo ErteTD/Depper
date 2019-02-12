@@ -51,7 +51,7 @@ public class OneWayDoor : MonoBehaviour
     {
             float dist = Vector3.Distance(Player_.transform.position, transform.position);
         
-        if (dist < 6 && clicked == true && !CantClickDoorDuringLoad)
+        if (dist < 8 && clicked == true && !CantClickDoorDuringLoad)
         {
             clicked = false;
             CantClickDoorDuringLoad = true;
@@ -121,10 +121,15 @@ public class OneWayDoor : MonoBehaviour
             GameManager.FindObjectOfType<GameManager>().BossBattle.Play();
         }
 
+        GameManager.FindObjectOfType<GameManager>().ShopWindowFunc(false);
+
         FindObjectOfType<GameManager>().SelectCursor(false);
         ResetCamera();
         FindObjectOfType<CastWeapon>().TelePortDoor = true;
         FindObjectOfType<GameManager>().SetCurrentRoom(ConRoom);
+
+
+
 
         MainCamera.GetComponent<CamController>().zLevel = doorHeight;
         MainCamera.GetComponent<CamController>().zLevel2 = doorHeight2;
@@ -167,11 +172,14 @@ public class OneWayDoor : MonoBehaviour
 
     private void OnMouseOver()
     {
-        FindObjectOfType<GameManager>().SelectCursor(true);
-        GetComponent<Light>().intensity = 1.5f;
-        if (Input.GetMouseButtonDown(0))
+        if (GameManager.FindObjectOfType<GameManager>().ShopWindow.activeSelf == false)
         {
-            clicked = true;
+            FindObjectOfType<GameManager>().SelectCursor(true);
+            GetComponent<Light>().intensity = 1.5f;
+            if (Input.GetMouseButtonDown(0))
+            {
+                clicked = true;
+            }
         }
     }
 

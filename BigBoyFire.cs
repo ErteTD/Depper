@@ -58,7 +58,7 @@ public class BigBoyFire : MonoBehaviour
     public void OnTriggerStay(Collider other)
     {
         IDamageable unit = other.GetComponent<IDamageable>();
-        if (unit == null || DamagingSelf(unit))
+        if (unit == null || DamagingSelf(unit) || other.tag == "Illusion")
         {
             return;
         }

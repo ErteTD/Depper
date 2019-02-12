@@ -40,9 +40,17 @@ public class AudioScript : MonoBehaviour
 
     public void SetSoundMaster(float soundLevel)
     {
-        masterMixer.SetFloat("Master Volume", soundLevel);
-        DisplayMaster.text = (Mathf.InverseLerp(MinLevel, MaxLevel, soundLevel) * 100).ToString("F0") + "%";
+        float SoundLevel_ = soundLevel;
         MasterSoundLevel = soundLevel;
+
+        if (soundLevel > 0)
+        {
+            soundLevel = soundLevel / 2;
+        }
+        masterMixer.SetFloat("Master Volume", soundLevel);
+        DisplayMaster.text = (Mathf.InverseLerp(MinLevel, MaxLevel, SoundLevel_) * 100).ToString("F0") + "%";
+
+  
 
         if (soundLevel == -40)
         {
@@ -52,10 +60,16 @@ public class AudioScript : MonoBehaviour
     }
     public void SetSoundMusic(float soundLevel)
     {
-        masterMixer.SetFloat("Music Volume", soundLevel);
-        DisplayMusic.text = (Mathf.InverseLerp(MinLevel, MaxLevel, soundLevel) * 100).ToString("F0") + "%";
+        float SoundLevel_ = soundLevel;
         MasterMusicLevel = soundLevel;
         DeathMusicSoundLevel = soundLevel;
+        if (soundLevel > 0)
+        {
+            soundLevel = soundLevel / 2;
+        }
+        masterMixer.SetFloat("Music Volume", soundLevel);
+        DisplayMusic.text = (Mathf.InverseLerp(MinLevel, MaxLevel, SoundLevel_) * 100).ToString("F0") + "%";
+
 
         if (soundLevel == -40)
         {
@@ -67,11 +81,16 @@ public class AudioScript : MonoBehaviour
     }
     public void SetSoundSFX(float soundLevel)
     {
-        masterMixer.SetFloat("SFX Volume", soundLevel);
-        masterMixer.SetFloat("Death", soundLevel);
-        DisplaySFX.text = (Mathf.InverseLerp(MinLevel, MaxLevel, soundLevel) * 100).ToString("F0") + "%";
+        float SoundLevel_ = soundLevel;
         MasterSFXLevel = soundLevel;
         DeathSFXSoundLevel = soundLevel;
+        if (soundLevel > 0)
+        {
+            soundLevel = soundLevel / 2;
+        }
+        masterMixer.SetFloat("SFX Volume", soundLevel);
+        masterMixer.SetFloat("Death", soundLevel);
+        DisplaySFX.text = (Mathf.InverseLerp(MinLevel, MaxLevel, SoundLevel_) * 100).ToString("F0") + "%";
 
         if (soundLevel == -40)
         {

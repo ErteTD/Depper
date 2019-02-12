@@ -14,6 +14,7 @@ public class MenuScript : MonoBehaviour {
     public static float PlayerModeArmor = 1;
     public static float BossHealthModifier = 1;
     public static string GameDifficulty = "Normal";
+    public static bool FirstLaunch;
 
 
     public Text ModeText;
@@ -265,6 +266,7 @@ public class MenuScript : MonoBehaviour {
                 GameDifficulty = "Challenge";
                 break;
         }
+        FirstLaunch = true;
         LoadingBarFunc();
     }
 

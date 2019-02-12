@@ -776,6 +776,7 @@ public class Monster : MonoBehaviour, IDamageable {
             float RandZ = Random.Range(-5f, 6f);
             GameObject NewGolem = Instantiate(NewStoneGolem, new Vector3(Rock.transform.position.x + RandX, 0, Rock.transform.position.z + RandZ), transform.rotation);
             Monster Golem = NewGolem.GetComponent<Monster>();
+            NewGolem.transform.parent = transform.parent;
             Golem.MageBossForGolems = GetComponent<Monster>();
             Golem.MovementSpeed = Random.Range(2f, 4f);
             Golem.MovementSpeed_ = Golem.MovementSpeed;
@@ -827,7 +828,7 @@ public class Monster : MonoBehaviour, IDamageable {
         CurBlob_.GolemOrbAim = true;
         CurBlob_.FrostBarrageTurnRateVariation = Random.Range(3, 5f);
         AttackCount--;
-
+        CurBlob_.Invoke("BlobExpireTimer", 20f);
         BossSound1.Play();
         if (AttackCount > 0)
         {
@@ -895,6 +896,7 @@ public class Monster : MonoBehaviour, IDamageable {
         BM.MageBossMeteor = true;
         BM.damage = 100;
         BM.MageBossCircle = RedCircle;
+      //  BM.enemyCastingspell = true;
         BM.MageBoss = this;
         if (TrueMeteor)
         {
@@ -1265,20 +1267,44 @@ public class Monster : MonoBehaviour, IDamageable {
 
                 if (MonsterType == 5)
                 {
-                    Vector3 dir = new Vector3(PC.transform.position.x, 3f, PC.transform.position.z) - this.transform.position;
-                        float distThisFrame = MovementSpeed * Time.deltaTime;
-                    if (!CurrentlyFrozen && !Type5BHSLOW && MovementSpeed > 1)
-                    {
-                        transform.Translate(dir.normalized * distThisFrame, Space.World);
-                    }
-                        Quaternion targetRotation = Quaternion.LookRotation(dir);
-                        this.transform.rotation = Quaternion.Lerp(this.transform.rotation, targetRotation, Time.deltaTime * MovementSpeed);
 
-                    if (!CurrentlyFrozen && InCombat && !Boss)
-                    {
-                        MovementSpeed += Time.deltaTime / 6;
-                        MovementSpeed_ += Time.deltaTime / 6;
-                    }
+
+                        if (!CurrentlyFrozen && !Type5BHSLOW && MovementSpeed > 1)
+                        {
+                        Vector3 dir = new Vector3(PC.transform.position.x, 3f, PC.transform.position.z) - this.transform.position;
+                        float distThisFrame = MovementSpeed * Time.deltaTime;
+
+                        if (!float.IsNaN(dir.x* distThisFrame) && !float.IsNaN(dir.y* distThisFrame) && !float.IsNaN(dir.z* distThisFrame) && !float.IsNaN(dir.normalized.x * distThisFrame) && !float.IsNaN(dir.normalized.y * distThisFrame) && !float.IsNaN(dir.normalized.z * distThisFrame))
+                            {
+
+
+
+                            Vector3 ErrorPos = transform.position + (transform.forward * distThisFrame);
+                            if (!float.IsNaN(ErrorPos.x) && !float.IsNaN(ErrorPos.y) && !float.IsNaN(ErrorPos.z) && !float.IsInfinity(ErrorPos.x) && !float.IsInfinity(ErrorPos.y) && !float.IsInfinity(ErrorPos.z))
+                            {
+                                transform.position += transform.forward * distThisFrame;
+
+                                //   transform.Translate(dir.normalized * distThisFrame, Space.World);
+                                Quaternion targetRotation = Quaternion.LookRotation(dir);
+                                this.transform.rotation = Quaternion.Lerp(this.transform.rotation, targetRotation, Time.deltaTime * MovementSpeed);
+                            }
+                            else
+                            {
+                                Debug.Log("Error 2 would occure here");
+                            }
+
+                        }
+                        else
+                        {
+                            Debug.Log("Error would occure here");
+                        }
+                        }
+
+                        if (!CurrentlyFrozen && InCombat && !Boss && MovementSpeed < 9f)
+                        {
+                            MovementSpeed += Time.deltaTime / 6;
+                            MovementSpeed_ += Time.deltaTime / 6;
+                        }               
 
                 }
                 if (MonsterType != 5)
@@ -1592,6 +1618,15 @@ public class Monster : MonoBehaviour, IDamageable {
 
     }
 
+    void BlobExpireTimer()
+    {
+        OnlyOnce = true;
+        transform.GetChild(0).gameObject.SetActive(true);
+        Destroy(transform.GetChild(0).gameObject, 0.99f);
+        transform.GetChild(0).gameObject.transform.parent = null;
+        Destroy(gameObject);
+    }
+
     void OnTriggerEnter(Collider other)
     {
         if (BlobAttackNoTarget && !OnlyOnce)
@@ -1823,8 +1858,13 @@ public class Monster : MonoBehaviour, IDamageable {
             if (attackCountdown >= 0.2f || !IamIllu) // so illus wont attack on spawn.
             {
 
-                GameObject test123 = Instantiate(currentspellObject, castPoint.transform.position, castPoint.transform.rotation, castPoint.transform);
+                Quaternion Rotat = castPoint.transform.rotation;
+                Vector3 Postat = castPoint.transform.position;
+
+                GameObject test123 = Instantiate(currentspellObject, Postat, Rotat, castPoint.transform);
                 SpellProjectile spell = test123.GetComponent<SpellProjectile>();
+
+
 
                 // makes it so the monster spellprojectiles vary a bit and don't always go in a predicatble pattern staright towards the player.
                 if (PC == PC_) // If still, hits player.
@@ -1852,7 +1892,6 @@ public class Monster : MonoBehaviour, IDamageable {
                         spell.SlowDuration = currentSpell.GetComponent<FrostBolt>().SlowDuration;
                         spell.SlowPercent = currentSpell.GetComponent<FrostBolt>().SlowPercent + 0.1f;
                         spell.SineWaveAttack = SineWaveAttack;
-
                         break;
                     case 2:
                         spell.projectilespeed = currentSpell.GetComponent<Fireball>().projectilespeed-4f;
@@ -1862,6 +1901,11 @@ public class Monster : MonoBehaviour, IDamageable {
                         spell.BurnPercent = currentSpell.GetComponent<Fireball>().BurnPercent;
                         spell.SineWaveAttack = SineWaveAttack;
                         spell.cone = Cone;
+                        if (MonsterType == 2)
+                        {
+                            ShapeCone(test123);
+                        }
+
                         break;
                     case 3:
                         spell.projectilespeed = currentSpell.GetComponent<LightningBolt>().projectilespeed;
@@ -1925,9 +1969,46 @@ public class Monster : MonoBehaviour, IDamageable {
             }
         }
     }
-    void StartSwarm() // so animation can start before spiders spawn.
+
+    void ShapeCone(GameObject cone)
     {
-        SummonSwarm(20);
+        cone.GetComponent<BoxCollider>().center = new Vector3(0, 0, -2);
+        cone.GetComponent<BoxCollider>().size = new Vector3(3.5f, 3.5f, 0);
+        StartCoroutine(ShapeConeNext(0.02f, 10, cone, -2, 0));
+    }
+    IEnumerator ShapeConeNext(float delay, int iterations, GameObject cone, float x1, float x2)
+    {
+        yield return new WaitForSeconds(delay);
+        if (cone != null)
+        {
+            Next(cone, iterations, x1, x2);
+        }
+    }
+    void Next(GameObject cone, int iterations, float x1, float x2)
+    {
+        x1 += 0.4f;
+        if (iterations > 5)
+        {
+            x2 += 0.8f;
+        }
+        else
+        {
+            x2 -= 0.8f;
+        }
+        cone.GetComponent<BoxCollider>().center = new Vector3(0, 0, x1);
+        cone.GetComponent<BoxCollider>().size = new Vector3(3.5f, 3.5f, x2);
+        if (iterations > 1)
+        {
+            StartCoroutine(ShapeConeNext(0.11f, iterations - 1, cone, x1, x2));
+        }
+    }
+
+
+
+
+void StartSwarm() // so animation can start before spiders spawn.
+    {
+        SummonSwarm(25);
 
     }
 
@@ -1958,9 +2039,9 @@ public class Monster : MonoBehaviour, IDamageable {
         AddToRoomMonsterList(Spider);
         Spider.GetComponent<Monster>().AggroRange = 50;
         Spider.GetComponent<Monster>().MovementSpeed = 3f;
-        Spider.GetComponent<Monster>().damage = 0.5f;
-        Spider.GetComponent<Monster>().health = 0.7f;
-        Spider.GetComponent<Monster>().health2 = 0.7f;
+        Spider.GetComponent<Monster>().damage = 0.25f;
+        Spider.GetComponent<Monster>().health = 0.5f;
+        Spider.GetComponent<Monster>().health2 = 0.5f;
         Spider.GetComponent<Monster>().MonsterTypeSubLayer = 2;
         Spider.GetComponent<Monster>().meleeRange = 2;
         Spider.transform.parent = GameObject.FindGameObjectWithTag("SpiderBossRoom").transform;
@@ -2526,6 +2607,13 @@ public class Monster : MonoBehaviour, IDamageable {
                     }
                 }
             }
+
+            if (Boss & !Golemboss)
+            {
+                manag.SteamBossAchievement(BossName);
+            }
+
+
             Destroy(gameObject);
         }
         else if (!Immortal)
@@ -2690,39 +2778,67 @@ public class Monster : MonoBehaviour, IDamageable {
 
         if (BlobAttackNoTarget && !OrderPhase2Orb)
         {
-            float distThisFrame = (MovementSpeed) * Time.deltaTime;
-            if (BlobAttack4)
-            {
-               // var rotation_ = (Vector3.up * Time.deltaTime * Blob4RotSpeed);
-                 transform.Rotate(Vector3.up * Time.deltaTime * Blob4RotSpeed);
-               // rb.rotation = Quaternion.Euler(rotation_); // currently not working, but would be better to use rigidbody for transform.
-            }
-            rb.position = new Vector3(transform.position.x, 2.5f, transform.position.z);
 
-            if (!CurrentlyFrozen && !Type5BHSLOW && MovementSpeed > 1)
+
+            float distThisFrame = (MovementSpeed) * Time.deltaTime;
+
+            Vector3 ErrorPos = transform.position + (transform.forward * distThisFrame);
+
+            if (!float.IsNaN(ErrorPos.x) && !float.IsNaN(ErrorPos.y) && !float.IsNaN(ErrorPos.z) && !float.IsInfinity(ErrorPos.x) && !float.IsInfinity(ErrorPos.y) && !float.IsInfinity(ErrorPos.z))
             {
-                rb.position += transform.forward * distThisFrame;
+
+                if (BlobAttack4)
+                {
+                    // var rotation_ = (Vector3.up * Time.deltaTime * Blob4RotSpeed);
+                    transform.Rotate(Vector3.up * Time.deltaTime * Blob4RotSpeed);
+                    // rb.rotation = Quaternion.Euler(rotation_); // currently not working, but would be better to use rigidbody for transform.
+                }
+                rb.position = new Vector3(transform.position.x, 2.5f, transform.position.z);
+
+                if (!CurrentlyFrozen && !Type5BHSLOW && MovementSpeed > 1)
+                {
+                    rb.position += transform.forward * distThisFrame;
+                }
             }
+            else
+            {
+                Debug.Log("Error 3 would occure here");
+            }
+
         }
         if (OrderPhase2Orb)
         {
             Vector3 dir = PC.transform.position - this.transform.position;
 
-            Quaternion targetRotation = Quaternion.LookRotation(dir);
-            if (!GolemOrbAim)
-            {
-                this.transform.rotation = Quaternion.Lerp(this.transform.rotation, targetRotation, Time.deltaTime * MovementSpeed / 8);
-            }
-            else
-            {
-                this.transform.rotation = Quaternion.Lerp(this.transform.rotation, targetRotation, Time.deltaTime * MovementSpeed / FrostBarrageTurnRateVariation);
-                MovementSpeed += Time.deltaTime / 6;
-                MovementSpeed_ += Time.deltaTime / 6;
-            }
+            float distThisFrame = (MovementSpeed) * Time.deltaTime;
 
+            Vector3 ErrorPos = transform.position + (transform.forward * distThisFrame);
 
-            rb.position = new Vector3(transform.position.x, 2.5f, transform.position.z);
-            rb.position += transform.forward * Time.deltaTime * MovementSpeed;
+            if (!float.IsNaN(ErrorPos.x) && !float.IsNaN(ErrorPos.y) && !float.IsNaN(ErrorPos.z) && !float.IsInfinity(ErrorPos.x) && !float.IsInfinity(ErrorPos.y) && !float.IsInfinity(ErrorPos.z))
+            {
+
+                Quaternion targetRotation = Quaternion.LookRotation(dir);
+                if (!GolemOrbAim)
+                {
+                    this.transform.rotation = Quaternion.Lerp(this.transform.rotation, targetRotation, Time.deltaTime * MovementSpeed / 8);
+                }
+                else
+                {
+                    this.transform.rotation = Quaternion.Lerp(this.transform.rotation, targetRotation, Time.deltaTime * MovementSpeed / FrostBarrageTurnRateVariation);
+                    if (MovementSpeed < 9f)
+                    {
+                        MovementSpeed += Time.deltaTime / 6;
+                        MovementSpeed_ += Time.deltaTime / 6;
+                    }
+                }
+
+                rb.position = new Vector3(transform.position.x, 2.5f, transform.position.z);
+                rb.position += transform.forward * distThisFrame;
+
+            }else
+            {
+                Debug.Log("Error 4 would occure here");
+            }
         }
 
         if (TimeKeeper && ParentPlatform != null && !CurrentlyInBlackHole)
@@ -2960,7 +3076,7 @@ public class Monster : MonoBehaviour, IDamageable {
             foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Monster"))
             { // if not null might need
                 float dist = Vector3.Distance(enemy.transform.position, transform.position);
-                if (dist < 20 && dist > 1)
+                if (dist < 30 && dist > 2 && enemy != gameObject)
                 {
                     MonsterList.Add(enemy);
                 }
@@ -4119,7 +4235,7 @@ public class Monster : MonoBehaviour, IDamageable {
         BiGHelp.GetComponent<Monster>().health = health;
         BiGHelp.GetComponent<Monster>().health2 = health2;
         SummonHelp = true;
-        BossHealthAct.transform.GetChild(2).gameObject.GetComponent<Text>().text = "Big Boy & Big Boy";
+        BossHealthAct.transform.GetChild(2).gameObject.GetComponent<Text>().text = "Big Boy & Big Bro";
         BiGHelp.GetComponent<Monster>().Brother = gameObject;
         Brother = BiGHelp;
     }

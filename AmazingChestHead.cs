@@ -76,7 +76,7 @@ public class AmazingChestHead : MonoBehaviour
         manag.SelectCursor(true);
         EventLight.intensity = 7f;
         EventLight.range = 4f;
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(MenuScript.MouseMovement))
         {
             clicked = true;
         }

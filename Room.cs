@@ -463,6 +463,7 @@ public class Room : MonoBehaviour
 
         GameEndTime = GameManager.FindObjectOfType<GameManager>().PlayTime;
         GameManager.FindObjectOfType<GameManager>().SteamModeAchievement();
+        GameManager.FindObjectOfType<GameManager>().SteamOtherAchievemnet();
         KeepDoorsClosedUntillChestIsOpened = false;
     }
 

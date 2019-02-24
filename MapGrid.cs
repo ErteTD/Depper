@@ -236,8 +236,8 @@ public class MapGrid : MonoBehaviour
                     Monst.transform.localPosition = Base_.MiniBossLocation;
                     if (MiniBosses[1]) { Monst.transform.localPosition = new Vector3(Base_.MiniBossLocation.x, 3, Base_.MiniBossLocation.z); } // Move Blob up from beneth the ground
                     Monst.GetComponent<Monster>().RoomIAmIn = Base;
-                    Monst.GetComponent<Monster>().health = 10+ (CurrentLevel * 5);
-                    Monst.GetComponent<Monster>().health2 = 10 + (CurrentLevel * 5);
+                    Monst.GetComponent<Monster>().health = 5 + (CurrentLevel * 5);
+                    Monst.GetComponent<Monster>().health2 = 5 + (CurrentLevel * 5);
                     Monst.GetComponent<Monster>().HBtext.color = Color.green;
                     Monst.SetActive(false);
                     Base_.AddMonster(Monst);

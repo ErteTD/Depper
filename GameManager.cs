@@ -354,12 +354,30 @@ public class GameManager : MonoBehaviour
             string ID3 = ("game_completed_Casual").ToLower();
             SteamAch.UnlockSteamAchievement(ID3);
         }
-        if (MenuScript.GameDifficulty == "Normal")
+        if (MenuScript.GameDifficulty == "Hard")
         {
             string ID4 = ("game_completed_Casual").ToLower();
             SteamAch.UnlockSteamAchievement(ID4);
         }
-
+    }
+    public void SteamOtherAchievemnet()
+    {
+        if (PlayTime < 3600)
+        {
+            SteamAch.UnlockSteamAchievement("under_one_hour");
+        }
+        if (DeathCount == 0)
+        {
+            SteamAch.UnlockSteamAchievement("0_deaths");
+        }
+        if (GoldSpent == 0)
+        {
+            SteamAch.UnlockSteamAchievement("0_gold");
+        }
+        if (DamageReceived == 0)
+        {
+            SteamAch.UnlockSteamAchievement("0_damage");
+        }
     }
 
 
@@ -675,6 +693,11 @@ public class GameManager : MonoBehaviour
     {
         PlayTime += Time.deltaTime;
 
+        if (Input.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.ItemKey)))
+        {
+            cw.WeaponAttack();
+        }
+
 
 
         if (Input.GetAxis("Mouse ScrollWheel") > 0f && ScrollWheelMinTimer_ <=0)
@@ -688,15 +711,24 @@ public class GameManager : MonoBehaviour
 
         ScrollWheelMinTimer_ -= Time.deltaTime;
 
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            if (CheatsEnabled)
+        if (CheatsEnabled)
+            {
+            if (Input.GetKeyDown(KeyCode.K))
             {
                 ActivateCheats();
             }
+            if (Input.GetKey(KeyCode.M))
+            {
+                Time.timeScale += Time.deltaTime*0.5f;
+            }
+            if (Input.GetKey(KeyCode.N))
+            {
+                Time.timeScale -= Time.deltaTime*0.5f;
+            }
+
         }
 
-        if (Input.GetKeyDown(KeyCode.H))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
             if (ToggleBoolLargeCamera)
             {

@@ -116,6 +116,10 @@ public class Player : MonoBehaviour, IDamageable
     private bool RotateAfterCasting = false;
     private float RotateAfterCastingTimer;
     private bool RRRRRRR = false;
+    private float HorMov;
+    private float VerMov;
+    private float HorMov2;
+    private float VerMov2;
 
     void Start()
     {
@@ -179,8 +183,45 @@ public class Player : MonoBehaviour, IDamageable
             AmIBurning();
             AmISlowed();
             agent.speed = MovementSpeed;
-            inputX = Input.GetAxisRaw("Horizontal");
-            inputY = Input.GetAxisRaw("Vertical");
+
+
+
+            if (Input.GetKey((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.MoveLeftKey)))
+            {
+                HorMov = -1;
+            }else
+            {
+                HorMov = 0;
+            }
+            if (Input.GetKey((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.MoveRightKey)))
+            {
+                HorMov2 = 1;
+            }
+            else
+            {
+                HorMov2 = 0;
+            }
+
+            if (Input.GetKey((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.MoveDownKey)))
+            {
+                VerMov = -1;
+            }
+            else
+            {
+                VerMov = 0;
+            }
+            if (Input.GetKey((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.MoveUpKey)))
+            {
+                VerMov2 = 1;
+            }
+            else
+            {
+                VerMov2 = 0;
+            }
+
+            inputY = VerMov + VerMov2;
+            inputX = HorMov + HorMov2;
+
 
             MoveCD_ -= Time.deltaTime;
 
@@ -206,7 +247,7 @@ public class Player : MonoBehaviour, IDamageable
             if (ChannelingCount > 0)  //channelingNow == true)
             {
                 anim.PlayerAttack();
-                if (Input.GetMouseButtonDown(1) && curSpellProjectile.Count > 0 && !BlobArmorBool)
+                if (Input.GetMouseButtonDown(MenuScript.MouseFire) && curSpellProjectile.Count > 0 && !BlobArmorBool)
                 {
                     foreach (var item in curSpellProjectile)
                     {
@@ -222,7 +263,7 @@ public class Player : MonoBehaviour, IDamageable
                     }
                 }
             }
-            if (((Input.GetMouseButtonDown(0) && !BlobArmorBool) || ((inputX != 0 || inputY != 0) && !BlobArmorBool)) && ChannelingCount > 0 && curSpellProjectile.Count > 0)
+            if (((Input.GetMouseButtonDown(MenuScript.MouseMovement) && !BlobArmorBool) || ((inputX != 0 || inputY != 0) && !BlobArmorBool)) && ChannelingCount > 0 && curSpellProjectile.Count > 0)
             {
                 foreach (var item in curSpellProjectile)
                 {
@@ -238,7 +279,7 @@ public class Player : MonoBehaviour, IDamageable
                 }
             }
 
-            if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject() && (ChannelingCount == 0 || BlobArmorBool))
+            if (Input.GetMouseButton(MenuScript.MouseMovement) && !EventSystem.current.IsPointerOverGameObject() && (ChannelingCount == 0 || BlobArmorBool))
             {
                 rightclick = false;
               //  BlobArmorAttackOnceBool = false;
@@ -248,7 +289,7 @@ public class Player : MonoBehaviour, IDamageable
                 {
                     Vector3 HitGroundlevel = new Vector3(hit.point.x, 1, hit.point.z);
                     float dist = Vector3.Distance(HitGroundlevel, transform.position); // distance between click point and PC
-                    if (Input.GetMouseButtonDown(0) && (hit.collider.tag == "Floor" || hit.collider.tag == "Door" || hit.collider.tag == "Wall" || hit.collider.tag == "MageBossDeadGolem" || hit.collider.tag == "Shop" || hit.collider.tag == "Chest"))
+                    if (Input.GetMouseButtonDown(MenuScript.MouseMovement) && (hit.collider.tag == "Floor" || hit.collider.tag == "Door" || hit.collider.tag == "Wall" || hit.collider.tag == "MageBossDeadGolem" || hit.collider.tag == "Shop" || hit.collider.tag == "Chest"))
                     {
                         Vector3 DaPoint = new Vector3(hit.point.x, hit.point.y + 0.1f, hit.point.z);
                         Instantiate(MousePing, DaPoint, Quaternion.Euler(0, 0, 0));
@@ -319,7 +360,7 @@ public class Player : MonoBehaviour, IDamageable
             }
             // right click spell cast input
 
-            if (Input.GetMouseButton(1) && !EventSystem.current.IsPointerOverGameObject())
+            if (Input.GetMouseButton(MenuScript.MouseFire) && !EventSystem.current.IsPointerOverGameObject())
             {
               //  BlobArmorAttackOnceBool = false;
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

@@ -172,11 +172,11 @@ public class OneWayDoor : MonoBehaviour
 
     private void OnMouseOver()
     {
-        if (GameManager.FindObjectOfType<GameManager>().ShopWindow.activeSelf == false)
+        if (GameManager.FindObjectOfType<GameManager>().ShopWindow.activeSelf == false && GameManager.FindObjectOfType<GameManager>().EscMenu.activeSelf == false)
         {
             FindObjectOfType<GameManager>().SelectCursor(true);
             GetComponent<Light>().intensity = 1.5f;
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(MenuScript.MouseMovement))
             {
                 clicked = true;
             }

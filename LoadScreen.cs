@@ -36,7 +36,7 @@ public class LoadScreen : MonoBehaviour {
         Leveltxt.text = lvl;
         if (level == 0)
         {
-            ShowControlstxt.text = "(Press \"H\" for controls)";
+            ShowControlstxt.text = "(Click Tab for controls)";
         }
         else
         {

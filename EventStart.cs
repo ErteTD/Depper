@@ -39,7 +39,7 @@ public class EventStart : MonoBehaviour {
         manag.SelectCursor(true);
         EventLight.intensity = 10f;
         EventLight.range = 5f;
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(MenuScript.MouseMovement))
         {
             clicked = true;
         }

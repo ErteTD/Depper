@@ -391,14 +391,14 @@ public class Monster : MonoBehaviour, IDamageable {
             lerpedColor = colorIni;
             _renderer = BigBoyColor.GetComponent<Renderer>();
         }
-        if (MonsterType != 5 && !Boss)
+        if (MonsterType != 5 && !Boss && !BigBoy)
         {
             agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
             agent.angularSpeed = turnRate;
             agent.speed = MovementSpeed;
             agent.stoppingDistance = meleeRange;
             StartAgentBool = true;
-        }else if(MonsterType != 5 && Boss)
+        }else if(MonsterType != 5 && Boss || BigBoy)
         {
             Invoke("StartAgentMonster", 0.05f);
         }else if (MonsterType == 5)
@@ -535,7 +535,7 @@ public class Monster : MonoBehaviour, IDamageable {
             Invoke("StoneGolemHardCode", 0.1f);
         }
     }
-
+    
 
     void StartAgentMonster()
     {
@@ -2424,6 +2424,7 @@ void StartSwarm() // so animation can start before spiders spawn.
             if (!Boss)
             {
                 Brother.GetComponent<Monster>().BossHealthAct.transform.GetChild(3).gameObject.GetComponent<Text>().text = health.ToString("F1") + " / " + health2;
+                Brother.GetComponent<Monster>().BossHealthAct.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().fillAmount = health / health2;
             }
         }
         Healthbar.fillAmount = health / health2;
@@ -3076,7 +3077,7 @@ void StartSwarm() // so animation can start before spiders spawn.
             foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Monster"))
             { // if not null might need
                 float dist = Vector3.Distance(enemy.transform.position, transform.position);
-                if (dist < 30 && dist > 2 && enemy != gameObject)
+                if (dist < 30 && dist > 1 && enemy != gameObject)
                 {
                     MonsterList.Add(enemy);
                 }
@@ -3514,7 +3515,7 @@ void StartSwarm() // so animation can start before spiders spawn.
         GameObject test123 = Instantiate(currentspellObject, castPoint.transform.position, castPoint.transform.rotation, castPoint.transform);
         SpellProjectile spell = test123.GetComponent<SpellProjectile>();
         spell.projectilespeed = currentSpell.GetComponent<FrostBolt>().projectilespeed;
-        spell.damage = currentSpell.GetComponent<FrostBolt>().damagePure;
+        spell.damage = currentSpell.GetComponent<FrostBolt>().damagePure - 0.5f;
         spell.FrostBoltSlow = currentSpell.GetComponent<FrostBolt>().FrostBoltSlow;
         spell.SlowDuration = currentSpell.GetComponent<FrostBolt>().SlowDuration;
         spell.SlowPercent = currentSpell.GetComponent<FrostBolt>().SlowPercent;
@@ -4039,7 +4040,7 @@ void StartSwarm() // so animation can start before spiders spawn.
     // Most bigboy code below
     void BigBoyAggro() // start/after special attack resetting to normal mode.
     {
-        if (!SummonHelp && (health <= (health2/2)))
+        if (!SummonHelp && (health <= (health2/2.5f)))
         {
             BigBoyGlow5.SetActive(true);
             BigBoyGlow5b.SetActive(true);
@@ -4238,6 +4239,9 @@ void StartSwarm() // so animation can start before spiders spawn.
         BossHealthAct.transform.GetChild(2).gameObject.GetComponent<Text>().text = "Big Boy & Big Bro";
         BiGHelp.GetComponent<Monster>().Brother = gameObject;
         Brother = BiGHelp;
+
+
+
     }
 
     void BBRoar()

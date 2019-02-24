@@ -208,15 +208,15 @@ public class Spellbook : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) //|| Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.SpellSlot1Key))) //|| Input.GetKeyDown(KeyCode.Q))
         {
             SlotOne();
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) //|| Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.SpellSlot2Key))) //|| Input.GetKeyDown(KeyCode.W))
         {
             SlotTwo();
         }
-        if (Input.GetKeyDown(KeyCode.Alpha3)) //|| Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.SpellSlot3Key))) //|| Input.GetKeyDown(KeyCode.E))
         {
             SlotThree();
         }

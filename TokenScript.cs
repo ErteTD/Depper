@@ -279,7 +279,7 @@ public class TokenScript : MonoBehaviour
         GetComponent<Renderer>().material.SetFloat("_Metallic", 0f);
         FindObjectOfType<GameManager>().SelectCursor(true);
         ShowName.SetActive(true);
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(MenuScript.MouseMovement))
         {
             clicked = true;
         }

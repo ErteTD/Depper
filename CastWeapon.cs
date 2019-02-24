@@ -546,12 +546,6 @@ public class CastWeapon : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            WeaponAttack();
-        }
-
-
         if (CD1 <= 0f)
         {
             spellSlot1rdy = true;

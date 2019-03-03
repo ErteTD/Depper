@@ -11,11 +11,14 @@ public class Player : MonoBehaviour, IDamageable
     public GameObject AudioList;
     public GameObject MousePing;
     public GameObject animChild;
+    public GameObject TakeDamageText;
     private MonsterAnim anim;
     public GameObject CastSpell;
     public float MoveCD;
     private float MoveCD_;
     private GameManager gm;
+
+    private float BurnTickRate;
 
     private CastSpell CS;
     private CastWeapon CW;
@@ -53,6 +56,7 @@ public class Player : MonoBehaviour, IDamageable
     public bool DieOnce;
     public GameObject CurrentRoom;
     private bool BlobArmorBool;
+
 
     [HideInInspector] public bool attackingRightNow;
     private float attackingDuration = 0.25f;
@@ -92,7 +96,6 @@ public class Player : MonoBehaviour, IDamageable
 
     [HideInInspector] public GameObject BlobWeaponObject;
     [Header("EnemySpellEffects")]
-    [HideInInspector]
     public float BurnDamage, TotalBurnDamage, BurnDur;
     public GameObject FireBurn;
     public GameObject FrostSlow;
@@ -247,7 +250,7 @@ public class Player : MonoBehaviour, IDamageable
             if (ChannelingCount > 0)  //channelingNow == true)
             {
                 anim.PlayerAttack();
-                if (Input.GetMouseButtonDown(MenuScript.MouseFire) && curSpellProjectile.Count > 0 && !BlobArmorBool)
+                if (Input.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.CastSpellLoc)) && curSpellProjectile.Count > 0 && !BlobArmorBool)
                 {
                     foreach (var item in curSpellProjectile)
                     {
@@ -263,7 +266,7 @@ public class Player : MonoBehaviour, IDamageable
                     }
                 }
             }
-            if (((Input.GetMouseButtonDown(MenuScript.MouseMovement) && !BlobArmorBool) || ((inputX != 0 || inputY != 0) && !BlobArmorBool)) && ChannelingCount > 0 && curSpellProjectile.Count > 0)
+            if (((Input.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.MoveLoc)) && !BlobArmorBool) || ((inputX != 0 || inputY != 0) && !BlobArmorBool)) && ChannelingCount > 0 && curSpellProjectile.Count > 0)
             {
                 foreach (var item in curSpellProjectile)
                 {
@@ -279,7 +282,7 @@ public class Player : MonoBehaviour, IDamageable
                 }
             }
 
-            if (Input.GetMouseButton(MenuScript.MouseMovement) && !EventSystem.current.IsPointerOverGameObject() && (ChannelingCount == 0 || BlobArmorBool))
+            if (Input.GetKey((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.MoveLoc)) && !EventSystem.current.IsPointerOverGameObject() && (ChannelingCount == 0 || BlobArmorBool))
             {
                 rightclick = false;
               //  BlobArmorAttackOnceBool = false;
@@ -289,7 +292,7 @@ public class Player : MonoBehaviour, IDamageable
                 {
                     Vector3 HitGroundlevel = new Vector3(hit.point.x, 1, hit.point.z);
                     float dist = Vector3.Distance(HitGroundlevel, transform.position); // distance between click point and PC
-                    if (Input.GetMouseButtonDown(MenuScript.MouseMovement) && (hit.collider.tag == "Floor" || hit.collider.tag == "Door" || hit.collider.tag == "Wall" || hit.collider.tag == "MageBossDeadGolem" || hit.collider.tag == "Shop" || hit.collider.tag == "Chest"))
+                    if (Input.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.MoveLoc)) && (hit.collider.tag == "Floor" || hit.collider.tag == "Door" || hit.collider.tag == "Wall" || hit.collider.tag == "MageBossDeadGolem" || hit.collider.tag == "Shop" || hit.collider.tag == "Chest"))
                     {
                         Vector3 DaPoint = new Vector3(hit.point.x, hit.point.y + 0.1f, hit.point.z);
                         Instantiate(MousePing, DaPoint, Quaternion.Euler(0, 0, 0));
@@ -360,7 +363,7 @@ public class Player : MonoBehaviour, IDamageable
             }
             // right click spell cast input
 
-            if (Input.GetMouseButton(MenuScript.MouseFire) && !EventSystem.current.IsPointerOverGameObject())
+            if (Input.GetKey((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.CastSpellLoc)) && !EventSystem.current.IsPointerOverGameObject())
             {
               //  BlobArmorAttackOnceBool = false;
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -572,15 +575,26 @@ public class Player : MonoBehaviour, IDamageable
             {           
                 health -= damage * PlayerModeArmor;
 
+
+
+
                 if (DieOnce == false)
                 {
                     gm.DamageReceived += damage * PlayerModeArmor;
                     HealthText.text = health.ToString("F1");
                     HealthBar.fillAmount = health / fullhealth;
+
+                    if ((damage) >= 0.2f)
+                    {
+                        GameObject DmgTxt = Instantiate(TakeDamageText, transform);
+                        DmgTxt.GetComponent<DamageVisualText>().damageAmount = damage* PlayerModeArmor;
+                    }
+
                 }
                 if (health <= 0 && DieOnce == false)
                 {
                     DieOnce = true;
+                    HealthText.text = "0";
                     Die();
                 }
 
@@ -595,7 +609,7 @@ public class Player : MonoBehaviour, IDamageable
     public void Heal(int heal)
     {
         health += heal;
-        if (health > fullhealth)
+        if (health >= fullhealth)
         {
             health = fullhealth;
             HealthText.text = health.ToString("F0");
@@ -731,6 +745,7 @@ public class Player : MonoBehaviour, IDamageable
     {
         Invoke("HCDeathAnimDueToFireDamageBug", 0.05f);
         gm.DeathCount++;
+        gm.SetDeathText();
         agent.destination = transform.position;
         DeathScreen.FadeToDeath();
         DeathSound.PlayDelayed(1);
@@ -799,6 +814,7 @@ public class Player : MonoBehaviour, IDamageable
         if (BurnDur <= 0 || StoneArmor)
         {
             BurnDamage = 0;
+            BurnTickRate = 0;
             Transform result = gameObject.transform.Find("burn");
             if (result)
             {
@@ -808,7 +824,22 @@ public class Player : MonoBehaviour, IDamageable
         else
         {
             BurnDur -= Time.deltaTime;
-            TakeDamage(TotalBurnDamage * Time.deltaTime);
+
+
+            if (BurnTickRate < 0)
+            {
+                TakeDamage(TotalBurnDamage*0.2f);
+                if (BurnDur > 0.2f || BurnDur < 0.01f)
+                {
+                    BurnTickRate = 0.2f;
+                }
+                else 
+                {
+                    BurnTickRate = BurnDur - 0.01f;
+                }
+            }
+
+            BurnTickRate -= Time.deltaTime;
         }
     }
 

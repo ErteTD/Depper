@@ -6,6 +6,10 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
 
+    public Button EnableSaveButton;
+    public Text EnableSaveButtonText;
+    public bool EnableSave;
+    private Color AlphaFade;
     public SteamAchievements SteamAch;
     public bool CheatsEnabled;
     public GameObject TestMenu;
@@ -15,8 +19,9 @@ public class GameManager : MonoBehaviour
     public Texture2D DefCursor;
     public Texture2D HoverOverObjectCursor;
     public GameObject EscMenu;
-    public static int minRoom_, maxRoom_, CurrentLevel_;
-    public static bool StartLevel_, GiveLoot_;
+    public static int minRoom_, maxRoom_, CurrentLevel_, CurrentMode_;
+    public static bool StartLevel_, GiveLoot_, LevelHasHadMiniBoss_, LevelHasHadEvent_, GenerateFromLoad_;
+    public static string SaveFileValidation;
     public GameObject BossHealth;
     public List<GameObject> SelectSpellsEffect;
     public GameObject SelectWeaponEffect;
@@ -37,6 +42,19 @@ public class GameManager : MonoBehaviour
     public Text DeathsText;
     public Text DamageReceivedText;
     public Text GoldSpentText;
+
+    [Header("ControlsFromKeybind")]
+    public Text CastSpellLocText;
+    public Text MoveLocText;
+    public Text SpellSlot1Text;
+    public Text SpellSlot2Text;
+    public Text SpellSlot3Text;
+    public Text ItemKeyText;
+    public Text MoveUpKeyText;
+    public Text MoveDownKeyText;
+    public Text MoveLeftKeyText;
+    public Text MoveRightKeyText;
+
 
     [Header("ShopStuff")]
     public int RandomSpellBuyCost;
@@ -130,9 +148,6 @@ public class GameManager : MonoBehaviour
     public GameObject FrostArmor_;
     public GameObject StoneArmor_;
     public GameObject ThunderArmor_;
-
-
-
 
     [Header("Resources")]
     public int meteorToken;
@@ -305,12 +320,27 @@ public class GameManager : MonoBehaviour
         DamageReceived = 0;
         DeathCount = 0;
 
+        CastSpellLocText.text = IsKeyBindAMouse(MenuScript.CastSpellLoc);
+        MoveLocText.text = IsKeyBindAMouse(MenuScript.MoveLoc);
+        SpellSlot1Text.text = IsKeyBindAMouse(MenuScript.SpellSlot1Key);
+        SpellSlot2Text.text = IsKeyBindAMouse(MenuScript.SpellSlot2Key);
+        SpellSlot3Text.text = IsKeyBindAMouse(MenuScript.SpellSlot3Key);
+        ItemKeyText.text = IsKeyBindAMouse(MenuScript.ItemKey);
+        MoveUpKeyText.text = IsKeyBindAMouse(MenuScript.MoveUpKey);
+        MoveDownKeyText.text = IsKeyBindAMouse(MenuScript.MoveDownKey);
+        MoveLeftKeyText.text = IsKeyBindAMouse(MenuScript.MoveLeftKey);
+        MoveRightKeyText.text = IsKeyBindAMouse(MenuScript.MoveRightKey);
+
+        if (GenerateFromLoad_)
+        {
+            LoadGame();
+        }
+
         if (MenuScript.FirstLaunch)
         {
             ToggleControls();
             MenuScript.FirstLaunch = false;
         }
-
 
         if (!MenuScript.InfiniteLives)
         {
@@ -322,12 +352,314 @@ public class GameManager : MonoBehaviour
             CurrentLivesText.text = "Lives:  ∞";
             DeathScreenLivesText.text = "Continue ∞";
         }
+
+
+    }
+
+    public void LoadGame()
+    {
+        PlayerPrefs.SetInt("SaveFile", 0); // Saves can only be loaded once.
+        GenerateFromLoad_ = false;
+
+        Money = GetInt("Money");
+
+        //Stats
+        PlayTime = GetFloat("PlayTime");
+        DeathCount = GetFloat("DeathCount");
+        DamageReceived = GetFloat("DamageReceived");
+        GoldSpent = GetFloat("GoldSpent");
+
+        Player_.health = GetFloat("Player_.health");
+        Player_.fullhealth = GetFloat("Player_.fullhealth");
+        Player_.Heal(0);
+
+        //Items
+        SpiderWeaponToken = GetInt("SpiderWeaponToken");
+        BlinkWeaponToken = GetInt("BlinkWeaponToken");
+        FireWeaponToken = GetInt("FireWeaponToken");
+        IKWeaponToken = GetInt("IKWeaponToken");
+        BlobWeaponToken = GetInt("BlobWeaponToken");
+        TimeWeaponToken = GetInt("TimeWeaponToken");
+        FrostWeaponToken = GetInt("FrostWeaponToken");
+        StrenghtWeaponToken = GetInt("StrenghtWeaponToken");
+        MadnessWeaponToken = GetInt("MadnessWeaponToken");
+        SpiderArmorToken = GetInt("SpiderArmorToken");
+        IlluArmorToken = GetInt("IlluArmorToken");
+        RoidArmorToken = GetInt("RoidArmorToken");
+        IKArmorToken = GetInt("IKArmorToken");
+        BlobArmorToken = GetInt("BlobArmorToken");
+        FireArmorToken = GetInt("FireArmorToken");
+        FrostArmorToken = GetInt("FrostArmorToken");
+        StoneArmorToken = GetInt("StoneArmorToken");
+        ThunderArmorToken = GetInt("ThunderArmorToken");
+
+        cw.CurrentWeapon = GetInt("cw.CurrentWeapon");
+        cw.CurrentArmor = GetInt("cw.CurrentArmor");
+        cw.SelectWeapon(cw.CurrentWeapon);
+        cw.SelectArmor(cw.CurrentArmor);
+
+        ToolTipScript tts = ToolTipScript.FindObjectOfType<ToolTipScript>();
+        tts.CurrentItemID(GetInt("cw.CurrentWeapon"));
+        tts.WeaponTip(false);
+        tts.CloseWeapon();
+
+        tts.CurrentItemID(GetInt("cw.CurrentArmor"));
+        tts.ArmorTip(false);
+        tts.CloseArmor();
+
+        tts.CloseAllItemPanels();
+        tts.ForceCloseArmorPanels.SetActive(false);
+        tts.ForceCloseWeaponPanels.SetActive(false);
+        tts.ItemToolTipPanelhardCode();
+
+        //Spell Selection
+        meteorToken_ = GetBool("meteorToken_");
+        coneToken_ = GetBool("coneToken_");
+        ghostToken_ = GetBool("ghostToken_");
+        doubleToken_ = GetBool("doubleToken_");
+        splitToken_ = GetBool("splitToken_");
+        channelingToken_ = GetBool("channelingToken_");
+        boostToken_ = GetBool("boostToken_");
+        hastenToken_ = GetBool("hastenToken_");
+        empowerToken_ = GetBool("empowerToken_");
+        bhToken_ = GetBool("bhToken_");
+        pushToken_ = GetBool("pushToken_");
+        poolToken_ = GetBool("poolToken_");
+        ChaosToken_ = GetBool("ChaosToken_");
+        CompToken_ = GetBool("CompToken_");
+        AimToken_ = GetBool("AimToken_");
+        meteorToken_2 = GetBool("meteorToken_2");
+        coneToken_2 = GetBool("coneToken_2");
+        ghostToken_2 = GetBool("ghostToken_2");
+        doubleToken_2 = GetBool("doubleToken_2");
+        splitToken_2 = GetBool("splitToken_2");
+        channelingToken_2 = GetBool("channelingToken_2");
+        boostToken_2 = GetBool("boostToken_2");
+        hastenToken_2 = GetBool("hastenToken_2");
+        empowerToken_2 = GetBool("empowerToken_2");
+        bhToken_2 = GetBool("bhToken_2");
+        pushToken_2 = GetBool("pushToken_2");
+        poolToken_2 = GetBool("poolToken_2");
+        ChaosToken_2 = GetBool("ChaosToken_2");
+        CompToken_2 = GetBool("CompToken_2");
+        AimToken_2 = GetBool("AimToken_2");
+        meteorToken_3 = GetBool("meteorToken_3");
+        coneToken_3 = GetBool("coneToken_3");
+        ghostToken_3 = GetBool("ghostToken_3");
+        doubleToken_3 = GetBool("doubleToken_3");
+        splitToken_3 = GetBool("splitToken_3");
+        channelingToken_3 = GetBool("channelingToken_3");
+        boostToken_3 = GetBool("boostToken_3");
+        hastenToken_3 = GetBool("hastenToken_3");
+        empowerToken_3 = GetBool("empowerToken_3");
+        bhToken_3 = GetBool("bhToken_3");
+        pushToken_3 = GetBool("pushToken_3");
+        poolToken_3 = GetBool("poolToken_3");
+        ChaosToken_3 = GetBool("ChaosToken_3");
+        CompToken_3 = GetBool("CompToken_3");
+        AimToken_3 = GetBool("AimToken_3");
+        //Tokens
+        meteorToken = GetInt("meteorToken");
+        coneToken = GetInt("coneToken");
+        ghostToken = GetInt("ghostToken");
+        doubleToken = GetInt("doubleToken");
+        splitToken = GetInt("splitToken");
+        channelingToken = GetInt("channelingToken");
+        boostToken = GetInt("boostToken");
+        hastenToken = GetInt("hastenToken");
+        empowerToken = GetInt("empowerToken");
+        bhToken = GetInt("bhToken");
+        pushToken = GetInt("pushToken");
+        poolToken = GetInt("poolToken");
+        ChaosToken = GetInt("ChaosToken");
+        CompToken = GetInt("CompToken");
+        AimToken = GetInt("AimToken");
+
+        Spellbook spellb = Spellbook.FindObjectOfType<Spellbook>();
+        GainGold(0);
+        spellb.LoadSpellMems();
+        PickedUpItem();      
+    }
+
+    public void SaveAndExit()
+    {
+        ToolTipScript tts = ToolTipScript.FindObjectOfType<ToolTipScript>();
+
+        PlayerPrefs.SetInt("SaveFile", 1);
+
+
+        SaveFileValidation = "";
+        //Map Generation
+        SetInt("MG.CurrentLevel", MG.CurrentLevel);
+        SetInt("MG.minRoom", MG.TotalRoomsForSave);
+        SetInt("MG.maxRoom", MG.TotalRoomsForSave);
+        SetBool("MG.LevelHasHadEvent", MG.LevelHasHadEvent);
+        SetBool("MG.LevelHasHadMiniBoss", MG.LevelHasHadMiniBoss);
+        SetInt("CurrentMode_", CurrentMode_);
+
+        //Stats
+        SetFloat("PlayTime", PlayTime);
+        SetFloat("DeathCount", DeathCount);
+        SetFloat("DamageReceived", DamageReceived);
+        SetFloat("GoldSpent", GoldSpent);
+        SetInt("Money", Money);
+        SetInt("Lives", Lives);
+        SetFloat("Player_.health", Player_.health);
+        SetFloat("Player_.fullhealth", Player_.fullhealth);
+
+        //Items
+        SetInt("SpiderWeaponToken", SpiderWeaponToken);
+        SetInt("BlinkWeaponToken", BlinkWeaponToken);
+        SetInt("FireWeaponToken", FireWeaponToken);
+        SetInt("IKWeaponToken", IKWeaponToken);
+        SetInt("BlobWeaponToken", BlobWeaponToken);
+        SetInt("TimeWeaponToken", TimeWeaponToken);
+        SetInt("FrostWeaponToken", FrostWeaponToken);
+        SetInt("StrenghtWeaponToken", StrenghtWeaponToken);
+        SetInt("MadnessWeaponToken", MadnessWeaponToken);
+        SetInt("SpiderArmorToken", SpiderArmorToken);
+        SetInt("IlluArmorToken", IlluArmorToken);
+        SetInt("RoidArmorToken", RoidArmorToken);
+        SetInt("IKArmorToken", IKArmorToken);
+        SetInt("BlobArmorToken", BlobArmorToken);
+        SetInt("FireArmorToken", FireArmorToken);
+        SetInt("FrostArmorToken", FrostArmorToken);
+        SetInt("StoneArmorToken", StoneArmorToken);
+        SetInt("ThunderArmorToken", ThunderArmorToken);
+
+        SetInt("cw.CurrentWeapon", cw.CurrentWeapon);
+        SetInt("cw.CurrentArmor", cw.CurrentArmor);
+
+        //Spell Selection
+        SetBool("meteorToken_", meteorToken_);
+        SetBool("coneToken_", coneToken_);
+        SetBool("ghostToken_", ghostToken_);
+        SetBool("doubleToken_", doubleToken_);
+        SetBool("splitToken_", splitToken_);
+        SetBool("channelingToken_", channelingToken_);
+        SetBool("boostToken_", boostToken_);
+        SetBool("hastenToken_", hastenToken_);
+        SetBool("empowerToken_", empowerToken_);
+        SetBool("bhToken_", bhToken_);
+        SetBool("pushToken_", pushToken_);
+        SetBool("poolToken_", poolToken_);
+        SetBool("ChaosToken_", ChaosToken_);
+        SetBool("CompToken_", CompToken_);
+        SetBool("AimToken_", AimToken_);
+        SetBool("meteorToken_2", meteorToken_2);
+        SetBool("coneToken_2", coneToken_2);
+        SetBool("ghostToken_2", ghostToken_2);
+        SetBool("doubleToken_2", doubleToken_2);
+        SetBool("splitToken_2", splitToken_2);
+        SetBool("channelingToken_2", channelingToken_2);
+        SetBool("boostToken_2", boostToken_2);
+        SetBool("hastenToken_2", hastenToken_2);
+        SetBool("empowerToken_2", empowerToken_2);
+        SetBool("bhToken_2", bhToken_2);
+        SetBool("pushToken_2", pushToken_2);
+        SetBool("poolToken_2", poolToken_2);
+        SetBool("ChaosToken_2", ChaosToken_2);
+        SetBool("CompToken_2", CompToken_2);
+        SetBool("AimToken_2", AimToken_2);
+        SetBool("meteorToken_3", meteorToken_3);
+        SetBool("coneToken_3", coneToken_3);
+        SetBool("ghostToken_3", ghostToken_3);
+        SetBool("doubleToken_3", doubleToken_3);
+        SetBool("splitToken_3", splitToken_3);
+        SetBool("channelingToken_3", channelingToken_3);
+        SetBool("boostToken_3", boostToken_3);
+        SetBool("hastenToken_3", hastenToken_3);
+        SetBool("empowerToken_3", empowerToken_3);
+        SetBool("bhToken_3", bhToken_3);
+        SetBool("pushToken_3", pushToken_3);
+        SetBool("poolToken_3", poolToken_3);
+        SetBool("ChaosToken_3", ChaosToken_3);
+        SetBool("CompToken_3", CompToken_3);
+        SetBool("AimToken_3", AimToken_3);
+        //Tokens
+        SetInt("meteorToken", meteorToken);
+        SetInt("coneToken", coneToken);
+        SetInt("ghostToken", ghostToken);
+        SetInt("doubleToken", doubleToken);
+        SetInt("splitToken", splitToken);
+        SetInt("channelingToken", channelingToken);
+        SetInt("boostToken", boostToken);
+        SetInt("hastenToken", hastenToken);
+        SetInt("empowerToken", empowerToken);
+        SetInt("bhToken", bhToken);
+        SetInt("pushToken", pushToken);
+        SetInt("poolToken", poolToken);
+        SetInt("ChaosToken", ChaosToken);
+        SetInt("CompToken", CompToken);
+        SetInt("AimToken", AimToken);
+        Spellbook spellb = Spellbook.FindObjectOfType<Spellbook>();
+        spellb.SaveSpellMems();
+
+        PlayerPrefs.SetString("SaveFileValidation", SaveFileValidation); // Encrypt this string if u want to create validaton for save file.
+        
+       // new RSACryptoServiceProvider
+
+        //Exits
+        Time.timeScale = 1;
+        SceneManager.LoadScene("Menu");
     }
 
 
+
+
+    public void SetBool(string name, bool booleanValue)
+    {
+        PlayerPrefs.SetInt(name, booleanValue ? 1 : 0);
+        SaveFileValidation += booleanValue ? 1 : 0;
+    }
+    public void SetInt(string name, int IntAmount)
+    {
+        PlayerPrefs.SetInt(name, IntAmount);
+        SaveFileValidation += IntAmount;
+    }
+    public void SetFloat(string name, float FloatAmount)
+    {
+        PlayerPrefs.SetFloat(name, FloatAmount);
+        SaveFileValidation += FloatAmount.ToString("F0");
+    }
+    bool GetBool(string name)  //For retriving value.
+    {
+        return PlayerPrefs.GetInt(name) == 1 ? true : false;
+    }
+
+    public int GetInt(string name)
+    {
+        return PlayerPrefs.GetInt(name);
+    }
+    public float GetFloat(string name)
+    {
+        return PlayerPrefs.GetFloat(name);
+    }
+
+
+
+
+
+
+
+    string IsKeyBindAMouse(string Key)
+    {
+
+        if (!Key.Contains("Mouse"))
+        {
+            return Key.Substring(Key.Length - 1);
+        }
+        else
+        {
+            return Key;
+        }
+    }
+
     void ActivateCheats()
     {
-        Player_.health = 9999;
+        Player_.health = 13.37f;
+        Player_.fullhealth = 13.37f;
+        Player_.HealthText.text = Player_.health.ToString("F2");
         SpellsAndItems();
         TestMenu.SetActive(true);
     }
@@ -354,7 +686,7 @@ public class GameManager : MonoBehaviour
             string ID3 = ("game_completed_Casual").ToLower();
             SteamAch.UnlockSteamAchievement(ID3);
         }
-        if (MenuScript.GameDifficulty == "Hard")
+        if (MenuScript.GameDifficulty == "Normal")
         {
             string ID4 = ("game_completed_Casual").ToLower();
             SteamAch.UnlockSteamAchievement(ID4);
@@ -753,6 +1085,7 @@ public class GameManager : MonoBehaviour
                     tts.CloseAllItemPanels();
                     tts.ForceCloseArmorPanels.SetActive(false);
                     tts.ForceCloseWeaponPanels.SetActive(false);
+                    tts.ItemToolTipPanelhardCode();
                 }
             }
         }
@@ -779,6 +1112,7 @@ public class GameManager : MonoBehaviour
                     tts.CloseAllItemPanels();
                     tts.ForceCloseArmorPanels.SetActive(false);
                     tts.ForceCloseWeaponPanels.SetActive(false);
+                    tts.ItemToolTipPanelhardCode();
                 }
             }
         }
@@ -818,6 +1152,7 @@ public class GameManager : MonoBehaviour
                 tts.CloseAllItemPanels();
                 tts.ForceCloseArmorPanels.SetActive(false);
                 tts.ForceCloseWeaponPanels.SetActive(false);
+                tts.ItemToolTipPanelhardCode();
             }
         }
 
@@ -1194,6 +1529,29 @@ public class GameManager : MonoBehaviour
             DamageReceivedText.text = DamageReceived.ToString("F1");
             GoldSpentText.text = GoldSpent.ToString();
 
+            if (EnableSave)
+            {
+
+                var colors = EnableSaveButton.colors;
+                colors.normalColor = Color.white;
+                EnableSaveButton.colors = colors;
+
+                AlphaFade = EnableSaveButtonText.color;
+                AlphaFade.a = 1;
+                EnableSaveButtonText.color = AlphaFade;
+                EnableSaveButton.interactable = true;
+            }
+            else
+            {
+                var colors = EnableSaveButton.colors;
+                colors.normalColor = Color.gray;
+                EnableSaveButton.colors = colors;
+
+                AlphaFade = EnableSaveButtonText.color;
+                AlphaFade.a = 0.5f;
+                EnableSaveButtonText.color = AlphaFade;
+                EnableSaveButton.interactable = false;
+            }
 
         }
         else
@@ -1214,7 +1572,7 @@ public class GameManager : MonoBehaviour
     public void EscButton()
     {
         Time.timeScale = 1;
-        SceneManager.LoadScene("Menu", LoadSceneMode.Single);
+        SceneManager.LoadScene("Menu");
     }
 
 
@@ -1224,8 +1582,22 @@ public void RestartButton()
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    public void SetDeathText()
+    {
+        if (Lives == 0)
+        {
+            DeathScreenLivesText.text = "Game Over";
+        }
+    }
+
     public void ContinueAfterDeath()
     {
+
+        //if (Lives == 0)
+        //{
+        //    DeathScreenLivesText.text = "Game Over";
+        //}
+
         if (Lives > 0)
         {
             if (!PreventDoubleClick)
@@ -1260,12 +1632,7 @@ public void RestartButton()
                 BossHealth.transform.GetChild(1).gameObject.SetActive(false);
                 BossHealth.transform.GetChild(2).gameObject.SetActive(false);
                 BossHealth.transform.GetChild(3).gameObject.SetActive(false);
-
-                if (Lives == 0)
-                {
-                    DeathScreenLivesText.text = "Game Over";
-                }
-                
+               
             }
         }
         else

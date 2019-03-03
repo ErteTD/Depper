@@ -178,7 +178,6 @@ public class Spellbook : MonoBehaviour
 
     public void Start()
     {
-
         manager = GameMang.GetComponent<GameManager>();
       //  ColorUtility.TryParseHtmlString("#83FF74FF", out selCol);
 
@@ -205,6 +204,85 @@ public class Spellbook : MonoBehaviour
 
         SlotOne(); // chose slot 1.
     }
+
+    public void SaveSpellMems()
+    {
+        manager.SetInt("slot1Mem1", slot1Mem1);
+        manager.SetInt("slot1Mem2", slot1Mem2);
+        manager.SetInt("slot1Mem3", slot1Mem3);
+        manager.SetInt("slot1Mem4", slot1Mem4);
+        manager.SetInt("slot1Mem5", slot1Mem5);
+        manager.SetInt("slot2Mem1", slot2Mem1);
+        manager.SetInt("slot2Mem2", slot2Mem2);
+        manager.SetInt("slot2Mem3", slot2Mem3);
+        manager.SetInt("slot2Mem4", slot2Mem4);
+        manager.SetInt("slot2Mem5", slot2Mem5);
+        manager.SetInt("slot3Mem1", slot3Mem1);
+        manager.SetInt("slot3Mem2", slot3Mem2);
+        manager.SetInt("slot3Mem3", slot3Mem3);
+        manager.SetInt("slot3Mem4", slot3Mem4);
+        manager.SetInt("slot3Mem5", slot3Mem5);
+
+        manager.SetInt("spellSlot1Choice1", spellSlot1Choice1);
+        manager.SetInt("spellSlot1Choice2", spellSlot1Choice2);
+        manager.SetInt("spellSlot1Choice3", spellSlot1Choice3);
+        manager.SetInt("spellSlot1Choice4", spellSlot1Choice4);
+        manager.SetInt("spellSlot1Choice5", spellSlot1Choice5);
+        manager.SetInt("spellSlot1Choice6", spellSlot1Choice6);
+        manager.SetInt("spellSlot2Choice1", spellSlot2Choice1);
+        manager.SetInt("spellSlot2Choice2", spellSlot2Choice2);
+        manager.SetInt("spellSlot2Choice3", spellSlot2Choice3);
+        manager.SetInt("spellSlot2Choice4", spellSlot2Choice4);
+        manager.SetInt("spellSlot2Choice5", spellSlot2Choice5);
+        manager.SetInt("spellSlot2Choice6", spellSlot2Choice6);
+        manager.SetInt("spellSlot3Choice1", spellSlot3Choice1);
+        manager.SetInt("spellSlot3Choice2", spellSlot3Choice2);
+        manager.SetInt("spellSlot3Choice3", spellSlot3Choice3);
+        manager.SetInt("spellSlot3Choice4", spellSlot3Choice4);
+        manager.SetInt("spellSlot3Choice5", spellSlot3Choice5);
+        manager.SetInt("spellSlot3Choice6", spellSlot3Choice6);
+    }
+
+    public void LoadSpellMems()
+    {
+        slot1Mem1 = manager.GetInt("slot1Mem1");
+        slot1Mem2 = manager.GetInt("slot1Mem2");
+        slot1Mem3 = manager.GetInt("slot1Mem3");
+        slot1Mem4 = manager.GetInt("slot1Mem4");
+        slot1Mem5 = manager.GetInt("slot1Mem5");
+        slot2Mem1 = manager.GetInt("slot2Mem1");
+        slot2Mem2 = manager.GetInt("slot2Mem2");
+        slot2Mem3 = manager.GetInt("slot2Mem3");
+        slot2Mem4 = manager.GetInt("slot2Mem4");
+        slot2Mem5 = manager.GetInt("slot2Mem5");
+        slot3Mem1 = manager.GetInt("slot3Mem1");
+        slot3Mem2 = manager.GetInt("slot3Mem2");
+        slot3Mem3 = manager.GetInt("slot3Mem3");
+        slot3Mem4 = manager.GetInt("slot3Mem4");
+        slot3Mem5 = manager.GetInt("slot3Mem5");
+
+        spellSlot1Choice1 = manager.GetInt("spellSlot1Choice1");
+        spellSlot1Choice2 = manager.GetInt("spellSlot1Choice2");
+        spellSlot1Choice3 = manager.GetInt("spellSlot1Choice3");
+        spellSlot1Choice4 = manager.GetInt("spellSlot1Choice4");
+        spellSlot1Choice5 = manager.GetInt("spellSlot1Choice5");
+        spellSlot1Choice6 = manager.GetInt("spellSlot1Choice6");
+        spellSlot2Choice1 = manager.GetInt("spellSlot2Choice1");
+        spellSlot2Choice2 = manager.GetInt("spellSlot2Choice2");
+        spellSlot2Choice3 = manager.GetInt("spellSlot2Choice3");
+        spellSlot2Choice4 = manager.GetInt("spellSlot2Choice4");
+        spellSlot2Choice5 = manager.GetInt("spellSlot2Choice5");
+        spellSlot2Choice6 = manager.GetInt("spellSlot2Choice6");
+        spellSlot3Choice1 = manager.GetInt("spellSlot3Choice1");
+        spellSlot3Choice2 = manager.GetInt("spellSlot3Choice2");
+        spellSlot3Choice3 = manager.GetInt("spellSlot3Choice3");
+        spellSlot3Choice4 = manager.GetInt("spellSlot3Choice4");
+        spellSlot3Choice5 = manager.GetInt("spellSlot3Choice5");
+        spellSlot3Choice6 = manager.GetInt("spellSlot3Choice6");
+
+        SlotOne();
+    }
+
 
     private void Update()
     {

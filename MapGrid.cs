@@ -10,6 +10,7 @@ public class MapGrid : MonoBehaviour
     public List<Material> FloorType;
     public GameObject GiveStuff;
     private int TotalRooms;
+    public int TotalRoomsForSave;
     public List<GameObject> RoomTypes;
     public GameObject Door;
     public GameObject BossDoor;
@@ -32,6 +33,10 @@ public class MapGrid : MonoBehaviour
     private Vector2Int LR;
     private Vector2Int RR;
     private GameObject LastRoom;
+    public GameObject HardCodeRing1;
+    public GameObject HardCodeRing2;
+    public bool LevelHasHadEvent;
+    public bool LevelHasHadMiniBoss;
 
     [Header("LevelStuff")]
     public int CurrentLevel;
@@ -82,6 +87,9 @@ public class MapGrid : MonoBehaviour
             minRoom = GameManager.minRoom_;
             maxRoom = GameManager.maxRoom_;
             CurrentLevel = GameManager.CurrentLevel_;
+            LevelHasHadEvent = GameManager.LevelHasHadEvent_;
+            LevelHasHadMiniBoss = GameManager.LevelHasHadMiniBoss_;
+
             if (GameManager.GiveLoot_)
             {
                 GiveStuff.GetComponent<GameManager>().SpellsAndItems();
@@ -94,17 +102,23 @@ public class MapGrid : MonoBehaviour
     {
         GiveStuff.GetComponent<GameManager>().CurrentLevel(CurrentLevel);
         TotalRooms = Random.Range(minRoom, maxRoom + 1);
+        TotalRoomsForSave = TotalRooms+1; // +1 to account for startroom which will be deducted right away.
         AmountOfLoot = (int)Mathf.Floor(TotalRooms / 5);
         AmountOfPotions = (int)Mathf.Floor(TotalRooms / 4);
-        //NumberOfMiniBosses = (int)Mathf.Floor(TotalRooms / );
-        //NumberOfEvents = (int)Mathf.Floor(TotalRooms / );
-        //if (TotalRooms < 6)
-        //{
+
+        if (!LevelHasHadMiniBoss)
+        {
             NumberOfMiniBosses = 1;
+        }
+        if (!LevelHasHadEvent)
+        {
             NumberOfEvents = 1;
-        //}
+        }
+
         GameObject Base = Instantiate(RoomTypes[0], transform.position, transform.rotation, transform);
         Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material = FloorType[CurrentLevel];
+        Base.GetComponent<Room>().Floor.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(Base.GetComponent<Room>().Floor.transform.localScale.x, Base.GetComponent<Room>().Floor.transform.localScale.z);
+
         GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().CurrentRoom = Base;
 
         var RandomObstacle = Random.Range(0, Obstacle.Count);
@@ -213,7 +227,7 @@ public class MapGrid : MonoBehaviour
                 }
 
                 //hardcode so miniboss & eventroom always spawn.
-                if (TotalRooms == 2 && NumberOfMiniBosses > 0)
+                if (TotalRooms <= 2 && NumberOfMiniBosses > 0)
                 {
                     RRoom = 3;
                 }
@@ -587,6 +601,9 @@ public class MapGrid : MonoBehaviour
         maxRoom = Random.Range(5+CurrentLevel, 7+ CurrentLevel);
         minRoom = Random.Range(5+ CurrentLevel, 7+ CurrentLevel);
 
+        LevelHasHadEvent = false;
+        LevelHasHadMiniBoss = false;
+
         MonstersThatCanDropLoot.Clear();
         GridList.Clear();
         MiniMapList.Clear();
@@ -594,6 +611,13 @@ public class MapGrid : MonoBehaviour
         MonsterType_.Clear();
         Counter = 0;
         MiniMapX = 0;
+
+        if (HardCodeRing1 != null)
+        {
+            Destroy(HardCodeRing1);
+            Destroy(HardCodeRing2);
+        }
+
         MiniMapZ = 0;
         DoorPortal1 = new Vector3(0, 0, 0);
         DoorPortal2 = new Vector3(0, 0, 0);
@@ -650,6 +674,7 @@ public class MapGrid : MonoBehaviour
     {
         Mboss.MonsterCanDropGold = true;
         Mboss.MonsterGold = Gold;
+        Mboss.MiniBossMonster = true;
         Mboss.GoldAmount = (CurrentLevel*4)+25;
         Mboss.GoldDropChance = 100;
     }

@@ -39,7 +39,7 @@ public class EventStart : MonoBehaviour {
         manag.SelectCursor(true);
         EventLight.intensity = 10f;
         EventLight.range = 5f;
-        if (Input.GetMouseButton(MenuScript.MouseMovement))
+        if (Input.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.MoveLoc)))
         {
             clicked = true;
         }

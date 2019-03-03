@@ -56,6 +56,11 @@ public class OneWayDoor : MonoBehaviour
             clicked = false;
             CantClickDoorDuringLoad = true;
             LoadSceneManager.GetComponent<LoadScreen>().FadeToLevel(this);
+
+            if (StartBossMusic)
+            {
+                GameManager.FindObjectOfType<GameManager>().EnableSave = false;
+            }
         }
     }
 
@@ -120,7 +125,6 @@ public class OneWayDoor : MonoBehaviour
             GameManager.FindObjectOfType<GameManager>().NormalTheme.Stop();
             GameManager.FindObjectOfType<GameManager>().BossBattle.Play();
         }
-
         GameManager.FindObjectOfType<GameManager>().ShopWindowFunc(false);
 
         FindObjectOfType<GameManager>().SelectCursor(false);
@@ -176,7 +180,7 @@ public class OneWayDoor : MonoBehaviour
         {
             FindObjectOfType<GameManager>().SelectCursor(true);
             GetComponent<Light>().intensity = 1.5f;
-            if (Input.GetMouseButtonDown(MenuScript.MouseMovement))
+            if (Input.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.MoveLoc)))
             {
                 clicked = true;
             }

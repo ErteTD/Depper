@@ -127,6 +127,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public bool ShowDecimalHealth;
     [HideInInspector]
     public string MaxHealthAsString;
+    public bool MiniBossMonster;
 
     [Header("Special abilities")]
     public bool Resurrect;
@@ -169,6 +170,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public float SwarmCD;
     private float SwarmCD_;
 
+
     [Header("TimeKeeper")]
     //TimeKeperstuff.
     public List<GameObject> TimeKeeperPoints;
@@ -204,7 +206,7 @@ public class Monster : MonoBehaviour, IDamageable {
     private float TImeRandomGottaGoFast;
     private bool TimeStartBlastingBool;
     private int TimeKeeperCounter;
-
+    private float MonsterSpellDamageModifier = 1;
 
     [Header("BigBoy")]
     public GameObject BigBoyGlow;
@@ -238,6 +240,7 @@ public class Monster : MonoBehaviour, IDamageable {
     private bool flag;
     private bool BBStill;
     private float BigBoyStepSoundDelay;
+    private float BurnTickRate;
 
     [Header("Frosttrail")]
     public float FrostTrailAttack1;
@@ -441,7 +444,7 @@ public class Monster : MonoBehaviour, IDamageable {
         if (OldKing)
         {
             OldKingSpecialAttack_1 = OldKingSpecialAttack;
-            health -= (health2/2);
+            health -= (health2/(5.0f/3.0f));
             Healthbar.fillAmount = health / health2;
             StartOpponent.GetComponent<Monster>().health -= 11;
             StartOpponent.GetComponent<Monster>().Healthbar.fillAmount = StartOpponent.GetComponent<Monster>().health / StartOpponent.GetComponent<Monster>().health2;
@@ -1457,15 +1460,15 @@ public class Monster : MonoBehaviour, IDamageable {
 
                    if (Golemboss)
                     {
-                        GolemRockTossCD_ += 1.5f;
+                        GolemRockTossCD_ += 2.5f;
                     }
                    if (BigBoy)
                     {
-                        BigBoySpecial1_ += 1.5f;
+                        BigBoySpecial1_ += 2.5f;
                     }
                    if (OldKing)
                     {
-                        OldKingSpecialAttack_1 += 1;
+                        OldKingSpecialAttack_1 += 3;
                     }
 
                     Invoke("Attack", AttackDelay);
@@ -1887,7 +1890,7 @@ public class Monster : MonoBehaviour, IDamageable {
                         }
 
                         spell.projectilespeed = currentSpell.GetComponent<FrostBolt>().projectilespeed + randSpeed;
-                        spell.damage = currentSpell.GetComponent<FrostBolt>().damagePure;
+                        spell.damage = currentSpell.GetComponent<FrostBolt>().damagePure * MonsterSpellDamageModifier;
                         spell.FrostBoltSlow = currentSpell.GetComponent<FrostBolt>().FrostBoltSlow;
                         spell.SlowDuration = currentSpell.GetComponent<FrostBolt>().SlowDuration;
                         spell.SlowPercent = currentSpell.GetComponent<FrostBolt>().SlowPercent + 0.1f;
@@ -1895,9 +1898,9 @@ public class Monster : MonoBehaviour, IDamageable {
                         break;
                     case 2:
                         spell.projectilespeed = currentSpell.GetComponent<Fireball>().projectilespeed-4f;
-                        spell.damage = currentSpell.GetComponent<Fireball>().damagePure - 0.5f;
+                        spell.damage = (currentSpell.GetComponent<Fireball>().damagePure * MonsterSpellDamageModifier) - 0.3f;
                         spell.FireBallBurn = currentSpell.GetComponent<Fireball>().FireBallBurn;
-                        spell.BurnDuration = currentSpell.GetComponent<Fireball>().BurnDuration;
+                        spell.BurnDuration = currentSpell.GetComponent<Fireball>().BurnDuration+0.5f;
                         spell.BurnPercent = currentSpell.GetComponent<Fireball>().BurnPercent;
                         spell.SineWaveAttack = SineWaveAttack;
                         spell.cone = Cone;
@@ -1909,7 +1912,7 @@ public class Monster : MonoBehaviour, IDamageable {
                         break;
                     case 3:
                         spell.projectilespeed = currentSpell.GetComponent<LightningBolt>().projectilespeed;
-                        spell.damage = currentSpell.GetComponent<LightningBolt>().damagePure;
+                        spell.damage = currentSpell.GetComponent<LightningBolt>().damagePure * MonsterSpellDamageModifier;
                         spell.LBBounce = currentSpell.GetComponent<LightningBolt>().LBBounce;
                         spell.LBBounceAmount = currentSpell.GetComponent<LightningBolt>().LBBounceAmount = 1;
                         break;
@@ -2198,6 +2201,7 @@ void StartSwarm() // so animation can start before spiders spawn.
                         Illu.MirrorImageCD = 100000;
                         Illu.MirrorImageCD_ = 100000;
                         Illu.IamIllu = true;
+                        Illu.MonsterSpellDamageModifier = 0.5f;
                         Illu.Boss = false;
                         Illu.AttackSpeed = 2;
 
@@ -2465,7 +2469,7 @@ void StartSwarm() // so animation can start before spiders spawn.
             IlluHit = true;
         }
 
-        if (health <= 0 && OnlyOnce == false)
+        if (health <= 0 && OnlyOnce == false && PC_.GetComponent<Player>().DieOnce == false)
         {
             OnlyOnce = true;
             if (Brother != null)
@@ -2595,7 +2599,7 @@ void StartSwarm() // so animation can start before spiders spawn.
             }
             else
             {
-                Loot();
+                Loot();               
             }
 
             if (Order)
@@ -2609,11 +2613,15 @@ void StartSwarm() // so animation can start before spiders spawn.
                 }
             }
 
-            if (Boss & !Golemboss)
+            if (Boss & !Golemboss && PC_.GetComponent<Player>().DieOnce == false)
             {
                 manag.SteamBossAchievement(BossName);
             }
 
+            if (MiniBossMonster)
+            {
+                MapGrid.FindObjectOfType<MapGrid>().LevelHasHadMiniBoss = true;
+            }
 
             Destroy(gameObject);
         }
@@ -3045,6 +3053,7 @@ void StartSwarm() // so animation can start before spiders spawn.
         if (BurnDur <= 0 && MonsterIsBurning)
         {
             BurnDamage = 0;
+            BurnTickRate = 0;
             Transform result = gameObject.transform.Find("burn");
             MonsterIsBurning = false;
             if (result)
@@ -3056,7 +3065,21 @@ void StartSwarm() // so animation can start before spiders spawn.
         else if (MonsterIsBurning)
         {
             BurnDur -= Time.deltaTime;
-            TakeDamage(TotalBurnDamage * Time.deltaTime);
+
+            if (BurnTickRate < 0)
+            {
+                TakeDamage(TotalBurnDamage * 0.2f);
+                if (BurnDur > 0.2f || BurnDur <= 0.01f)
+                {
+                    BurnTickRate = 0.2f;
+                }
+                else
+                {
+                    BurnTickRate = BurnDur - 0.01f;
+                }
+            }
+
+            BurnTickRate -= Time.deltaTime;
         }
     }
 
@@ -3226,7 +3249,7 @@ void StartSwarm() // so animation can start before spiders spawn.
         else if (OldKing)
         {
             anim.DieAnimation5();
-            OldKingSpecialAttack_1 = 6f;
+            OldKingSpecialAttack_1 = 12f;
             Invoke("LongLiveTheKing", 2.5f);
             BossHealthAct.transform.GetChild(3).gameObject.GetComponent<Text>().text = health.ToString("F1") + " / " + health2;
             BossHealthAct.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().fillAmount = health / health2;

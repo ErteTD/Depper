@@ -65,6 +65,7 @@ public class AmazingChestHead : MonoBehaviour
         }
 
         transform.parent.GetComponent<Room>().KeepDoorsClosedUntillChestIsOpened = false;
+        transform.parent.GetComponent<Room>().EventOverForSave = true;
 
 
     }
@@ -76,7 +77,7 @@ public class AmazingChestHead : MonoBehaviour
         manag.SelectCursor(true);
         EventLight.intensity = 7f;
         EventLight.range = 4f;
-        if (Input.GetMouseButtonDown(MenuScript.MouseMovement))
+        if (Input.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.MoveLoc)))
         {
             clicked = true;
         }

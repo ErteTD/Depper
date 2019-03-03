@@ -11,6 +11,7 @@ public class Room : MonoBehaviour
     public NavMeshSurface NavGen;
     public bool ThisRoomHasShop;
     public bool ThisRoomHasEvent;
+    public bool EventOverForSave;
     [Header("DoorPositions")]
     public List<Vector3> DoorLocations;
     public List<Vector3> DoorRotation;
@@ -95,6 +96,11 @@ public class Room : MonoBehaviour
         InvokeRepeating("OpenDoorsIfNoMonsters", 0.1f, 0.5f);
         Invoke("GetDoors", 0.001f);
         Invoke("ColorMiniMapRed", 0.1f);
+        DaPlayer = Player.FindObjectOfType<Player>();
+        if (!startmenu)
+        {
+            gm.EnableSave = false;
+        }
         if (!BossRoom)
         {
             BuildRoomNavMesh();
@@ -118,6 +124,11 @@ public class Room : MonoBehaviour
         {
             OuterRing.transform.parent = null;
             InnerRing.transform.parent = null;
+
+            MapGrid mg = FindObjectOfType<MapGrid>();
+            mg.HardCodeRing1 = OuterRing;
+            mg.HardCodeRing2 = InnerRing;
+
         }
 
         //for (int i = -6; i < 6; i++) // dont delete :) used to generate the monsterspawn locations for new rooms.
@@ -142,6 +153,7 @@ public class Room : MonoBehaviour
         EventStarted = true;
         TriggerEvent.SetActive(false);
         GameManager.FindObjectOfType<GameManager>().SelectCursor(false);
+        GameManager.FindObjectOfType<GameManager>().EnableSave = false;
         switch (CurrentLevel)
         {
             case 0:
@@ -170,13 +182,13 @@ public class Room : MonoBehaviour
                 break;
             case 4:
                 SwarmSize = 20;
-                CasterSize = 4;
+                CasterSize = 3;
                 BlobSize = 4;
                 SkeletonSize = 8;
                 break;
             case 5:
                 SwarmSize = 30;
-                CasterSize = 6;
+                CasterSize = 5;
                 BlobSize = 8;
                 SkeletonSize = 10;
                 break;
@@ -484,6 +496,15 @@ public class Room : MonoBehaviour
                 OpenDoors();
                 CancelInvoke("OpenDoorsIfNoMonsters");
 
+                if (!ThisRoomHasEvent && !startmenu)
+                {
+                    MapGrid.FindObjectOfType<MapGrid>().TotalRoomsForSave--;
+                } else if (EventOverForSave)
+                {
+                    MapGrid.FindObjectOfType<MapGrid>().TotalRoomsForSave--;
+                    MapGrid.FindObjectOfType<MapGrid>().LevelHasHadEvent = true;
+                }
+
                 if (LastBoss)
                 {
                     CancelInvoke("OpenDoorsIfNoMonsters");
@@ -518,7 +539,7 @@ public class Room : MonoBehaviour
 
     void GBCheck2()
     {
-        if (Monsters.Count == 0)
+        if (Monsters.Count == 0 && DaPlayer.DieOnce == false)
         {
             GameManager.FindObjectOfType<GameManager>().SteamBossAchievement("Jade Golem");
             Rocks = GameObject.FindGameObjectsWithTag("GolemRock");
@@ -577,6 +598,13 @@ public class Room : MonoBehaviour
         foreach (var door in DoorList)
         {
             OpenDoor(door, true);
+        }
+        if (!startmenu)
+        {
+            if (!BossRoom)
+            {
+                gm.EnableSave = true;
+            }
         }
     }
 

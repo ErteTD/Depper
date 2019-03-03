@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Text.RegularExpressions;
 
 public class MenuScript : MonoBehaviour {
     AsyncOperation async;
@@ -18,30 +19,52 @@ public class MenuScript : MonoBehaviour {
     public static int MouseMovement;
     public static int MouseFire;
 
-    public static string SpellSlot1Key;
-    public static string SpellSlot2Key;
-    public static string SpellSlot3Key;
-    public static string ItemKey;
-    public static string MoveUpKey;
-    public static string MoveDownKey;
-    public static string MoveLeftKey;
-    public static string MoveRightKey;
+    public static string SpellSlot1Key = "Alpha1";
+    public static string SpellSlot2Key = "Alpha2";
+    public static string SpellSlot3Key = "Alpha3";
+    public static string ItemKey = "R";
+    public static string MoveUpKey = "W";
+    public static string MoveDownKey = "S";
+    public static string MoveLeftKey = "A";
+    public static string MoveRightKey = "D";
 
+    public static string MoveLoc = "Mouse0";
+    public static string CastSpellLoc = "Mouse1";
+
+    public Button ContinueFromLoadbutton;
+    public Text ContinueFromLoadbuttonText;
     public GameObject KeyBinder;
-
+    private Color AlphaFade;
     [Header ("KeyBindings")]
-    public InputField SpellSlot1Key_;
-    public InputField SpellSlot2Key_;
-    public InputField SpellSlot3Key_;
-    public InputField ItemKey_;
-    public InputField MoveUpKey_;
-    public InputField MoveDownKey_;
-    public InputField MoveLeftKey_;
-    public InputField MoveRightKey_;
+    //public InputField SpellSlot1Key_;
+    //public InputField SpellSlot2Key_;
+    //public InputField SpellSlot3Key_;
+    //public InputField ItemKey_;
+    //public InputField MoveUpKey_;
+    //public InputField MoveDownKey_;
+    //public InputField MoveLeftKey_;
+    //public InputField MoveRightKey_;
     public Text InputText1;
-    public Button InputButton1;
     public Text InputText2;
+    public Text InputText3;
+    public Text InputText4;
+    public Text InputText5;
+    public Text InputText6;
+    public Text InputText7;
+    public Text InputText8;
+    public Text InputText9;
+    public Text InputText10;
+
+    public Button InputButton1;
     public Button InputButton2;
+    public Button InputButton3;
+    public Button InputButton4;
+    public Button InputButton5;
+    public Button InputButton6;
+    public Button InputButton7;
+    public Button InputButton8;
+    public Button InputButton9;
+    public Button InputButton10;
 
     private Text ActiveInputTextField;
     private Button ActiveInputButtonField;
@@ -71,6 +94,7 @@ public class MenuScript : MonoBehaviour {
     private bool DontUpdateRes;
     internal static int AASetting;
 
+    private float LimitInputTimer;
     private bool BindAButton;
 
     public void Start()
@@ -128,7 +152,9 @@ public class MenuScript : MonoBehaviour {
 
     void SetKeyBinding()
     {
-        InverseMouseButtons = PlayerPrefs.GetInt("InvMouse", 0);
+       // InverseMouseButtons = PlayerPrefs.GetInt("InvMouse", 0);
+        MoveLoc = PlayerPrefs.GetString("MoveLoc", "Mouse0");
+        CastSpellLoc = PlayerPrefs.GetString("CastSpellLoc", "Mouse1");
         SpellSlot1Key = PlayerPrefs.GetString("SpellSlot1Key", "Alpha1");
         SpellSlot2Key = PlayerPrefs.GetString("SpellSlot2Key", "Alpha2");
         SpellSlot3Key = PlayerPrefs.GetString("SpellSlot3Key", "Alpha3");
@@ -138,6 +164,8 @@ public class MenuScript : MonoBehaviour {
         MoveLeftKey = PlayerPrefs.GetString("MoveLeftKey", "A");
         MoveRightKey = PlayerPrefs.GetString("MoveRightKey", "D");
 
+        string MoveLoc_2 = MoveLoc;
+        string CastSpellLoc_2 = CastSpellLoc;
         string SpellSlot1Key_2 = SpellSlot1Key;
         string SpellSlot2Key_2 = SpellSlot2Key;
         string SpellSlot3Key_2 = SpellSlot3Key;
@@ -147,7 +175,8 @@ public class MenuScript : MonoBehaviour {
         string MoveLeftKey_2 = MoveLeftKey;
         string MoveRightKey_2 = MoveRightKey;
 
-
+        MoveLoc_2 = CheckIfStringIsNumber(MoveLoc_2, false);
+        CastSpellLoc_2 = CheckIfStringIsNumber(CastSpellLoc_2, false);
         SpellSlot1Key_2 = CheckIfStringIsNumber(SpellSlot1Key_2, false);
         SpellSlot2Key_2 = CheckIfStringIsNumber(SpellSlot2Key_2, false);
         SpellSlot3Key_2 = CheckIfStringIsNumber(SpellSlot3Key_2, false);
@@ -157,26 +186,17 @@ public class MenuScript : MonoBehaviour {
         MoveLeftKey_2 = CheckIfStringIsNumber(MoveLeftKey_2, false);
         MoveRightKey_2 = CheckIfStringIsNumber(MoveRightKey_2, false);
 
+        InputText9.text = MoveLoc_2;
+        InputText10.text = CastSpellLoc_2;
+        InputText1.text = SpellSlot1Key_2;
+        InputText2.text = SpellSlot2Key_2;
+        InputText3.text = SpellSlot3Key_2;
+        InputText4.text = ItemKey_2;
+        InputText5.text = MoveUpKey_2;
+        InputText6.text = MoveDownKey_2;
+        InputText7.text = MoveLeftKey_2;
+        InputText8.text = MoveRightKey_2;
 
-        SpellSlot1Key_.text = SpellSlot1Key_2;
-        SpellSlot2Key_.text = SpellSlot2Key_2;
-        SpellSlot3Key_.text = SpellSlot3Key_2;
-        ItemKey_.text = ItemKey_2;
-        MoveUpKey_.text = MoveUpKey_2;
-        MoveDownKey_.text = MoveDownKey_2;
-        MoveLeftKey_.text = MoveLeftKey_2;
-        MoveRightKey_.text = MoveRightKey_2;
-
-        if (InverseMouseButtons == 1)
-        {
-            MouseMovement = 1;
-            MouseFire = 0;
-        }
-        else
-        {
-            MouseMovement = 0;
-            MouseFire = 1;
-        }
     }
 
 
@@ -188,52 +208,59 @@ public class MenuScript : MonoBehaviour {
             Key = "Alpha" + Key;
             return Key;
         }
-        //else if (Save)asd
-        //{
-        //    Key = "Mouse" + Key;
-        //    return Key;
-        //}
+        else if (Save && Key.Contains("Mouse"))
+        {
+            return Key;
+        }
         else if (Save)
         {
             return Key.ToUpper();
         }
 
-        else if (!Save && Key.Length > 1)
+        if (!Save && Key.Contains("Alpha"))
         {
             return Key = Key.Substring(Key.Length - 1);
+        }
+        else if (!Save && Key.Contains("Mouse"))
+        {
+            return Key;
         }
         else
         {
             return Key.ToUpper();
-        }
-
+        }      
     }
 
     public void ChangeKeyBind()
     {
-
         if (KeyBinder.activeSelf == true)
         {
 
-            string SpellSlot1Key_2 = SpellSlot1Key_.text;
-            string SpellSlot2Key_2 = SpellSlot2Key_.text;
-            string SpellSlot3Key_2 = SpellSlot3Key_.text;
-            string ItemKey_2 = ItemKey_.text;
-            string MoveUpKey_2 = MoveUpKey_.text;
-            string MoveDownKey_2 = MoveDownKey_.text;
-            string MoveLeftKey_2 = MoveLeftKey_.text;
-            string MoveRightKey_2 = MoveRightKey_.text;
+            string MoveLoc_2 = InputText9.text;
+            string CastSpellLoc_2 = InputText10.text;
+            string SpellSlot1Key_2 = InputText1.text;
+            string SpellSlot2Key_2 = InputText2.text;
+            string SpellSlot3Key_2 = InputText3.text;
+            string ItemKey_2 = InputText4.text;
+            string MoveUpKey_2 = InputText5.text;
+            string MoveDownKey_2 = InputText6.text;
+            string MoveLeftKey_2 = InputText7.text;
+            string MoveRightKey_2 = InputText8.text;
+
+            MoveLoc_2 = CheckIfStringIsNumber(MoveLoc_2, true);
+            CastSpellLoc_2 = CheckIfStringIsNumber(CastSpellLoc_2, true);
+            SpellSlot1Key_2 = CheckIfStringIsNumber(SpellSlot1Key_2, true);
+            SpellSlot2Key_2 = CheckIfStringIsNumber(SpellSlot2Key_2, true);
+            SpellSlot3Key_2 = CheckIfStringIsNumber(SpellSlot3Key_2, true);
+            ItemKey_2 = CheckIfStringIsNumber(ItemKey_2, true);
+            MoveUpKey_2 = CheckIfStringIsNumber(MoveUpKey_2, true);
+            MoveDownKey_2 = CheckIfStringIsNumber(MoveDownKey_2, true);
+            MoveLeftKey_2 = CheckIfStringIsNumber(MoveLeftKey_2, true);
+            MoveRightKey_2 = CheckIfStringIsNumber(MoveRightKey_2, true);
 
 
-            SpellSlot1Key_2 = CheckIfStringIsNumber(SpellSlot1Key_.text, true);
-            SpellSlot2Key_2 = CheckIfStringIsNumber(SpellSlot2Key_.text, true);
-            SpellSlot3Key_2 = CheckIfStringIsNumber(SpellSlot3Key_.text, true);
-            ItemKey_2 = CheckIfStringIsNumber(ItemKey_.text, true);
-            MoveUpKey_2 = CheckIfStringIsNumber(MoveUpKey_.text, true);
-            MoveDownKey_2 = CheckIfStringIsNumber(MoveDownKey_.text, true);
-            MoveLeftKey_2 = CheckIfStringIsNumber(MoveLeftKey_.text, true);
-            MoveRightKey_2 = CheckIfStringIsNumber(MoveRightKey_.text, true);
-
+            PlayerPrefs.SetString("MoveLoc", MoveLoc_2);
+            PlayerPrefs.SetString("CastSpellLoc", CastSpellLoc_2);
             PlayerPrefs.SetString("SpellSlot1Key", SpellSlot1Key_2);
             PlayerPrefs.SetString("SpellSlot2Key", SpellSlot2Key_2);
             PlayerPrefs.SetString("SpellSlot3Key", SpellSlot3Key_2);
@@ -242,17 +269,83 @@ public class MenuScript : MonoBehaviour {
             PlayerPrefs.SetString("MoveDownKey", MoveDownKey_2);
             PlayerPrefs.SetString("MoveLeftKey", MoveLeftKey_2);
             PlayerPrefs.SetString("MoveRightKey", MoveRightKey_2);
+
             PlayerPrefs.Save();
         }
     }
 
+    private void Update()
+    {
+        if (BarBool)
+        {
+            StartCoroutine(LevelCoroutine());
+        }
+
+        LimitInputTimer -= Time.deltaTime;
+
+        if (Input.anyKeyDown && BindAButton && LimitInputTimer < 0)
+        {
+            LimitInputTimer = 0.3f;
+
+            int count = 0;
+            bool tooManyKeys = false;
+            foreach (KeyCode kc in System.Enum.GetValues(typeof(KeyCode)))
+            {
+                if (Input.GetKeyDown(kc))
+                    count++;
+                if (count > 1)
+                {
+                    tooManyKeys = true;
+                    Debug.Log("Too many keys pressed");
+                    break;
+                }
+            }
+
+
+            if (!tooManyKeys)
+            {
+
+                for (int ButtonNumber = 0; ButtonNumber < 6; ButtonNumber++)
+                {
+                    if (Input.GetMouseButtonDown(ButtonNumber))
+                    {
+                        ActiveInputTextField.text = ("Mouse" + ButtonNumber);
+                        EndKeyInput();
+                        ChangeKeyBind();
+                        return;
+                    }
+                }
+
+                if (Input.inputString.Length > 0)
+                {
+
+                    char c = Input.inputString[0];
+                    string c_ = c.ToString();
+                    if (Regex.IsMatch(c_, @"[a-zA-Z]") || System.Char.IsDigit(c))
+                    {
+                        ActiveInputTextField.text = Input.inputString;
+                        EndKeyInput();
+                        ChangeKeyBind();
+                        return;
+                    }
+                }
+
+                if (Input.GetKey(KeyCode.Escape))
+                {
+                    EndKeyInput();
+                    ChangeKeyBind();
+                }
+            }
+        }
+    }
 
     public void ResetKeyBinds()
     {
+        //InverseMouseButtons = PlayerPrefs.GetInt("InvMouse", 0);
+        // PlayerPrefs.SetInt("InvMouse", 0);
 
-        InverseMouseButtons = PlayerPrefs.GetInt("InvMouse", 0);
-
-        PlayerPrefs.SetInt("InvMouse", 0);
+        PlayerPrefs.SetString("MoveLoc", "Mouse0");
+        PlayerPrefs.SetString("CastSpellLoc", "Mouse1");
         PlayerPrefs.SetString("SpellSlot1Key", "Alpha1");
         PlayerPrefs.SetString("SpellSlot2Key", "Alpha2");
         PlayerPrefs.SetString("SpellSlot3Key", "Alpha3");
@@ -319,20 +412,44 @@ public class MenuScript : MonoBehaviour {
         SetKeyBinding();
     }
 
-
-
     public void SetModeText(int mode)
     {
         switch (mode)
         {
             case 1:
-                ModeText.text = "- Infinite lives \n- Normal monster density \n- Monsters deal normal damage \n- Bosses have normal health";
+                ModeText.text = "- 5 extra lives \n- Lower monster density \n- Monsters deal less damage \n- Bosses have less health";
                 break;
             case 2:
-                ModeText.text = "- 3 extra lives \n- Higher monster density \n- Monsters deal more damage \n- Bosses have more health";
+                ModeText.text = "- 3 extra lives \n- Normal monster density \n- Monsters deal Normal damage \n- Bosses have Normal health";
                 break;
             case 3:
-                ModeText.text = "- 0 extra lives \n- Highest monster density \n- Monsters deal most damage \n- Bosses have most health";
+                ModeText.text = "- 0 extra lives \n- Higher monster density \n- Monsters deal more damage \n- Bosses have more health";
+                break;
+            case 4:
+
+                if (PlayerPrefs.GetInt("SaveFile") == 1)
+                {
+                    int mode123 = PlayerPrefs.GetInt("CurrentMode_");
+                    string CurMode = "";
+                    switch (mode123)
+                    {
+                        case 1:
+                            CurMode = "Easy";
+                            break;
+                        case 2:
+                            CurMode = "Normal";
+                            break;
+                        case 3:
+                            CurMode = "Challenge";
+                            break;
+                    }
+
+                    ModeText.text = string.Format("- Save file found\n-Mode: {0}\n-Level: {1}\n-Lives: {2}", CurMode, PlayerPrefs.GetInt("MG.CurrentLevel")+1, PlayerPrefs.GetInt("Lives"));
+                }
+                else
+                {
+                    ModeText.text = "No save file found";
+                }
                 break;
             case 0:
                 ModeText.text = "";
@@ -392,39 +509,7 @@ public class MenuScript : MonoBehaviour {
         async.allowSceneActivation = false;
     }
 
-    private void Update()
-    {
-        if (BarBool)
-        {
-            StartCoroutine(LevelCoroutine());
-        }
 
-        if (Input.anyKeyDown && BindAButton)
-        {
-            for (int ButtonNumber = 0; ButtonNumber < 6; ButtonNumber++)
-            {
-                if (Input.GetMouseButtonDown(ButtonNumber))
-                {
-                    ActiveInputTextField.text = ("Mouse" + ButtonNumber);
-                    EndKeyInput();
-                }
-            }
-            if (Input.inputString.Length > 0)
-            {
-                char c = Input.inputString[0];
-                if (System.Char.IsLetter(c) || System.Char.IsDigit(c))
-                {
-                    ActiveInputTextField.text = Input.inputString;
-                    EndKeyInput();
-                }
-            }
-
-            if (Input.GetKey(KeyCode.Escape))
-            {
-                EndKeyInput();
-            }
-        }
-    }
 
     void EndKeyInput()
     {
@@ -435,7 +520,6 @@ public class MenuScript : MonoBehaviour {
         colors_.highlightedColor = Color.gray;
         ActiveInputButtonField.colors = colors_;
     }
-
 
     public void BindButtonTest(int Button)
     {
@@ -451,22 +535,36 @@ public class MenuScript : MonoBehaviour {
                 ActiveInputButtonField = InputButton2;
                 break;
             case 3:
-
+                ActiveInputTextField = InputText3;
+                ActiveInputButtonField = InputButton3;
                 break;
             case 4:
-
+                ActiveInputTextField = InputText4;
+                ActiveInputButtonField = InputButton4;
                 break;
             case 5:
-
+                ActiveInputTextField = InputText5;
+                ActiveInputButtonField = InputButton5;
                 break;
             case 6:
-
+                ActiveInputTextField = InputText6;
+                ActiveInputButtonField = InputButton6;
                 break;
             case 7:
-
+                ActiveInputTextField = InputText7;
+                ActiveInputButtonField = InputButton7;
                 break;
             case 8:
-
+                ActiveInputTextField = InputText8;
+                ActiveInputButtonField = InputButton8;
+                break;
+            case 9:
+                ActiveInputTextField = InputText9;
+                ActiveInputButtonField = InputButton9;
+                break;
+            case 10:
+                ActiveInputTextField = InputText10;
+                ActiveInputButtonField = InputButton10;
                 break;
         }
 
@@ -475,8 +573,6 @@ public class MenuScript : MonoBehaviour {
         ActiveInputButtonField.colors = colors;
         colors.highlightedColor = Color.red;
         ActiveInputButtonField.colors = colors;
-
-
     }
 
 
@@ -519,18 +615,101 @@ public class MenuScript : MonoBehaviour {
         }
     }
 
+    bool GetBool(string name)  //For retriving value.
+    {
+        return PlayerPrefs.GetInt(name) == 1 ? true : false;
+    }
+
+
+
+    public void ShowContinueFromLoadButton()
+    {
+        if (PlayerPrefs.GetInt("SaveFile") == 1)
+        {
+
+            var colors = ContinueFromLoadbutton.colors;
+            colors.normalColor = Color.white;
+            ContinueFromLoadbutton.colors = colors;
+
+            AlphaFade = ContinueFromLoadbuttonText.color;
+            AlphaFade.a = 1;
+            ContinueFromLoadbuttonText.color = AlphaFade;
+            ContinueFromLoadbutton.interactable = true;
+        }
+        else
+        {
+            var colors = ContinueFromLoadbutton.colors;
+            colors.normalColor = Color.gray;
+            ContinueFromLoadbutton.colors = colors;
+
+            AlphaFade = ContinueFromLoadbuttonText.color;
+            AlphaFade.a = 0.5f;
+            ContinueFromLoadbuttonText.color = AlphaFade;
+            ContinueFromLoadbutton.interactable = false;
+        }
+    }
+
+    public void ContinueFromLoad()
+    {
+       int mode = PlayerPrefs.GetInt("CurrentMode_");
+        switch (mode)
+        {
+            case 1:
+                InfiniteLives = false;
+                MonsterDensity = 0.70f;
+                GoldDropChance = 15;
+                PlayerModeArmor = 0.7f;
+                BossHealthModifier = 0.7f;
+                GameDifficulty = "Easy";
+                GameManager.CurrentMode_ = 1;
+                break;
+            case 2:
+                InfiniteLives = false;
+                MonsterDensity = 1;
+                PlayerModeArmor = 1f;
+                GoldDropChance = 0;
+                BossHealthModifier = 1f;
+                GameDifficulty = "Normal";
+                GameManager.CurrentMode_ = 2;
+                break;
+            case 3:
+                InfiniteLives = false;
+                MonsterDensity = 1.35f;
+                GoldDropChance = -15;
+                PlayerModeArmor = 1.2f;
+                BossHealthModifier = 1.3f;
+                GameDifficulty = "Challenge";
+                GameManager.CurrentMode_ = 3;
+                break;
+        }
+
+        Lives = PlayerPrefs.GetInt("Lives");
+        GameManager.minRoom_ = PlayerPrefs.GetInt("MG.minRoom");
+        GameManager.maxRoom_ = PlayerPrefs.GetInt("MG.maxRoom");
+        GameManager.CurrentLevel_ = PlayerPrefs.GetInt("MG.CurrentLevel");
+        GameManager.LevelHasHadEvent_ = GetBool("MG.LevelHasHadEvent");
+        GameManager.LevelHasHadMiniBoss_ = GetBool("MG.LevelHasHadMiniBoss");
+        GameManager.GenerateFromLoad_ = true;
+        GameManager.GiveLoot_ = false;
+        GameManager.StartLevel_ = true;
+
+        FirstLaunch = true;
+        LoadingBarFunc();
+    }
+
     public void ChooseMode(int mode)
     {
         switch (mode)
         {
             case 1:
-                Lives = 1;
-                InfiniteLives = true;
-                MonsterDensity = 0.70f;
+                Lives = 5;
+                InfiniteLives = false;
+                MonsterDensity = 0.80f;
                 GoldDropChance = 15;
                 PlayerModeArmor = 0.7f;
                 BossHealthModifier = 0.7f;
-                GameDifficulty = "Normal";
+                GameDifficulty = "Easy";
+                GameManager.CurrentMode_ = 1;
                 break;
             case 2:
                 Lives = 3;
@@ -538,7 +717,9 @@ public class MenuScript : MonoBehaviour {
                 MonsterDensity = 1;
                 PlayerModeArmor = 1f;
                 GoldDropChance = 0;
-                GameDifficulty = "Hard";
+                BossHealthModifier = 1f;
+                GameDifficulty = "Normal";
+                GameManager.CurrentMode_ = 2;
                 break;
             case 3:
                 Lives = 0;
@@ -548,8 +729,16 @@ public class MenuScript : MonoBehaviour {
                 PlayerModeArmor = 1.2f;
                 BossHealthModifier = 1.3f;
                 GameDifficulty = "Challenge";
+                GameManager.CurrentMode_ = 3;
                 break;
         }
+
+        
+        GameManager.minRoom_ = 5;
+        GameManager.maxRoom_ = 7;
+        GameManager.CurrentLevel_ = 0;
+        GameManager.GiveLoot_ = false;
+
         FirstLaunch = true;
         LoadingBarFunc();
     }

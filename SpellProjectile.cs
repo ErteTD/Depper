@@ -289,7 +289,7 @@ public class SpellProjectile : MonoBehaviour
                         Quaternion targetRotationNotX = Quaternion.Euler(transform.rotation.eulerAngles.x, targetRotation.eulerAngles.y, targetRotation.eulerAngles.z);
                         this.transform.rotation = Quaternion.Lerp(this.transform.rotation, targetRotationNotX, Time.deltaTime * projectilespeed / 6);
                     }
-                    transform.position = new Vector3(pos_.x, pos_.y, pos_.z);
+                    transform.position = new Vector3(pos_.x, 3f, pos_.z);
                 }
                 return;
             }
@@ -1180,7 +1180,10 @@ public class SpellProjectile : MonoBehaviour
         //{
 
         //}
-
+        if (CompOrbPlayer)
+        {
+            transform.position = new Vector3(transform.position.x, 3, transform.position.z);
+        }
         if (spellName == "Lightningbolt")
         {
            // transform.localScale += new Vector3(transform.localScale.x * 2f, transform.localScale.y * 3f, transform.localScale.z * 4f);

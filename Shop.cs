@@ -67,7 +67,7 @@ public class Shop : MonoBehaviour
         FindObjectOfType<GameManager>().SelectCursor(true);
         EventLight.intensity = 7f;
         EventLight.range = 4f;
-        if (Input.GetMouseButtonDown(MenuScript.MouseMovement))
+        if (Input.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode), MenuScript.MoveLoc)))
         {
             clicked = true;
 

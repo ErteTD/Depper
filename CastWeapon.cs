@@ -335,15 +335,17 @@ public class CastWeapon : MonoBehaviour
                 case 7:
                     Blink spell7 = Weapons[CurrentWeapon].GetComponent<Blink>();
                     Collider[] cols = Physics.OverlapSphere(transform.position, 35);
+                    bool AnySpells = false;
                     foreach (Collider c in cols)
                     {
                         Monster e = c.GetComponent<Monster>();
                         if (e != null && e.tag == "Monster")
                         {
+                            AnySpells = true;
                             //Monster enemy = e.GetComponent<Monster>();
                             GameObject test123 = Instantiate(spell7.ItemObject, transform.position, transform.rotation, transform);
                             SpellProjectile Frostmeteor = test123.GetComponent<SpellProjectile>();
-                            Frostmeteor.projectilespeed = 20;
+                            Frostmeteor.projectilespeed = 30;
                             Frostmeteor.damage = 1;
                             Frostmeteor.FrostBoltSlow = true;
                             Frostmeteor.SlowDuration = 3f;
@@ -351,10 +353,27 @@ public class CastWeapon : MonoBehaviour
                             Frostmeteor.aoeSizeMeteor = 3f;
                             Frostmeteor.FrostStaff = true;
                             Frostmeteor.spellCastLocation = e.transform.position;
-                            Frostmeteor.transform.position = new Vector3(transform.position.x, 15, transform.position.z);
+                            Frostmeteor.transform.position = new Vector3(transform.position.x, 20, transform.position.z);
                             player_.SpellsCastInThisRoom.Add(test123);
                         }
                     }
+
+                    if (!AnySpells)
+                    {
+                        GameObject test12345 = Instantiate(spell7.ItemObject, transform.position, transform.rotation, transform);
+                        SpellProjectile Frostmeteor = test12345.GetComponent<SpellProjectile>();
+                        Frostmeteor.projectilespeed = 15;
+                        Frostmeteor.damage = 1;
+                        Frostmeteor.FrostBoltSlow = true;
+                        Frostmeteor.SlowDuration = 3f;
+                        Frostmeteor.SlowPercent = 1.4f;
+                        Frostmeteor.aoeSizeMeteor = 3f;
+                        Frostmeteor.FrostStaff = true;
+                        Frostmeteor.spellCastLocation = transform.position;
+                        Frostmeteor.transform.position = new Vector3(transform.position.x, 20, transform.position.z);
+                        player_.SpellsCastInThisRoom.Add(test12345);
+                    }
+
                     spellSlotCD = spell7.cooldown;
                     break;
                 case 8:

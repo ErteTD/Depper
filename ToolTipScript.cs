@@ -68,6 +68,7 @@ public class ToolTipScript : MonoBehaviour
     public GameObject ForceCloseWeaponPanels;
     public Text weaponEffect;
     public Text weaponName;
+    public Text WeaponHotKey;
 
     [Header("Armor")]
     public GameObject ArmorColor;
@@ -107,7 +108,7 @@ public class ToolTipScript : MonoBehaviour
     private bool toggleArmorTooltip;
     private bool toggleWeaponTooltip;
 
-    private int CurItemID;
+    public int CurItemID;
     private GameManager gm;
     public bool ToolTipHC1;
     public bool ToolTipHC2;
@@ -517,6 +518,21 @@ public class ToolTipScript : MonoBehaviour
     {
         weaponName.text = item.itemname;
         weaponEffect.text = item.effect;
+        if (item.itemID != 5 && item.itemID != 0)
+        {
+            if (!MenuScript.ItemKey.Contains("Mouse"))
+            {
+                WeaponHotKey.text = "Press \"" + MenuScript.ItemKey.Substring(MenuScript.ItemKey.Length - 1) + "\"" + " to activate";
+            }
+            else
+            {
+                WeaponHotKey.text = "Press \"" + MenuScript.ItemKey + "\"" + " to activate";
+            }
+        }
+        else
+        {
+            WeaponHotKey.text = "";
+        }
         if (!preview)
         {
             WeaponColor.GetComponent<Image>().color = item.ItemColor;
@@ -611,7 +627,6 @@ public class ToolTipScript : MonoBehaviour
         }
     }
 
-
     public void CloseAllItemPanels()
     {
         if (SelectWeapon.activeSelf == true)
@@ -619,11 +634,20 @@ public class ToolTipScript : MonoBehaviour
             showWeaponSelect = showWeaponSelect ? false : true;
             SelectWeapon.SetActive(showWeaponSelect);
         }
+
         if (SelectArmor.activeSelf == true)
         {
             showArmorSelect = showArmorSelect ? false : true;
             SelectArmor.SetActive(showArmorSelect);
         }
+    }
+
+    public void ItemToolTipPanelhardCode()
+    {
+        WeaponTipPanel.SetActive(false);
+        toggleWeaponTooltip = false;
+        ArmorTipPanel.SetActive(false);
+        toggleArmorTooltip = false;
     }
 }
 

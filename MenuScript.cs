@@ -85,6 +85,7 @@ public class MenuScript : MonoBehaviour {
     public Toggle InverseMouseToggle;
     public Dropdown ScreenResolution;
     public Dropdown AASettings;
+    public Dropdown GameQualitySetting;
     //internal static int VsyncIni;
     internal static bool ResChecked;
     internal static int ResCheckInt;
@@ -93,6 +94,7 @@ public class MenuScript : MonoBehaviour {
     List<int> FakeCount = new List<int>();
     private bool DontUpdateRes;
     internal static int AASetting;
+    internal static int QualSetting;
 
     private float LimitInputTimer;
     private bool BindAButton;
@@ -141,10 +143,14 @@ public class MenuScript : MonoBehaviour {
         ScreenResolution.RefreshShownValue();
         SetModeText(0);
 
-        AASetting = PlayerPrefs.GetInt("PP_AASettings", 1);
-        AASettings.value = AASetting;
+     //   AASetting = PlayerPrefs.GetInt("PP_AASettings", 1);
+     //   AASettings.value = AASetting;
 
-        ChooseAA(AASetting);
+        QualSetting = PlayerPrefs.GetInt("PP_QualSettings", 2);
+        GameQualitySetting.value = QualSetting;
+        ChooseQuality(QualSetting);
+
+        // ChooseAA(AASetting);
         QualitySettings.vSyncCount = PlayerPrefs.GetInt("PP_VsyncSettings", 0);
 
         SetKeyBinding();
@@ -399,9 +405,16 @@ public class MenuScript : MonoBehaviour {
             FSToggle.isOn = false;
         }
         DontUpdateRes = false;
-        AASettings.value = AASetting;
-        ChooseAA(AASetting);
+        //  AASettings.value = AASetting;
+        //  ChooseAA(AASetting);
+
+
+        QualSetting = PlayerPrefs.GetInt("PP_QualSettings", 2);
+        GameQualitySetting.value = QualSetting;
+        ChooseQuality(QualSetting);
+
     }
+
 
     public void GetKeySettings()
     {
@@ -509,6 +522,38 @@ public class MenuScript : MonoBehaviour {
         async.allowSceneActivation = false;
     }
 
+
+
+    public void ChooseQuality(int Qual)
+    {
+
+
+        switch (Qual)
+        {
+        case 0:
+            QualitySettings.SetQualityLevel(0, true);
+        break;
+        case 1:
+            QualitySettings.SetQualityLevel(1, true);
+        break;
+        case 2:
+            QualitySettings.SetQualityLevel(2, true);
+        break;
+        case 3:
+            QualitySettings.SetQualityLevel(3, true);
+        break;
+        case 4:
+            QualitySettings.SetQualityLevel(4, true);
+        break;
+        default:
+        break;
+        }
+
+        QualitySettings.vSyncCount = PlayerPrefs.GetInt("PP_VsyncSettings", 0);
+
+        PlayerPrefs.SetInt("PP_QualSettings", Qual);
+        PlayerPrefs.Save();
+    }
 
 
     void EndKeyInput()

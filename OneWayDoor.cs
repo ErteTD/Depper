@@ -20,6 +20,8 @@ public class OneWayDoor : MonoBehaviour
     public float leftEdge;
     public float rightEdge;
     private Color roomCol;
+    private float dist;
+    private float MinimumDoorTimer;
 
     public Vector3 DoorPortal;
     public Vector3 BossRoomLoc; // is this used?
@@ -45,12 +47,17 @@ public class OneWayDoor : MonoBehaviour
         {
             roomCol = ConRoom.GetComponent<Room>().MimiMapBlock.GetComponent<Renderer>().material.color;
         }
+
+        MinimumDoorTimer = 1.5f;
     }
 
     void Update()
     {
-            float dist = Vector3.Distance(Player_.transform.position, transform.position);
-        
+            dist = Vector3.Distance(Player_.transform.position, transform.position);
+        if (MinimumDoorTimer > -1)
+        {
+            MinimumDoorTimer -= Time.deltaTime;
+        }
         if (dist < 8 && clicked == true && !CantClickDoorDuringLoad)
         {
             clicked = false;
@@ -63,6 +70,7 @@ public class OneWayDoor : MonoBehaviour
             }
         }
     }
+
 
     void ColorMiniMapDoorsGreen()
     {
@@ -98,6 +106,20 @@ public class OneWayDoor : MonoBehaviour
                 break;
         }
     }
+
+    private void OnTriggerExit(Collider other)
+    {
+        MinimumDoorTimer = 0;
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.tag == "Player" && dist < 3 && !CantClickDoorDuringLoad && MinimumDoorTimer < 0)
+        {
+            clicked = true;
+        }
+    }
+
 
     public void EnterRoom()
     {

@@ -20,6 +20,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public float MovementSpeed;
     private float MovementSpeed_;
     public float slowedDur;
+    private float StartHeight;
     public float AggroRange;
     [HideInInspector] public float AggroRange_;
     public float turnRate;
@@ -142,6 +143,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public GameObject FrostExplosion;
     public GameObject Frozen;
     public GameObject SpiderPoison;
+    public bool FireAndFrostDisabled;
     //public GameObject BlackHole;
 
     [Header("Bosses")]
@@ -216,6 +218,7 @@ public class Monster : MonoBehaviour, IDamageable {
     public GameObject BigBoyGlow5;
     public GameObject BigBoyGlow5b;
     public GameObject Smallboy;
+    public bool SmallBoyBool;
     public bool SummonHelp;
     private GameObject Brother;
     public float BigBoySpecial1;
@@ -394,14 +397,14 @@ public class Monster : MonoBehaviour, IDamageable {
             lerpedColor = colorIni;
             _renderer = BigBoyColor.GetComponent<Renderer>();
         }
-        if (MonsterType != 5 && !Boss && !BigBoy)
+        if (MonsterType != 5 && !Boss && !BigBoy && !SmallBoyBool)
         {
             agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
             agent.angularSpeed = turnRate;
             agent.speed = MovementSpeed;
             agent.stoppingDistance = meleeRange;
             StartAgentBool = true;
-        }else if(MonsterType != 5 && Boss || BigBoy)
+        }else if(MonsterType != 5 && Boss || BigBoy || SmallBoyBool)
         {
             Invoke("StartAgentMonster", 0.05f);
         }else if (MonsterType == 5)
@@ -513,10 +516,13 @@ public class Monster : MonoBehaviour, IDamageable {
         if (BigBoy) // Starting anim for BigBoyBoss.
         {
             anim.Spawn();
-            BossSound2.PlayDelayed(0.5f);
-            AggroRange = 40f;
-            Invoke("BigBoyAggro", 3.6f);
-            BigBoySpecial1_ = BigBoySpecial1;
+            if (BigBoy)
+            {
+                BossSound2.PlayDelayed(0.5f);
+                AggroRange = 40f;
+                Invoke("BigBoyAggro", 3.6f);
+                BigBoySpecial1_ = BigBoySpecial1;
+            }
             BBStill = true;
         }
 
@@ -537,6 +543,11 @@ public class Monster : MonoBehaviour, IDamageable {
         {
             Invoke("StoneGolemHardCode", 0.1f);
         }
+
+        if (MonsterType == 5)
+        {
+            StartHeight = transform.localPosition.y;
+        }
     }
     
 
@@ -548,9 +559,14 @@ public class Monster : MonoBehaviour, IDamageable {
             agent.stoppingDistance = meleeRange;
             agent.enabled = true;
             StartAgentBool = true;
-        if ((Illusionist || TimeKeeper || BigBoy) && !IamIllu)
+        if ((Illusionist || TimeKeeper || BigBoy || SmallBoyBool) && !IamIllu)
         {
             agent.isStopped = true;
+            if (SmallBoyBool)
+            {
+                anim.Spawn();
+                BBStill = true;
+            }
         }
 
     }
@@ -1236,8 +1252,12 @@ public class Monster : MonoBehaviour, IDamageable {
             Platforms.transform.rotation = Quaternion.Euler(new Vector3(0, ASD, 0));
         }
 
-        AmISlowed();
-        AmIBurning();
+        if (!FireAndFrostDisabled)
+        {
+            AmISlowed();
+            AmIBurning();
+        }
+
         ChooseTarget();
         
         if (LeaveFireTrail && InCombat)
@@ -1466,7 +1486,7 @@ public class Monster : MonoBehaviour, IDamageable {
                     {
                         BigBoySpecial1_ += 2.5f;
                     }
-                   if (OldKing)
+                   if (OldKing && !AttackFriend)
                     {
                         OldKingSpecialAttack_1 += 3;
                     }
@@ -1698,6 +1718,10 @@ public class Monster : MonoBehaviour, IDamageable {
         if (HealthBarCanvas != null)
         {
             HealthBarCanvas.transform.rotation = HBtrack;
+        }
+        if (MonsterType == 5)
+        {
+            transform.localPosition = new Vector3(transform.localPosition.x, StartHeight, transform.localPosition.z);
         }
     }
 
@@ -2952,7 +2976,7 @@ void StartSwarm() // so animation can start before spiders spawn.
     {
         CurrentSlowSTR = str;
 
-        if (slow && MovementSpeed >= MovementSpeed_ && !CurrentlyRessing) //slow is true and currently not slowed. How to work if enemy has a sprint effect? to be seen.
+        if (slow && MovementSpeed >= MovementSpeed_ && !CurrentlyRessing && !FireAndFrostDisabled) //slow is true and currently not slowed. How to work if enemy has a sprint effect? to be seen.
         {
             MovementSpeed /= str;
             if (MonsterType != 5 && agent != null)
@@ -3025,7 +3049,7 @@ void StartSwarm() // so animation can start before spiders spawn.
 
     public void Burn(bool burn, float dur, float str, float dmg)
     {
-        if (burn && !CurrentlyRessing)
+        if (burn && !CurrentlyRessing && !FireAndFrostDisabled)
         {
             BurnDamage += dmg;
             TotalBurnDamage = BurnDamage * str;
@@ -3324,6 +3348,11 @@ void StartSwarm() // so animation can start before spiders spawn.
             for (int i = AllDefiles.Count - 1; i >= 0; i--)
             {
                 Destroy(AllDefiles[i].gameObject);
+            }
+
+            if (PC_.GetComponent<Player>().DieOnce == false)
+            {
+                manag.SteamBossAchievement(BossName);
             }
 
             Loot();
@@ -3646,7 +3675,7 @@ void StartSwarm() // so animation can start before spiders spawn.
         int BlobDirMod = 0;
         for (int i = 0; i < 18; i++)
         {
-            StartCoroutine(Order1(gameObject, 5, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 0.5f, AttackDelay_, Color.white));
+            StartCoroutine(Order1(gameObject, 5, new Vector3(0, 0, 0), BlobDirMod, 1f, 0.5f, AttackDelay_, Color.white));
             AttackDelay_ += 0.01f;
             BlobDirMod += 18;
         }
@@ -3659,7 +3688,7 @@ void StartSwarm() // so animation can start before spiders spawn.
         bool side = true;
         for (int i = 0; i < 6; i++)
         {
-            StartCoroutine(Order1(gameObject, 4, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 12, AttackDelay_, Color.black));
+            StartCoroutine(Order1(gameObject, 4, new Vector3(0, 0, 0), BlobDirMod, 1f, 12, AttackDelay_, Color.black));
             AttackDelay_ += 0.8f;
 
             if (side)
@@ -3683,7 +3712,7 @@ void StartSwarm() // so animation can start before spiders spawn.
         int BlobDirMod = 0;
         for (int i = 0; i < 12; i++)
         {
-            StartCoroutine(Order1(gameObject, 1, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 12, AttackDelay_, Color.yellow));
+            StartCoroutine(Order1(gameObject, 1, new Vector3(0, 0, 0), BlobDirMod, 1, 12, AttackDelay_, Color.yellow));
             AttackDelay_ += 0.2f;
         }
     }
@@ -3706,7 +3735,7 @@ void StartSwarm() // so animation can start before spiders spawn.
 
         for (int i = 0; i < 11; i++)
         {
-            StartCoroutine(Order1(gameObject, 2, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 9, AttackDelay_, Color.red));
+            StartCoroutine(Order1(gameObject, 2, new Vector3(0, 0, 0), BlobDirMod, 1, 9, AttackDelay_, Color.red));
             AttackDelay_ += 0.1f;
             if (side)
             {
@@ -3736,7 +3765,7 @@ void StartSwarm() // so animation can start before spiders spawn.
         }
         for (int i = 0; i < 15; i++)
         {
-            StartCoroutine(Order1(gameObject, 3, new Vector3(0, 0, 0), BlobDirMod, 0.7f, 9, AttackDelay_, Color.green));
+            StartCoroutine(Order1(gameObject, 3, new Vector3(0, 0, 0), BlobDirMod, 1f, 9, AttackDelay_, Color.green));
             AttackDelay_ += 0.2f;
 
             if (BlobDirMod <= -25 && side == false)
@@ -3998,10 +4027,7 @@ void StartSwarm() // so animation can start before spiders spawn.
         GameObject CurBlob = Instantiate(BlobAttack1Object, transform.position, transform.rotation, transform);
         AddToRoomMonsterList(CurBlob);
         Monster CurBlob_ = CurBlob.GetComponent<Monster>();
-        if (!heal)
-        {
-            BlobDad.GetComponent<Monster>().TakeDamage(0.75f);
-        }
+
         ParticleSystem ps = CurBlob_.BlobPS;
         var main = ps.main;
         if (AttackNumb == 1)
@@ -4049,6 +4075,13 @@ void StartSwarm() // so animation can start before spiders spawn.
         CurBlob_.BlobAttackNoTarget = true;
         CurBlob_.BlobDie = false;
         CurBlob_.BlobDieTimer = lifeTime;
+
+
+        if (!heal)
+        {
+            TakeDamage(0.65f);
+        }
+
     }
 
     void BlobExpire()
@@ -4137,15 +4170,16 @@ void StartSwarm() // so animation can start before spiders spawn.
             SmallHelp_.damage = 1f;
             SmallHelp_.health = 3;
             SmallHelp_.health2 = 3;
-
+       
             float RandomSpot = Random.Range(0, 5);
             float RandomSpot2 = Random.Range(0, 5);
             SmallHelp.transform.parent = transform.parent;
             SmallHelp.transform.position = new Vector3(SmallHelp.transform.position.x + RandomSpot, SmallHelp.transform.position.y, SmallHelp.transform.position.z + RandomSpot2);
             SmallHelp.transform.localScale = new Vector3(1, 1, 1);
-            SmallHelp.GetComponent<UnityEngine.AI.NavMeshAgent>().isStopped = true;
-            SmallHelp_.BBStill = true;
-            SmallHelp_.animChild.GetComponent<MonsterAnim>().Spawn();
+            SmallHelp_.SmallBoyBool = true;
+            //SmallHelp.GetComponent<UnityEngine.AI.NavMeshAgent>().isStopped = true;
+            //SmallHelp_.BBStill = true;
+            //SmallHelp_.animChild.GetComponent<MonsterAnim>().Spawn();
             SmallHelp_.Invoke("SmallSpawnAnimStop", 3f);
         }
     }

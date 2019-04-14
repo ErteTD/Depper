@@ -1117,6 +1117,10 @@ public class GameManager : MonoBehaviour
             }
         }
 
+
+        //Please asd
+        //asd
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (!GameOverEsc)

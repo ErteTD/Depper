@@ -644,10 +644,16 @@ public class ToolTipScript : MonoBehaviour
 
     public void ItemToolTipPanelhardCode()
     {
-        WeaponTipPanel.SetActive(false);
-        toggleWeaponTooltip = false;
-        ArmorTipPanel.SetActive(false);
-        toggleArmorTooltip = false;
+        if (ToolTipHC1)
+        {
+            WeaponTipPanel.SetActive(false);
+            toggleWeaponTooltip = false;
+        }
+        if (ToolTipHC2)
+        {
+            ArmorTipPanel.SetActive(false);
+            toggleArmorTooltip = false;
+        }
     }
 }
 
